@@ -6,6 +6,7 @@ import {
 import { api } from "../services/api.js";
 import { useToast } from "../context/ToastContext.js";
 import { UrlQrCode } from "../components/UrlQrCode.js";
+import { getDisplayShortUrl, getShortDomain } from "../utils/urlHelper.js";
 
 export const CreateUrlPage: React.FC = () => {
   const { toast } = useToast();
@@ -52,7 +53,7 @@ export const CreateUrlPage: React.FC = () => {
         isFavorite,
       });
 
-      const fullShortUrl = `${window.location.origin}/${res.shortCode}`;
+      const fullShortUrl = getDisplayShortUrl(res.shortCode);
       setCreatedUrl(fullShortUrl);
       setCreatedCode(res.shortCode);
       toast.success("Link created!");
@@ -123,7 +124,7 @@ export const CreateUrlPage: React.FC = () => {
               </label>
               <div className="relative">
                 <span className="absolute left-3.5 top-3.5 z-10 pointer-events-none text-zinc-800 dark:text-zinc-300 text-sm font-semibold select-none">
-                  {window.location.host} /
+                  {getShortDomain()} /
                 </span>
                 <input
                   type="text"

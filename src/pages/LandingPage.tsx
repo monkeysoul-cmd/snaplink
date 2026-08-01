@@ -3,6 +3,7 @@ import { Check, Copy, ArrowRight, Zap, BarChart3, Lock, Sparkles, Link2 } from "
 import { api } from "../services/api.js";
 import { useAuth } from "../context/AuthContext.js";
 import { useToast } from "../context/ToastContext.js";
+import { getDisplayShortUrl } from "../utils/urlHelper.js";
 
 export const LandingPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -22,7 +23,7 @@ export const LandingPage: React.FC = () => {
     setIsShortening(true);
     try {
       const data = await api.url.create({ originalUrl: longUrl });
-      const fullShort = `${window.location.origin}/${data.shortCode}`;
+      const fullShort = getDisplayShortUrl(data.shortCode);
       setShortenedUrl(fullShort);
       toast.success("Link shortened!");
     } catch (error: any) {
