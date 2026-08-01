@@ -49,7 +49,9 @@ router.post("/", async (req: Request, res: Response): Promise<void> => {
 
     // If custom alias is provided, validate uniqueness
     let finalShortCode = "";
-    if (customAlias) {
+    const hasCustomAlias = Boolean(customAlias && customAlias.trim() !== "");
+
+    if (hasCustomAlias) {
       const trimmedAlias = customAlias.trim().replace(/\s+/g, "-");
       if (trimmedAlias.length < 3) {
         res.status(400).json({ message: "Custom alias must be at least 3 characters long" });
@@ -70,7 +72,9 @@ router.post("/", async (req: Request, res: Response): Promise<void> => {
       let attempts = 0;
       while (attempts < 10) {
         const code = generateShortCode(6);
-        const existing = await Url.findOne({ shortCode: code });
+        const existing = await Url.findOne({
+          $or: [{ shortCode: code }, { customAlias: code }]
+        });
         if (!existing) {
           finalShortCode = code;
           break;
@@ -91,23 +95,28 @@ router.post("/", async (req: Request, res: Response): Promise<void> => {
     }
 
     // Create the record
-    const newUrl = await Url.create({
+    const urlDataToCreate: any = {
       userId: userId || null,
       originalUrl: normalizedOriginal,
       shortCode: finalShortCode,
-      customAlias: customAlias ? finalShortCode : null,
       expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
       isActive: true,
       passwordHash,
       tags: Array.isArray(tags) ? tags.map((t: string) => t.trim().toLowerCase()) : [],
       isPublic: isPublic ?? true,
       isFavorite: isFavorite ?? false,
-    });
+    };
+
+    if (hasCustomAlias) {
+      urlDataToCreate.customAlias = finalShortCode;
+    }
+
+    const newUrl = await Url.create(urlDataToCreate);
 
     res.status(201).json(newUrl);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Create URL error:", error);
-    res.status(500).json({ message: "Server error creating short URL" });
+    res.status(500).json({ message: error?.message || "Server error creating short URL" });
   }
 });
 
