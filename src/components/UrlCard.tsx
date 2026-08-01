@@ -7,7 +7,7 @@ import { UrlItem } from "../types.js";
 import { api } from "../services/api.js";
 import { useToast } from "../context/ToastContext.js";
 import { UrlQrCode } from "./UrlQrCode.js";
-import { getDisplayShortUrl, getRedirectUrl } from "../utils/urlHelper.js";
+import { getDisplayShortUrl, getWorkingShortUrl, getRedirectUrl } from "../utils/urlHelper.js";
 
 interface UrlCardProps {
   url: UrlItem;
@@ -35,13 +35,14 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const displayShortLink = getDisplayShortUrl(url.shortCode);
+  const workingShortLink = getWorkingShortUrl(url.shortCode);
   const redirectLink = getRedirectUrl(url.shortCode);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(displayShortLink);
+      await navigator.clipboard.writeText(workingShortLink);
       setCopied(true);
-      toast.success("Copied!");
+      toast.success("Copied working link!");
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       toast.error("Couldn't copy — try selecting it manually.");
@@ -254,7 +255,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
           {/* QR drawer */}
           {showQr && (
             <div className="border-t border-white/[0.06] pt-4 animate-fadeIn">
-              <UrlQrCode shortUrl={displayShortLink} shortCode={url.shortCode} />
+              <UrlQrCode shortUrl={workingShortLink} shortCode={url.shortCode} />
             </div>
           )}
 
