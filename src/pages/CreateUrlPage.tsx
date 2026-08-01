@@ -52,7 +52,7 @@ export const CreateUrlPage: React.FC = () => {
         isFavorite,
       });
 
-      const fullShortUrl = `https://linkcut.com/${res.shortCode}`;
+      const fullShortUrl = `${window.location.origin}/${res.shortCode}`;
       setCreatedUrl(fullShortUrl);
       setCreatedCode(res.shortCode);
       toast.success("Link created!");
@@ -123,7 +123,7 @@ export const CreateUrlPage: React.FC = () => {
               </label>
               <div className="relative">
                 <span className="absolute left-3.5 top-3.5 z-10 pointer-events-none text-zinc-800 dark:text-zinc-300 text-sm font-semibold select-none">
-                  linkcut.com /
+                  {window.location.host} /
                 </span>
                 <input
                   type="text"
