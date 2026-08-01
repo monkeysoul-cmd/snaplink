@@ -33,7 +33,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
   const [editIsPublic, setEditIsPublic] = useState<boolean>(url.isPublic);
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  const shortLink = `https://linkcut.com/${url.shortCode}`;
+  const shortLink = `${window.location.origin}/${url.shortCode}`;
 
   const handleCopy = async () => {
     try {

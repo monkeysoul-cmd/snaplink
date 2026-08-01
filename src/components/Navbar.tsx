@@ -29,7 +29,7 @@ export const Navbar: React.FC = () => {
           id="nav-logo"
         >
           <span className="text-2xl group-hover:rotate-12 transition-transform duration-300 inline-block">✂️</span>
-          <span className="font-display tracking-tight gradient-text">LinkCut</span>
+          <span className="font-display tracking-tight gradient-text">SnapLink</span>
         </button>
 
         {/* Actions */}

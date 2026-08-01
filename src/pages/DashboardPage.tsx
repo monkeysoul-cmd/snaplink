@@ -201,7 +201,7 @@ export const DashboardPage: React.FC = () => {
                     <tr key={u.id} className="hover:bg-white/[0.02]">
                       <td className="py-3 pr-2 font-bold text-zinc-300 truncate max-w-[150px] sm:max-w-[220px]">
                         <a
-                          href={`https://linkcut.com/${u.shortCode}`}
+                          href={`${window.location.origin}/${u.shortCode}`}
                           target="_blank"
                           rel="noreferrer"
                           className="hover:underline text-violet-400 hover:text-violet-300 transition-colors"
@@ -254,7 +254,7 @@ export const DashboardPage: React.FC = () => {
                     <tr key={u.id} className="hover:bg-white/[0.02]">
                       <td className="py-3 pr-2 font-bold text-zinc-300 truncate max-w-[150px] sm:max-w-[220px]">
                         <a
-                          href={`https://linkcut.com/${u.shortCode}`}
+                          href={`${window.location.origin}/${u.shortCode}`}
                           target="_blank"
                           rel="noreferrer"
                           className="hover:underline text-violet-400 hover:text-violet-300 transition-colors"
