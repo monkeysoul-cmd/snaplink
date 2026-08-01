@@ -7,6 +7,7 @@ import { UrlItem } from "../types.js";
 import { api } from "../services/api.js";
 import { useToast } from "../context/ToastContext.js";
 import { UrlQrCode } from "./UrlQrCode.js";
+import { getDisplayShortUrl, getRedirectUrl } from "../utils/urlHelper.js";
 
 interface UrlCardProps {
   url: UrlItem;
@@ -33,11 +34,12 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
   const [editIsPublic, setEditIsPublic] = useState<boolean>(url.isPublic);
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  const shortLink = `${window.location.origin}/${url.shortCode}`;
+  const displayShortLink = getDisplayShortUrl(url.shortCode);
+  const redirectLink = getRedirectUrl(url.shortCode);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(shortLink);
+      await navigator.clipboard.writeText(displayShortLink);
       setCopied(true);
       toast.success("Copied!");
       setTimeout(() => setCopied(false), 2000);
@@ -117,11 +119,11 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
             <div className="flex-1 space-y-1.5 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <button
-                  onClick={() => window.open(shortLink, "_blank")}
+                  onClick={() => window.open(redirectLink, "_blank")}
                   className="text-base sm:text-lg font-bold text-violet-400 hover:text-violet-300 hover:underline flex items-center gap-1.5 truncate max-w-full cursor-pointer font-display transition-colors"
                   id={`link-short-${url.id}`}
                 >
-                  {shortLink}
+                  {displayShortLink}
                   <ExternalLink className="w-4 h-4 shrink-0" />
                 </button>
 
@@ -252,7 +254,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
           {/* QR drawer */}
           {showQr && (
             <div className="border-t border-white/[0.06] pt-4 animate-fadeIn">
-              <UrlQrCode shortUrl={shortLink} shortCode={url.shortCode} />
+              <UrlQrCode shortUrl={displayShortLink} shortCode={url.shortCode} />
             </div>
           )}
 
