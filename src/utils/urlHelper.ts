@@ -25,11 +25,17 @@ export const getDisplayShortUrl = (shortCode: string): string => {
  */
 export const getWorkingShortUrl = (shortCode: string): string => {
   const envDomain = (import.meta as any).env?.VITE_SHORT_DOMAIN || (import.meta as any).env?.VITE_APP_URL;
-  if (envDomain && typeof envDomain === "string" && envDomain.trim() !== "") {
+  if (
+    envDomain && 
+    typeof envDomain === "string" && 
+    envDomain.trim() !== "" && 
+    !envDomain.includes("snaplink.app") &&
+    !envDomain.includes("MY_APP_URL")
+  ) {
     const clean = envDomain.trim().replace(/^https?:\/\//, "").replace(/\/$/, "");
     return `https://${clean}/${shortCode}`;
   }
-  if (typeof window !== "undefined" && window.location?.origin) {
+  if (typeof window !== "undefined" && window.location?.origin && window.location.origin !== "null") {
     return `${window.location.origin}/${shortCode}`;
   }
   return `https://url-shortner-lilac-seven.vercel.app/${shortCode}`;

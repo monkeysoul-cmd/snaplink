@@ -6,6 +6,7 @@ import { api } from "../services/api.js";
 import { useToast } from "../context/ToastContext.js";
 import { AnalyticsDashboardData } from "../types.js";
 import { MetricsSkeleton, ChartSkeleton } from "../components/Skeletons.js";
+import { getDisplayShortUrl, getWorkingShortUrl } from "../utils/urlHelper.js";
 
 export const DashboardPage: React.FC = () => {
   const { toast } = useToast();
@@ -201,12 +202,12 @@ export const DashboardPage: React.FC = () => {
                     <tr key={u.id} className="hover:bg-white/[0.02]">
                       <td className="py-3 pr-2 font-bold text-zinc-300 truncate max-w-[150px] sm:max-w-[220px]">
                         <a
-                          href={`/${u.shortCode}`}
+                          href={getWorkingShortUrl(u.shortCode)}
                           target="_blank"
                           rel="noreferrer"
                           className="hover:underline text-violet-400 hover:text-violet-300 transition-colors"
                         >
-                          {`/${u.shortCode}`}
+                          {getDisplayShortUrl(u.shortCode)}
                         </a>
                         <span className="block text-[10px] text-zinc-600 font-medium truncate">{u.originalUrl}</span>
                       </td>
@@ -254,12 +255,12 @@ export const DashboardPage: React.FC = () => {
                     <tr key={u.id} className="hover:bg-white/[0.02]">
                       <td className="py-3 pr-2 font-bold text-zinc-300 truncate max-w-[150px] sm:max-w-[220px]">
                         <a
-                          href={`/${u.shortCode}`}
+                          href={getWorkingShortUrl(u.shortCode)}
                           target="_blank"
                           rel="noreferrer"
                           className="hover:underline text-violet-400 hover:text-violet-300 transition-colors"
                         >
-                          {`/${u.shortCode}`}
+                          {getDisplayShortUrl(u.shortCode)}
                         </a>
                         <span className="block text-[10px] text-zinc-600 font-medium truncate">{u.originalUrl}</span>
                       </td>

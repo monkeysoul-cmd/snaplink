@@ -243,7 +243,7 @@ export const CreateUrlPage: React.FC = () => {
                 
                 <div className="space-y-1.5 min-w-0">
                   <a
-                    href={getRedirectUrl(createdCode)}
+                    href={workingUrl}
                     target="_blank"
                     rel="noreferrer"
                     className="text-lg font-bold text-violet-300 hover:text-violet-200 hover:underline break-all block transition-colors"

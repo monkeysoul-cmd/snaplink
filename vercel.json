@@ -9,7 +9,7 @@
     },
     {
       "source": "/:shortCode([^/.]{3,})",
-      "destination": "/api/index.ts"
+      "destination": "/api/index.ts?shortCode=:shortCode"
     },
     {
       "source": "/(.*)",

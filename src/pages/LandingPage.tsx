@@ -10,6 +10,7 @@ export const LandingPage: React.FC = () => {
   const { toast } = useToast();
   const [longUrl, setLongUrl] = useState<string>("");
   const [shortenedUrl, setShortenedUrl] = useState<string | null>(null);
+  const [workingUrl, setWorkingUrl] = useState<string | null>(null);
   const [isShortening, setIsShortening] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -24,7 +25,9 @@ export const LandingPage: React.FC = () => {
     try {
       const data = await api.url.create({ originalUrl: longUrl });
       const fullShort = getDisplayShortUrl(data.shortCode);
+      const fullWorking = getWorkingShortUrl(data.shortCode);
       setShortenedUrl(fullShort);
+      setWorkingUrl(fullWorking);
       toast.success("Link shortened!");
     } catch (error: any) {
       toast.error(error.message || "Something went wrong.");
@@ -34,11 +37,12 @@ export const LandingPage: React.FC = () => {
   };
 
   const handleCopy = async () => {
-    if (!shortenedUrl) return;
+    const textToCopy = workingUrl || shortenedUrl;
+    if (!textToCopy) return;
     try {
-      await navigator.clipboard.writeText(shortenedUrl);
+      await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
-      toast.success("Copied to clipboard!");
+      toast.success("Copied working link!");
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       toast.error("Couldn't copy — try selecting it manually.");
@@ -145,7 +149,7 @@ export const LandingPage: React.FC = () => {
                     ✅ Your short link is ready!
                   </span>
                   <a
-                    href={shortenedUrl}
+                    href={workingUrl || shortenedUrl || "#"}
                     target="_blank"
                     rel="noreferrer"
                     className="text-base font-bold text-violet-300 hover:text-violet-200 hover:underline break-all transition-colors"
