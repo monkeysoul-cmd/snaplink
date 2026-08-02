@@ -3,7 +3,7 @@ import { Check, Copy, ArrowRight, Zap, BarChart3, Lock, Sparkles, Link2 } from "
 import { api } from "../services/api.js";
 import { useAuth } from "../context/AuthContext.js";
 import { useToast } from "../context/ToastContext.js";
-import { getDisplayShortUrl } from "../utils/urlHelper.js";
+import { getDisplayShortUrl, getWorkingShortUrl } from "../utils/urlHelper.js";
 
 export const LandingPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
