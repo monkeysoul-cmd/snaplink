@@ -61,11 +61,28 @@ router.post("/api/url/:shortCode/verify", async (req: Request, res: Response): P
 // Main redirect handler. Checks expiry, password protection, active status, logs analytics, and redirects.
 router.get("/:shortCode", async (req: Request, res: Response, next: import("express").NextFunction) => {
   try {
-    const { shortCode } = req.params;
+    let shortCode = req.params.shortCode;
+
+    // Check if passed in query from Vercel rewrite (?shortCode=:shortCode)
+    if (req.query.shortCode && typeof req.query.shortCode === "string" && req.query.shortCode.trim() !== "") {
+      shortCode = req.query.shortCode.trim();
+    }
+
+    // Fallback: extract short code from originalUrl if shortCode is index.ts / index.js / api
+    if ((!shortCode || shortCode === "index.ts" || shortCode === "index.js" || shortCode === "api") && req.originalUrl) {
+      const rawPath = req.originalUrl.split("?")[0];
+      const parts = rawPath.split("/").filter(Boolean);
+      if (parts.length > 0 && parts[0] !== "api") {
+        shortCode = parts[0];
+      }
+    }
 
     // Skip for asset routes, api requests, or internal Vite paths so next middlewares can handle them
     if (
-      shortCode.startsWith("api") || 
+      !shortCode ||
+      shortCode === "api" ||
+      shortCode === "index.ts" ||
+      shortCode === "index.js" ||
       shortCode.startsWith("@") || 
       shortCode.startsWith("src") ||
       shortCode.startsWith("node_modules") ||
@@ -75,7 +92,11 @@ router.get("/:shortCode", async (req: Request, res: Response, next: import("expr
       return next();
     }
 
-    const url = await Url.findOne({ shortCode });
+    // Look up by shortCode OR customAlias
+    const url = await Url.findOne({
+      $or: [{ shortCode }, { customAlias: shortCode }]
+    });
+
     if (!url) {
       // Redirect to frontend's 404 handler
       res.redirect("/#/404");
@@ -100,7 +121,7 @@ router.get("/:shortCode", async (req: Request, res: Response, next: import("expr
     // 3. Check if link is password protected
     if (url.passwordHash) {
       // Redirect to frontend unlock screen
-      res.redirect(`/#/unlock/${shortCode}`);
+      res.redirect(`/#/unlock/${url.shortCode}`);
       return;
     }
 
