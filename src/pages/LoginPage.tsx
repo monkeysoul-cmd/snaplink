@@ -41,7 +41,7 @@ const ParticleCanvas: React.FC = () => {
         if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
         if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(168,85,247,${p.a * 0.45})`; ctx.fill();
+        ctx.fillStyle = `rgba(52,211,153,${p.a * 0.45})`; ctx.fill();
       }
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -49,7 +49,7 @@ const ParticleCanvas: React.FC = () => {
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 100) {
             ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(139,92,246,${(1 - dist / 100) * 0.12})`; ctx.lineWidth = 0.5; ctx.stroke();
+            ctx.strokeStyle = `rgba(20,184,166,${(1 - dist / 100) * 0.12})`; ctx.lineWidth = 0.5; ctx.stroke();
           }
         }
       }
@@ -84,7 +84,7 @@ const ParticleCanvasLight: React.FC = () => {
         if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
         if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(99,102,241,${p.a * 0.18})`; ctx.fill();
+        ctx.fillStyle = `rgba(16,185,129,${p.a * 0.18})`; ctx.fill();
       }
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -92,7 +92,7 @@ const ParticleCanvasLight: React.FC = () => {
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 90) {
             ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(99,102,241,${(1 - dist / 90) * 0.07})`; ctx.lineWidth = 0.6; ctx.stroke();
+            ctx.strokeStyle = `rgba(20,184,166,${(1 - dist / 90) * 0.07})`; ctx.lineWidth = 0.6; ctx.stroke();
           }
         }
       }
@@ -118,23 +118,23 @@ const FloatingInput: React.FC<FloatingInputProps> = ({ id, type, value, onChange
   const fieldStyle: React.CSSProperties = {
     display: "flex", alignItems: "center", position: "relative",
     background: isDark
-      ? (focused ? "rgba(139,92,246,0.07)" : "rgba(255,255,255,0.035)")
-      : (focused ? "rgba(99,102,241,0.06)" : "#ffffff"),
+      ? (focused ? "rgba(16,185,129,0.07)" : "rgba(255,255,255,0.035)")
+      : (focused ? "rgba(16,185,129,0.06)" : "#ffffff"),
     border: `1px solid ${isDark
-      ? (focused ? "rgba(168,85,247,0.55)" : "rgba(139,92,246,0.18)")
-      : (focused ? "rgba(99,102,241,0.6)" : "rgba(203,213,225,0.9)")}`,
+      ? (focused ? "rgba(52,211,153,0.55)" : "rgba(20,184,166,0.18)")
+      : (focused ? "rgba(5,150,105,0.6)" : "rgba(167,243,208,0.9)")}`,
     borderRadius: 14, padding: "0.25rem 0.75rem", gap: "0.5rem",
     boxShadow: focused
       ? isDark
-        ? "0 0 0 3px rgba(168,85,247,0.12), 0 0 20px rgba(168,85,247,0.08)"
-        : "0 0 0 3px rgba(99,102,241,0.12)"
+        ? "0 0 0 3px rgba(52,211,153,0.12), 0 0 20px rgba(52,211,153,0.08)"
+        : "0 0 0 3px rgba(16,185,129,0.12)"
       : isDark ? "none" : "0 1px 3px rgba(0,0,0,0.06)",
     transition: "border-color 0.25s, box-shadow 0.25s, background 0.25s",
   };
 
   const iconColor = isDark
-    ? (focused ? "#a78bfa" : "rgba(168,85,247,0.5)")
-    : (focused ? "#6366f1" : "rgba(99,102,241,0.45)");
+    ? (focused ? "#34d399" : "rgba(52,211,153,0.5)")
+    : (focused ? "#059669" : "rgba(16,185,129,0.45)");
 
   const labelStyle: React.CSSProperties = {
     position: "absolute",
@@ -144,8 +144,8 @@ const FloatingInput: React.FC<FloatingInputProps> = ({ id, type, value, onChange
     fontSize: active ? "0.65rem" : "0.85rem",
     fontWeight: active ? 700 : 400,
     color: active
-      ? (isDark ? "#a78bfa" : "#6366f1")
-      : (isDark ? "rgba(255,255,255,0.28)" : "rgba(71,85,105,0.7)"),
+      ? (isDark ? "#34d399" : "#059669")
+      : (isDark ? "rgba(255,255,255,0.28)" : "rgba(6,78,59,0.6)"),
     letterSpacing: active ? "0.04em" : "normal",
     textTransform: active ? "uppercase" : "none",
     pointerEvents: "none",
@@ -207,60 +207,60 @@ export const LoginPage: React.FC = () => {
     } finally { setIsSubmitting(false); }
   };
 
-  /* ── Theme-specific tokens ── */
-  const bg = isDark ? "#060612" : "#eef2ff";
+  /* ── Theme-specific tokens — Emerald & Teal ── */
+  const bg = isDark ? "#020d0a" : "#f0fdf4";
   const leftBg = isDark
-    ? "radial-gradient(ellipse at 20% 30%, rgba(99,102,241,0.25) 0%, transparent 55%), radial-gradient(ellipse at 80% 70%, rgba(168,85,247,0.2) 0%, transparent 55%)"
-    : "radial-gradient(ellipse at 20% 30%, rgba(99,102,241,0.18) 0%, transparent 55%), radial-gradient(ellipse at 80% 70%, rgba(139,92,246,0.14) 0%, transparent 55%), radial-gradient(ellipse at 50% 80%, rgba(244,114,182,0.08) 0%, transparent 55%)";
-  const gridColor = isDark ? "rgba(139,92,246,0.06)" : "rgba(99,102,241,0.07)";
+    ? "radial-gradient(ellipse at 20% 30%, rgba(16,185,129,0.25) 0%, transparent 55%), radial-gradient(ellipse at 80% 70%, rgba(20,184,166,0.2) 0%, transparent 55%)"
+    : "radial-gradient(ellipse at 20% 30%, rgba(16,185,129,0.18) 0%, transparent 55%), radial-gradient(ellipse at 80% 70%, rgba(20,184,166,0.14) 0%, transparent 55%), radial-gradient(ellipse at 50% 80%, rgba(34,211,238,0.08) 0%, transparent 55%)";
+  const gridColor = isDark ? "rgba(20,184,166,0.06)" : "rgba(16,185,129,0.07)";
   const cardBg = isDark
-    ? "linear-gradient(145deg, rgba(18,18,45,0.88), rgba(8,8,22,0.95))"
-    : "linear-gradient(145deg, rgba(255,255,255,0.98), rgba(241,245,249,0.95))";
+    ? "linear-gradient(145deg, rgba(3,26,22,0.9), rgba(1,14,11,0.95))"
+    : "linear-gradient(145deg, rgba(255,255,255,0.98), rgba(240,253,244,0.95))";
   const cardBorder = isDark
-    ? { border: "1px solid rgba(139,92,246,0.18)", borderTop: "1px solid rgba(168,85,247,0.35)", borderLeft: "1px solid rgba(168,85,247,0.25)" }
-    : { border: "1px solid rgba(203,213,225,0.9)", borderTop: "1px solid #ffffff", borderLeft: "1px solid #ffffff" };
+    ? { border: "1px solid rgba(20,184,166,0.18)", borderTop: "1px solid rgba(52,211,153,0.35)", borderLeft: "1px solid rgba(52,211,153,0.25)" }
+    : { border: "1px solid rgba(167,243,208,0.9)", borderTop: "1px solid #ffffff", borderLeft: "1px solid #ffffff" };
   const cardShadow = isDark
-    ? "0 0 0 1px rgba(139,92,246,0.06), 0 32px 64px rgba(0,0,0,0.5), 0 0 60px rgba(139,92,246,0.08), inset 0 1px 0 rgba(255,255,255,0.07)"
-    : "0 4px 6px rgba(0,0,0,0.04), 0 20px 48px rgba(99,102,241,0.12), 0 0 0 1px rgba(203,213,225,0.5), inset 0 1px 0 rgba(255,255,255,1)";
+    ? "0 0 0 1px rgba(16,185,129,0.06), 0 32px 64px rgba(0,0,0,0.55), 0 0 60px rgba(16,185,129,0.08), inset 0 1px 0 rgba(255,255,255,0.07)"
+    : "0 4px 6px rgba(0,0,0,0.04), 0 20px 48px rgba(16,185,129,0.13), 0 0 0 1px rgba(167,243,208,0.6), inset 0 1px 0 rgba(255,255,255,1)";
   const topLine = isDark
-    ? "linear-gradient(90deg, transparent, #818cf8, #c084fc, #f472b6, transparent)"
-    : "linear-gradient(90deg, transparent, #6366f1, #8b5cf6, #ec4899, transparent)";
-  const badgeBg = isDark ? "rgba(139,92,246,0.1)" : "rgba(99,102,241,0.1)";
-  const badgeBorder = isDark ? "rgba(139,92,246,0.2)" : "rgba(99,102,241,0.2)";
-  const badgeColor = isDark ? "#a78bfa" : "#4f46e5";
-  const titleColor = isDark ? "#ffffff" : "#0f172a";
-  const subColor = isDark ? "rgba(255,255,255,0.38)" : "rgba(71,85,105,0.7)";
-  const leftTitleColor = isDark ? "#ffffff" : "#1e1b4b";
-  const leftSubColor = isDark ? "rgba(255,255,255,0.45)" : "rgba(55,48,163,0.6)";
-  const pillBg = isDark ? "rgba(139,92,246,0.12)" : "rgba(99,102,241,0.08)";
-  const pillBorder = isDark ? "rgba(139,92,246,0.22)" : "rgba(99,102,241,0.18)";
-  const pillColor = isDark ? "rgba(255,255,255,0.5)" : "rgba(67,56,202,0.7)";
-  const pillIconColor = isDark ? "#a78bfa" : "#6366f1";
-  const dividerColor = isDark ? "rgba(255,255,255,0.15)" : "rgba(71,85,105,0.2)";
-  const footerColor = isDark ? "rgba(255,255,255,0.3)" : "rgba(71,85,105,0.7)";
-  const footerLinkColor = isDark ? "#a78bfa" : "#6366f1";
+    ? "linear-gradient(90deg, transparent, #34d399, #2dd4bf, #22d3ee, transparent)"
+    : "linear-gradient(90deg, transparent, #059669, #0d9488, #0891b2, transparent)";
+  const badgeBg = isDark ? "rgba(52,211,153,0.1)" : "rgba(16,185,129,0.1)";
+  const badgeBorder = isDark ? "rgba(52,211,153,0.25)" : "rgba(16,185,129,0.25)";
+  const badgeColor = isDark ? "#34d399" : "#065f46";
+  const titleColor = isDark ? "#ecfdf5" : "#022c22";
+  const subColor = isDark ? "rgba(255,255,255,0.38)" : "rgba(6,78,59,0.6)";
+  const leftTitleColor = isDark ? "#ecfdf5" : "#022c22";
+  const leftSubColor = isDark ? "rgba(255,255,255,0.45)" : "rgba(6,78,59,0.6)";
+  const pillBg = isDark ? "rgba(20,184,166,0.12)" : "rgba(16,185,129,0.08)";
+  const pillBorder = isDark ? "rgba(20,184,166,0.22)" : "rgba(16,185,129,0.18)";
+  const pillColor = isDark ? "rgba(255,255,255,0.5)" : "rgba(6,78,59,0.7)";
+  const pillIconColor = isDark ? "#34d399" : "#059669";
+  const dividerColor = isDark ? "rgba(255,255,255,0.15)" : "rgba(6,78,59,0.5)";
+  const footerColor = isDark ? "rgba(255,255,255,0.3)" : "rgba(6,78,59,0.6)";
+  const footerLinkColor = isDark ? "#34d399" : "#065f46";
   const blob1Bg = isDark
-    ? "radial-gradient(circle, rgba(99,102,241,0.18), transparent 70%)"
-    : "radial-gradient(circle, rgba(99,102,241,0.15), transparent 70%)";
+    ? "radial-gradient(circle, rgba(52,211,153,0.18), transparent 70%)"
+    : "radial-gradient(circle, rgba(110,231,183,0.22), transparent 70%)";
   const blob2Bg = isDark
-    ? "radial-gradient(circle, rgba(217,70,239,0.14), transparent 70%)"
-    : "radial-gradient(circle, rgba(167,139,250,0.12), transparent 70%)";
+    ? "radial-gradient(circle, rgba(20,184,166,0.14), transparent 70%)"
+    : "radial-gradient(circle, rgba(45,212,191,0.18), transparent 70%)";
   const logoGradient = isDark
-    ? "linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #d946ef 100%)"
-    : "linear-gradient(135deg, #4338ca 0%, #6d28d9 50%, #c026d3 100%)";
+    ? "linear-gradient(135deg, #059669 0%, #0d9488 50%, #0891b2 100%)"
+    : "linear-gradient(135deg, #047857 0%, #0f766e 50%, #0369a1 100%)";
   const btnBg = isDark
-    ? "linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #d946ef 100%)"
-    : "linear-gradient(135deg, #4338ca 0%, #6d28d9 50%, #9d174d 100%)";
+    ? "linear-gradient(135deg, #059669 0%, #0d9488 50%, #0891b2 100%)"
+    : "linear-gradient(135deg, #047857 0%, #0f766e 50%, #0369a1 100%)";
   const btnShadow = isDark
-    ? "0 4px 20px rgba(124,58,237,0.4), 0 0 0 1px rgba(139,92,246,0.2)"
-    : "0 4px 20px rgba(67,56,202,0.3), 0 0 0 1px rgba(99,102,241,0.2)";
+    ? "0 4px 20px rgba(16,185,129,0.45), 0 0 0 1px rgba(52,211,153,0.2)"
+    : "0 4px 20px rgba(5,150,105,0.35), 0 0 0 1px rgba(16,185,129,0.2)";
 
   return (
     <div style={{ minHeight: "calc(100vh - 4rem)", display: "flex", alignItems: "stretch", position: "relative", overflow: "hidden", background: bg, transition: "background 0.4s" }}>
       {/* Background blobs */}
       <div style={{ position: "absolute", width: 500, height: 500, top: "-10%", left: "-10%", borderRadius: "50%", filter: "blur(100px)", background: blob1Bg, animation: "blob-move 14s ease-in-out infinite", pointerEvents: "none" }} />
       <div style={{ position: "absolute", width: 400, height: 400, bottom: "-5%", right: "-5%", borderRadius: "50%", filter: "blur(100px)", background: blob2Bg, animation: "blob-move 18s ease-in-out infinite reverse", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", width: 300, height: 300, top: "40%", left: "40%", borderRadius: "50%", filter: "blur(90px)", background: isDark ? "radial-gradient(circle, rgba(139,92,246,0.1), transparent 70%)" : "radial-gradient(circle, rgba(139,92,246,0.07), transparent 70%)", animation: "blob-move 10s ease-in-out infinite 3s", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", width: 300, height: 300, top: "40%", left: "40%", borderRadius: "50%", filter: "blur(90px)", background: isDark ? "radial-gradient(circle, rgba(34,211,238,0.08), transparent 70%)" : "radial-gradient(circle, rgba(34,211,238,0.07), transparent 70%)", animation: "blob-move 10s ease-in-out infinite 3s", pointerEvents: "none" }} />
 
       {/* Left decorative panel — desktop only */}
       <div style={{ display: "none", flexDirection: "column", justifyContent: "center", alignItems: "center", flex: 1, padding: "3rem", position: "relative", overflow: "hidden" }}
@@ -271,12 +271,12 @@ export const LoginPage: React.FC = () => {
         {isDark ? <ParticleCanvas /> : <ParticleCanvasLight />}
 
         <div style={{ position: "relative", zIndex: 2, textAlign: "center" }}>
-          <div style={{ width: 80, height: 80, borderRadius: 22, background: logoGradient, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 2rem", boxShadow: isDark ? "0 0 40px rgba(139,92,246,0.5), 0 20px 40px rgba(0,0,0,0.4)" : "0 0 30px rgba(99,102,241,0.35), 0 12px 30px rgba(0,0,0,0.12)", animation: "login-logo-float 4s ease-in-out infinite" }}>
+          <div style={{ width: 80, height: 80, borderRadius: 22, background: logoGradient, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 2rem", boxShadow: isDark ? "0 0 40px rgba(16,185,129,0.5), 0 20px 40px rgba(0,0,0,0.4)" : "0 0 30px rgba(16,185,129,0.35), 0 12px 30px rgba(0,0,0,0.12)", animation: "login-logo-float 4s ease-in-out infinite" }}>
             <Link2 size={36} color="#fff" />
           </div>
           <h1 style={{ fontFamily: "'Outfit', sans-serif", fontSize: "2.4rem", fontWeight: 800, color: leftTitleColor, lineHeight: 1.15, marginBottom: "1rem", transition: "color 0.3s" }}>
             Shorten.<br />
-            <span style={{ background: "linear-gradient(135deg, #818cf8, #c084fc, #f472b6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Amplify.</span>
+            <span style={{ background: "linear-gradient(135deg, #34d399, #2dd4bf, #22d3ee)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Amplify.</span>
             <br />Track.
           </h1>
           <p style={{ fontSize: "0.95rem", color: leftSubColor, maxWidth: 320, margin: "0 auto 2.5rem", lineHeight: 1.6, transition: "color 0.3s" }}>
@@ -341,9 +341,9 @@ export const LoginPage: React.FC = () => {
 
           {/* Divider */}
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", margin: "1.25rem 0", color: dividerColor, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-            <div style={{ flex: 1, height: 1, background: isDark ? "linear-gradient(90deg, transparent, rgba(139,92,246,0.2), transparent)" : "linear-gradient(90deg, transparent, rgba(99,102,241,0.15), transparent)" }} />
+            <div style={{ flex: 1, height: 1, background: isDark ? "linear-gradient(90deg, transparent, rgba(20,184,166,0.22), transparent)" : "linear-gradient(90deg, transparent, rgba(16,185,129,0.15), transparent)" }} />
             or
-            <div style={{ flex: 1, height: 1, background: isDark ? "linear-gradient(90deg, transparent, rgba(139,92,246,0.2), transparent)" : "linear-gradient(90deg, transparent, rgba(99,102,241,0.15), transparent)" }} />
+            <div style={{ flex: 1, height: 1, background: isDark ? "linear-gradient(90deg, transparent, rgba(20,184,166,0.22), transparent)" : "linear-gradient(90deg, transparent, rgba(16,185,129,0.15), transparent)" }} />
           </div>
 
           <div style={{ textAlign: "center", fontSize: "0.82rem", color: footerColor, transition: "color 0.3s" }}>

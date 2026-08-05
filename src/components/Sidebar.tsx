@@ -64,7 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
                 onClick={() => handleNavigate(item.path)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all cursor-pointer group ${
                   isActive
-                    ? "bg-gradient-to-r from-violet-600/10 dark:from-violet-600/15 to-purple-600/5 dark:to-purple-600/10 text-violet-700 dark:text-violet-300 shadow-sm border border-violet-500/15"
+                    ? "bg-gradient-to-r from-emerald-600/10 dark:from-emerald-600/15 to-teal-600/5 dark:to-teal-600/10 text-emerald-700 dark:text-emerald-300 shadow-sm border border-emerald-500/15"
                     : "text-zinc-600 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200 border border-transparent"
                 }`}
                 id={`sidebar-item-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
@@ -74,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
                 </span>
                 <span>{item.label}</span>
                 {isActive && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-violet-500 dark:bg-violet-400 shadow-sm shadow-violet-500/50" />
+                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 shadow-sm shadow-emerald-500/50" />
                 )}
               </button>
             );
@@ -103,8 +103,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
               onClick={() => handleNavigate(item.path)}
               className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 px-2 rounded-lg cursor-pointer transition-all ${
                 isActive
-                  ? "text-violet-600 dark:text-violet-400"
-                  : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300"
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
               }`}
               id={`mobile-nav-item-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
             >
