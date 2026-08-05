@@ -79,10 +79,10 @@ export const AnalyticsPage: React.FC = () => {
         <button
           onClick={() => fetchAnalytics(true)}
           disabled={isRefreshing}
-          className="p-2 glass-card rounded-xl text-zinc-400 hover:text-violet-400 transition cursor-pointer disabled:opacity-50 flex items-center justify-center self-start"
+          className="p-2 glass-card rounded-xl text-zinc-600 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer disabled:opacity-50 flex items-center justify-center self-start"
           title="Refresh"
         >
-          <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-violet-400" : ""}`} />
+          <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-emerald-600 dark:text-emerald-400" : ""}`} />
         </button>
       </div>
 

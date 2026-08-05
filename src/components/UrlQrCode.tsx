@@ -42,8 +42,8 @@ export const UrlQrCode: React.FC<UrlQrCodeProps> = ({ shortUrl, shortCode }) => 
       
       <div className="relative w-44 h-44 flex items-center justify-center border border-white/[0.06] p-2 rounded-xl bg-white overflow-hidden">
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
-            <Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-zinc-900 z-10">
+            <Loader2 className="w-6 h-6 text-emerald-500 animate-spin" />
           </div>
         )}
         <img
