@@ -56,7 +56,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               bgColor = "bg-rose-500/10 border-rose-500/20 text-rose-300";
               Icon = AlertCircle;
             } else if (t.type === "info") {
-              bgColor = "bg-violet-500/10 border-violet-500/20 text-violet-300";
+              bgColor = "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-300";
               Icon = Info;
             }
 

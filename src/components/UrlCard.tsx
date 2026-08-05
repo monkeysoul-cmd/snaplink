@@ -121,7 +121,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={() => window.open(workingShortLink, "_blank")}
-                  className="text-base sm:text-lg font-bold text-violet-400 hover:text-violet-300 hover:underline flex items-center gap-1.5 truncate max-w-full cursor-pointer font-display transition-colors"
+                  className="text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline flex items-center gap-1.5 truncate max-w-full cursor-pointer font-display transition-colors"
                   id={`link-short-${url.id}`}
                 >
                   {displayShortLink}
