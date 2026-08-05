@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Loader2, User, Mail, Lock, ShieldCheck, ArrowRight, Eye, EyeOff, Sparkles } from "lucide-react";
+import { Loader2, User, Mail, Lock, ShieldCheck, ArrowRight, Eye, EyeOff, Link2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.js";
 import { useToast } from "../context/ToastContext.js";
 
@@ -32,23 +32,23 @@ const FloatingInput: React.FC<FloatingInputProps> = ({ id, type, value, onChange
   const fieldStyle: React.CSSProperties = {
     display: "flex", alignItems: "center", position: "relative",
     background: isDark
-      ? (focused ? "rgba(168,85,247,0.07)" : "rgba(255,255,255,0.03)")
-      : (focused ? "rgba(147,51,234,0.05)" : "#ffffff"),
+      ? (focused ? "rgba(16,185,129,0.07)" : "rgba(255,255,255,0.03)")
+      : (focused ? "rgba(16,185,129,0.05)" : "#ffffff"),
     border: `1px solid ${isDark
-      ? (focused ? "rgba(217,70,239,0.55)" : "rgba(168,85,247,0.15)")
-      : (focused ? "rgba(147,51,234,0.55)" : "rgba(203,213,225,0.9)")}`,
+      ? (focused ? "rgba(52,211,153,0.55)" : "rgba(20,184,166,0.15)")
+      : (focused ? "rgba(5,150,105,0.55)" : "rgba(167,243,208,0.9)")}`,
     borderRadius: 14, padding: "0.25rem 0.75rem", gap: "0.5rem",
     boxShadow: focused
       ? isDark
-        ? "0 0 0 3px rgba(217,70,239,0.1), 0 0 20px rgba(217,70,239,0.07)"
-        : "0 0 0 3px rgba(147,51,234,0.1)"
+        ? "0 0 0 3px rgba(52,211,153,0.1), 0 0 20px rgba(52,211,153,0.07)"
+        : "0 0 0 3px rgba(16,185,129,0.1)"
       : isDark ? "none" : "0 1px 3px rgba(0,0,0,0.06)",
     transition: "border-color 0.25s, box-shadow 0.25s, background 0.25s",
   };
 
   const iconColor = isDark
-    ? (focused ? "#e879f9" : "rgba(217,70,239,0.5)")
-    : (focused ? "#9333ea" : "rgba(147,51,234,0.4)");
+    ? (focused ? "#34d399" : "rgba(52,211,153,0.5)")
+    : (focused ? "#059669" : "rgba(16,185,129,0.4)");
 
   const labelStyle: React.CSSProperties = {
     position: "absolute",
@@ -56,8 +56,8 @@ const FloatingInput: React.FC<FloatingInputProps> = ({ id, type, value, onChange
     transform: active ? "none" : "translateY(-50%)",
     left: 0, fontSize: active ? "0.65rem" : "0.85rem", fontWeight: active ? 700 : 400,
     color: active
-      ? (isDark ? "#e879f9" : "#9333ea")
-      : (isDark ? "rgba(255,255,255,0.28)" : "rgba(71,85,105,0.7)"),
+      ? (isDark ? "#34d399" : "#059669")
+      : (isDark ? "rgba(255,255,255,0.28)" : "rgba(6,78,59,0.6)"),
     letterSpacing: active ? "0.04em" : "normal",
     textTransform: active ? "uppercase" : "none",
     pointerEvents: "none",
@@ -127,65 +127,65 @@ export const RegisterPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !password || !confirmPassword) { setErrorMsg("Please fill in all fields."); return; }
-    if (password.length < 6) { setErrorMsg("Password must be at least 6 characters."); return; }
-    if (password !== confirmPassword) { setErrorMsg("Passwords don't match."); return; }
+    if (!name || !email || !password || !confirmPassword) { setErrorMsg("Hey, don't forget to fill everything in!"); return; }
+    if (password.length < 6) { setErrorMsg("Make your password at least 6 characters — keep it safe!"); return; }
+    if (password !== confirmPassword) { setErrorMsg("Hmm, those passwords don't quite match."); return; }
     setIsSubmitting(true); setErrorMsg(null);
     try {
       await register(name.trim(), email.trim(), password);
-      toast.success("Account created! Welcome aboard 🎉");
+      toast.success("You're in! Welcome to LinkCut 🎉");
       window.location.hash = "#/dashboard";
     } catch (err: any) {
-      const msg = err.message || "Something went wrong.";
+      const msg = err.message || "Oops, something went wrong. Give it another shot!";
       setErrorMsg(msg); toast.error(msg);
     } finally { setIsSubmitting(false); }
   };
 
-  /* ── Theme tokens ── */
-  const bg = isDark ? "#060612" : "#fdf4ff";
-  const gridColor = isDark ? "rgba(168,85,247,0.04)" : "rgba(147,51,234,0.06)";
+  /* ── Theme tokens — Emerald & Teal ── */
+  const bg = isDark ? "#020d0a" : "#f0fdf4";
+  const gridColor = isDark ? "rgba(20,184,166,0.04)" : "rgba(16,185,129,0.06)";
 
   const cardBg = isDark
-    ? "linear-gradient(145deg, rgba(18,18,46,0.88), rgba(8,8,24,0.95))"
-    : "linear-gradient(145deg, rgba(255,255,255,0.98), rgba(253,244,255,0.96))";
+    ? "linear-gradient(145deg, rgba(3,26,22,0.9), rgba(1,14,11,0.95))"
+    : "linear-gradient(145deg, rgba(255,255,255,0.98), rgba(240,253,244,0.96))";
   const cardBorder = isDark
-    ? { border: "1px solid rgba(168,85,247,0.15)", borderTop: "1px solid rgba(217,70,239,0.32)", borderLeft: "1px solid rgba(217,70,239,0.22)" }
-    : { border: "1px solid rgba(221,214,254,0.9)", borderTop: "1px solid #ffffff", borderLeft: "1px solid #ffffff" };
+    ? { border: "1px solid rgba(20,184,166,0.15)", borderTop: "1px solid rgba(52,211,153,0.32)", borderLeft: "1px solid rgba(52,211,153,0.22)" }
+    : { border: "1px solid rgba(167,243,208,0.9)", borderTop: "1px solid #ffffff", borderLeft: "1px solid #ffffff" };
   const cardShadow = isDark
-    ? "0 0 0 1px rgba(168,85,247,0.05), 0 32px 64px rgba(0,0,0,0.55), 0 0 70px rgba(168,85,247,0.07), inset 0 1px 0 rgba(255,255,255,0.06)"
-    : "0 4px 6px rgba(0,0,0,0.04), 0 20px 48px rgba(147,51,234,0.12), 0 0 0 1px rgba(221,214,254,0.6), inset 0 1px 0 rgba(255,255,255,1)";
+    ? "0 0 0 1px rgba(16,185,129,0.05), 0 32px 64px rgba(0,0,0,0.6), 0 0 70px rgba(16,185,129,0.08), inset 0 1px 0 rgba(255,255,255,0.06)"
+    : "0 4px 6px rgba(0,0,0,0.04), 0 20px 48px rgba(16,185,129,0.13), 0 0 0 1px rgba(167,243,208,0.6), inset 0 1px 0 rgba(255,255,255,1)";
   const topLine = isDark
-    ? "linear-gradient(90deg, transparent, #c084fc, #f472b6, #fb923c, transparent)"
-    : "linear-gradient(90deg, transparent, #9333ea, #ec4899, #f97316, transparent)";
+    ? "linear-gradient(90deg, transparent, #34d399, #2dd4bf, #22d3ee, transparent)"
+    : "linear-gradient(90deg, transparent, #059669, #0d9488, #0891b2, transparent)";
 
-  const badgeBg = isDark ? "rgba(217,70,239,0.1)" : "rgba(147,51,234,0.1)";
-  const badgeBorder = isDark ? "rgba(217,70,239,0.2)" : "rgba(147,51,234,0.2)";
-  const badgeColor = isDark ? "#e879f9" : "#7e22ce";
-  const titleColor = isDark ? "#ffffff" : "#1a0030";
-  const subColor = isDark ? "rgba(255,255,255,0.35)" : "rgba(88,28,135,0.55)";
-  const perkColor = isDark ? "rgba(255,255,255,0.35)" : "rgba(88,28,135,0.55)";
-  const perkCheck = isDark ? "#a78bfa" : "#9333ea";
-  const footerColor = isDark ? "rgba(255,255,255,0.28)" : "rgba(88,28,135,0.55)";
-  const footerLinkColor = isDark ? "#c084fc" : "#7e22ce";
-  const dividerLineColor = isDark ? "rgba(168,85,247,0.2)" : "rgba(147,51,234,0.12)";
-  const dividerTextColor = isDark ? "rgba(255,255,255,0.13)" : "rgba(88,28,135,0.25)";
-  const matchColor = password === confirmPassword ? (isDark ? "#22c55e" : "#15803d") : (isDark ? "#ef4444" : "#b91c1c");
+  const badgeBg = isDark ? "rgba(52,211,153,0.1)" : "rgba(16,185,129,0.1)";
+  const badgeBorder = isDark ? "rgba(52,211,153,0.25)" : "rgba(16,185,129,0.25)";
+  const badgeColor = isDark ? "#34d399" : "#065f46";
+  const titleColor = isDark ? "#ecfdf5" : "#022c22";
+  const subColor = isDark ? "rgba(255,255,255,0.38)" : "rgba(6,78,59,0.6)";
+  const perkColor = isDark ? "rgba(255,255,255,0.38)" : "rgba(6,78,59,0.6)";
+  const perkCheck = isDark ? "#34d399" : "#059669";
+  const footerColor = isDark ? "rgba(255,255,255,0.3)" : "rgba(6,78,59,0.6)";
+  const footerLinkColor = isDark ? "#34d399" : "#065f46";
+  const dividerLineColor = isDark ? "rgba(20,184,166,0.22)" : "rgba(16,185,129,0.15)";
+  const dividerTextColor = isDark ? "rgba(255,255,255,0.13)" : "rgba(6,78,59,0.55)";
+  const matchColor = password === confirmPassword ? (isDark ? "#34d399" : "#059669") : (isDark ? "#ef4444" : "#b91c1c");
 
   const blob1Bg = isDark
-    ? "radial-gradient(circle, rgba(217,70,239,0.18), transparent 70%)"
-    : "radial-gradient(circle, rgba(192,132,252,0.2), transparent 70%)";
+    ? "radial-gradient(circle, rgba(52,211,153,0.18), transparent 70%)"
+    : "radial-gradient(circle, rgba(110,231,183,0.25), transparent 70%)";
   const blob2Bg = isDark
-    ? "radial-gradient(circle, rgba(99,102,241,0.15), transparent 70%)"
-    : "radial-gradient(circle, rgba(99,102,241,0.12), transparent 70%)";
+    ? "radial-gradient(circle, rgba(20,184,166,0.15), transparent 70%)"
+    : "radial-gradient(circle, rgba(45,212,191,0.18), transparent 70%)";
   const blob3Bg = isDark
-    ? "radial-gradient(circle, rgba(249,115,22,0.08), transparent 70%)"
-    : "radial-gradient(circle, rgba(249,115,22,0.06), transparent 70%)";
+    ? "radial-gradient(circle, rgba(34,211,238,0.08), transparent 70%)"
+    : "radial-gradient(circle, rgba(103,232,249,0.12), transparent 70%)";
   const btnBg = isDark
-    ? "linear-gradient(135deg, #9333ea 0%, #db2777 50%, #f97316 100%)"
-    : "linear-gradient(135deg, #7e22ce 0%, #be185d 50%, #ea580c 100%)";
+    ? "linear-gradient(135deg, #059669 0%, #0d9488 50%, #0891b2 100%)"
+    : "linear-gradient(135deg, #047857 0%, #0f766e 50%, #0369a1 100%)";
   const btnShadow = isDark
-    ? "0 4px 20px rgba(147,51,234,0.4), 0 0 0 1px rgba(217,70,239,0.2)"
-    : "0 4px 20px rgba(126,34,206,0.3), 0 0 0 1px rgba(147,51,234,0.2)";
+    ? "0 4px 20px rgba(16,185,129,0.45), 0 0 0 1px rgba(52,211,153,0.2)"
+    : "0 4px 20px rgba(5,150,105,0.35), 0 0 0 1px rgba(16,185,129,0.2)";
 
   return (
     <>
@@ -223,15 +223,15 @@ export const RegisterPage: React.FC = () => {
           {/* Header */}
           <div style={{ textAlign: "center", marginBottom: "1.75rem" }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", background: badgeBg, border: `1px solid ${badgeBorder}`, borderRadius: 99, padding: "0.3rem 0.85rem", fontSize: "0.7rem", fontWeight: 700, color: badgeColor, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "1rem", transition: "all 0.3s" }}>
-              <Sparkles size={11} /> New Account
+              <Link2 size={11} /> Join Us
             </div>
-            <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1.75rem", fontWeight: 800, color: titleColor, marginBottom: "0.35rem", lineHeight: 1.2, transition: "color 0.3s" }}>Create your account ✨</h2>
-            <p style={{ fontSize: "0.85rem", color: subColor, transition: "color 0.3s" }}>Free forever. No credit card required.</p>
+            <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1.75rem", fontWeight: 800, color: titleColor, marginBottom: "0.35rem", lineHeight: 1.2, transition: "color 0.3s" }}>Let's get you set up 🔗</h2>
+            <p style={{ fontSize: "0.85rem", color: subColor, transition: "color 0.3s" }}>Totally free. Jump right in — no card needed.</p>
           </div>
 
           {/* Perks */}
           <div style={{ display: "flex", gap: "1rem", marginBottom: "1.75rem", justifyContent: "center" }}>
-            {["Free plan", "Unlimited links", "Analytics"].map((p) => (
+            {["Always free", "Links without limits", "Real insights"].map((p) => (
               <span key={p} style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.72rem", color: perkColor, transition: "color 0.3s" }}>
                 <span style={{ color: perkCheck, fontWeight: 800, fontSize: "0.7rem" }}>✓</span>{p}
               </span>
@@ -268,7 +268,7 @@ export const RegisterPage: React.FC = () => {
               onMouseEnter={(e) => { if (!isSubmitting) (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)"; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; }}>
               <div style={{ position: "absolute", top: 0, left: "-100%", width: "60%", height: "100%", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)", transform: "skewX(-20deg)", animation: "reg-shimmer 2.5s ease-in-out infinite" }} />
-              {isSubmitting ? (<><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /><span>Creating account…</span></>) : (<><span>Create account</span><ArrowRight size={16} /></>)}
+              {isSubmitting ? (<><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /><span>Almost there…</span></>) : (<><span>Let's go!</span><ArrowRight size={16} /></>)}
             </button>
           </form>
 
@@ -280,9 +280,9 @@ export const RegisterPage: React.FC = () => {
           </div>
 
           <div style={{ textAlign: "center", fontSize: "0.82rem", color: footerColor, transition: "color 0.3s" }}>
-            Already have an account?{" "}
+            Been here before?{" "}
             <button onClick={() => { window.location.hash = "#/login"; }} style={{ background: "none", border: "none", color: footerLinkColor, fontWeight: 700, cursor: "pointer", fontSize: "0.82rem", fontFamily: "'Inter', sans-serif", transition: "color 0.2s" }}>
-              Sign in →
+              Welcome back →
             </button>
           </div>
         </div>

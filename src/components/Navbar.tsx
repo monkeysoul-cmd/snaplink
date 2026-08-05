@@ -1,5 +1,5 @@
 import React from "react";
-import { LogIn, LogOut, Sparkles } from "lucide-react";
+import { LogIn, LogOut, UserPlus } from "lucide-react";
 import { useAuth } from "../context/AuthContext.js";
 import { ThemeToggle } from "./ThemeToggle.js";
 
@@ -40,7 +40,7 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => handleNavigate("#/dashboard")}
-                className="hidden sm:inline-flex text-sm font-medium text-zinc-400 hover:text-violet-400 px-3 py-1.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors"
+                className="hidden sm:inline-flex text-sm font-medium text-zinc-400 hover:text-emerald-400 px-3 py-1.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors"
               >
                 Dashboard
               </button>
@@ -51,7 +51,7 @@ export const Navbar: React.FC = () => {
                 title="Your profile"
                 id="nav-profile"
               >
-                <div className="w-8 h-8 rounded-lg accent-gradient text-white flex items-center justify-center font-bold text-xs shadow-md shadow-violet-600/20">
+                <div className="w-8 h-8 rounded-lg accent-gradient text-white flex items-center justify-center font-bold text-xs shadow-md shadow-emerald-600/20">
                   {getInitials(user.name)}
                 </div>
                 <div className="hidden md:flex flex-col text-left pr-2">
@@ -74,7 +74,7 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleNavigate("#/login")}
-                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 text-sm font-semibold text-zinc-400 hover:text-violet-400 cursor-pointer transition-colors"
+                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 text-sm font-semibold text-zinc-400 hover:text-emerald-400 cursor-pointer transition-colors"
                 id="nav-login-btn"
               >
                 <LogIn className="w-4 h-4" />
@@ -83,10 +83,10 @@ export const Navbar: React.FC = () => {
 
               <button
                 onClick={() => handleNavigate("#/register")}
-                className="px-3 sm:px-4 py-2 btn-gradient text-white text-sm font-semibold rounded-xl shadow-md shadow-violet-600/20 transition-all cursor-pointer flex items-center gap-1.5"
+                className="px-3 sm:px-4 py-2 btn-gradient text-white text-sm font-semibold rounded-xl shadow-md shadow-emerald-600/20 transition-all cursor-pointer flex items-center gap-1.5"
                 id="nav-register-btn"
               >
-                <Sparkles className="w-3.5 h-3.5" />
+                <UserPlus className="w-3.5 h-3.5" />
                 <span>Sign up</span>
               </button>
             </div>

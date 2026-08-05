@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { 
-  Calendar, ShieldCheck, 
-  Terminal, Sparkles
+import {
+  Calendar, ShieldCheck,
+  Terminal, Server
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.js";
 import { api } from "../services/api.js";
@@ -86,7 +86,7 @@ export const ProfilePage: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           <div className="glass-card p-5 sm:p-6 rounded-2xl space-y-4">
             <h3 className="font-bold text-base text-white flex items-center gap-2.5 font-display">
-              <Sparkles className="w-4 h-4 text-violet-400" />
+              <Server className="w-4 h-4 text-emerald-400" />
               Deployment setup
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
@@ -94,7 +94,7 @@ export const ProfilePage: React.FC = () => {
             </p>
 
             <div className="p-4 bg-white/[0.03] rounded-xl border border-white/[0.04] text-[11px] font-mono text-zinc-400 leading-relaxed space-y-3">
-              <div className="flex items-center gap-1.5 text-violet-400 font-bold uppercase select-none">
+              <div className="flex items-center gap-1.5 text-emerald-400 font-bold uppercase select-none">
                 <Terminal className="w-3.5 h-3.5" /> Environment variables
               </div>
               <p className="bg-white/[0.03] p-2.5 rounded-lg border border-white/[0.04]">

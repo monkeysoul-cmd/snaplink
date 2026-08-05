@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Check, Copy, ArrowRight, Zap, BarChart3, Lock, Sparkles, Link2 } from "lucide-react";
+import { Check, Copy, ArrowRight, Zap, BarChart3, Lock, Tag, Link2 } from "lucide-react";
 import { api } from "../services/api.js";
 import { useAuth } from "../context/AuthContext.js";
 import { useToast } from "../context/ToastContext.js";
@@ -58,40 +58,40 @@ export const LandingPage: React.FC = () => {
       icon: BarChart3,
       title: "Click analytics",
       description: "See exactly who's clicking your links — which devices, browsers, and countries. Beautiful charts, zero setup.",
-      gradient: "from-blue-500 to-indigo-600",
-      glowColor: "shadow-blue-500/20",
+      gradient: "from-emerald-500 to-teal-600",
+      glowColor: "shadow-emerald-500/20",
     },
     {
       icon: Lock,
       title: "Password protection",
       description: "Lock any link with a password or set it to auto-expire. Share confidently knowing you're in control.",
-      gradient: "from-amber-500 to-orange-600",
-      glowColor: "shadow-amber-500/20",
+      gradient: "from-teal-400 to-cyan-600",
+      glowColor: "shadow-teal-400/20",
     },
     {
-      icon: Sparkles,
+      icon: Tag,
       title: "Custom aliases",
       description: "Ditch the random characters. Use memorable words like /summer-sale that people actually want to click.",
-      gradient: "from-violet-500 to-purple-600",
-      glowColor: "shadow-violet-500/20",
+      gradient: "from-cyan-400 to-sky-600",
+      glowColor: "shadow-cyan-400/20",
     },
   ];
 
   return (
     <div className="w-full min-h-[calc(100vh-4rem)] transition-colors relative overflow-hidden">
       {/* === ANIMATED MESH BACKGROUND === */}
-      <div className="absolute inset-0 bg-[#060612]" />
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[150px] animate-blob" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-indigo-600/8 rounded-full blur-[150px] animate-blob" style={{ animationDelay: '4s' }} />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-purple-600/6 rounded-full blur-[180px] animate-aurora" />
-      <div className="absolute bottom-1/4 left-1/6 w-72 h-72 bg-pink-600/6 rounded-full blur-[100px] animate-blob" style={{ animationDelay: '8s' }} />
+      <div className="absolute inset-0 bg-[#020d0a]" />
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[150px] animate-blob" />
+      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[150px] animate-blob" style={{ animationDelay: '4s' }} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-teal-500/[0.06] rounded-full blur-[180px] animate-aurora" />
+      <div className="absolute bottom-1/4 left-1/6 w-72 h-72 bg-cyan-400/[0.06] rounded-full blur-[100px] animate-blob" style={{ animationDelay: '8s' }} />
 
       {/* === HERO SECTION === */}
       <div className="relative z-10 py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-8 pt-8 sm:pt-16 pb-12">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-violet-500/10 border border-violet-500/20 rounded-full text-xs font-semibold select-none text-violet-300 backdrop-blur-sm animate-fadeIn">
-            <Zap className="w-3.5 h-3.5 text-violet-400" />
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs font-semibold select-none text-emerald-300 backdrop-blur-sm animate-fadeIn">
+            <Zap className="w-3.5 h-3.5 text-emerald-400" />
             Free link shortener — no limits
           </div>
 
@@ -111,12 +111,12 @@ export const LandingPage: React.FC = () => {
         {/* === SHORTENER BOX === */}
         <div className="max-w-xl mx-auto glass-card rounded-3xl p-6 sm:p-8 mb-20 relative z-10 animate-slideUp" style={{ animationDelay: '0.3s', opacity: 0 }}>
           {/* Inner glow accent */}
-          <div className="absolute -top-px left-1/2 -translate-x-1/2 w-48 h-[1px] bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
+          <div className="absolute -top-px left-1/2 -translate-x-1/2 w-48 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
 
           <form onSubmit={handleShorten} className="space-y-5">
             <div className="space-y-2">
               <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider block flex items-center gap-1.5">
-                <Link2 className="w-3.5 h-3.5 text-violet-400" />
+                <Link2 className="w-3.5 h-3.5 text-emerald-400" />
                 Your long URL
               </label>
               <div className="flex flex-col sm:flex-row gap-3">
@@ -131,7 +131,7 @@ export const LandingPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isShortening}
-                  className="px-6 py-3.5 btn-gradient text-white font-semibold text-sm rounded-xl transition-all shadow-lg shadow-violet-600/20 cursor-pointer flex items-center justify-center gap-2 shrink-0 disabled:opacity-60"
+                  className="px-6 py-3.5 btn-gradient text-white font-semibold text-sm rounded-xl transition-all shadow-lg shadow-emerald-600/20 cursor-pointer flex items-center justify-center gap-2 shrink-0 disabled:opacity-60"
                 >
                   <span>{isShortening ? "Working..." : "Shorten it"}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -152,7 +152,7 @@ export const LandingPage: React.FC = () => {
                     href={workingUrl || shortenedUrl || "#"}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-base font-bold text-violet-300 hover:text-violet-200 hover:underline break-all transition-colors"
+                    className="text-base font-bold text-teal-300 hover:text-teal-200 hover:underline break-all transition-colors"
                   >
                     {shortenedUrl}
                   </a>
@@ -171,7 +171,7 @@ export const LandingPage: React.FC = () => {
                   <span>Want custom aliases, QR codes, and click stats?</span>
                   <button
                     onClick={() => navigateTo("#/register")}
-                    className="font-bold text-violet-400 hover:text-violet-300 flex items-center gap-1 cursor-pointer shrink-0 transition-colors"
+                    className="font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer shrink-0 transition-colors"
                   >
                     Sign up free
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -218,9 +218,9 @@ export const LandingPage: React.FC = () => {
           <div className="text-center pt-8">
             <button
               onClick={() => navigateTo(isAuthenticated ? "#/dashboard" : "#/register")}
-              className="px-8 py-4 btn-gradient text-white font-bold text-sm rounded-2xl shadow-lg shadow-violet-600/25 cursor-pointer inline-flex items-center gap-2 transition-all hover:shadow-violet-600/35"
+              className="px-8 py-4 btn-gradient text-white font-bold text-sm rounded-2xl shadow-lg shadow-emerald-600/25 cursor-pointer inline-flex items-center gap-2 transition-all hover:shadow-emerald-600/35"
             >
-              <Sparkles className="w-4 h-4" />
+              <Zap className="w-4 h-4" />
               <span>{isAuthenticated ? "Go to Dashboard" : "Get started — it's free"}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
