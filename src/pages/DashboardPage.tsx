@@ -58,10 +58,10 @@ export const DashboardPage: React.FC = () => {
   const maxClicks = Math.max(...dailyClicks.map((d) => d.clicks), 5);
 
   const statCards = [
-    { emoji: "🔗", label: "Total Links", value: metrics.totalUrls, gradient: "from-blue-500 to-indigo-600", glow: "shadow-blue-500/15" },
-    { emoji: "👆", label: "Total Clicks", value: metrics.totalClicks, gradient: "from-violet-500 to-purple-600", glow: "shadow-violet-500/15" },
-    { emoji: "⚡", label: "Active Links", value: metrics.activeUrls, gradient: "from-emerald-500 to-teal-600", glow: "shadow-emerald-500/15" },
-    { emoji: "⭐", label: "Favorites", value: metrics.favoriteUrls, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/15" },
+    { emoji: "🔗", label: "Total Links", value: metrics.totalUrls, gradient: "from-emerald-500 to-teal-500", glow: "shadow-emerald-500/15" },
+    { emoji: "👆", label: "Total Clicks", value: metrics.totalClicks, gradient: "from-teal-500 to-cyan-500", glow: "shadow-teal-500/15" },
+    { emoji: "⚡", label: "Active Links", value: metrics.activeUrls, gradient: "from-emerald-600 to-green-500", glow: "shadow-emerald-600/15" },
+    { emoji: "⭐", label: "Favorites", value: metrics.favoriteUrls, gradient: "from-teal-400 to-emerald-500", glow: "shadow-teal-400/15" },
   ];
 
   return (
@@ -81,7 +81,7 @@ export const DashboardPage: React.FC = () => {
           <button
             onClick={() => fetchDashboardData(true)}
             disabled={isRefreshing}
-            className="p-2.5 glass-card rounded-xl text-zinc-400 hover:text-violet-400 transition cursor-pointer disabled:opacity-50 flex items-center justify-center"
+            className="p-2.5 glass-card rounded-xl text-zinc-400 hover:text-emerald-400 transition cursor-pointer disabled:opacity-50 flex items-center justify-center"
             title="Refresh"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
@@ -89,7 +89,7 @@ export const DashboardPage: React.FC = () => {
 
           <button
             onClick={() => handleNavigate("#/create")}
-            className="px-4 py-2.5 btn-gradient text-white text-xs sm:text-sm font-semibold rounded-xl shadow-lg shadow-violet-600/15 cursor-pointer flex items-center gap-2 transition-all"
+            className="px-4 py-2.5 btn-gradient text-white text-xs sm:text-sm font-semibold rounded-xl shadow-lg shadow-emerald-600/15 cursor-pointer flex items-center gap-2 transition-all"
             id="dash-create-btn"
           >
             <PlusCircle className="w-4 h-4" />
@@ -123,7 +123,7 @@ export const DashboardPage: React.FC = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2 font-display">
-              <TrendingUp className="w-4 h-4 text-violet-400" />
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
               Clicks this week
             </h2>
             <p className="text-xs text-zinc-500 mt-0.5">
@@ -153,7 +153,7 @@ export const DashboardPage: React.FC = () => {
                       {/* Bar */}
                       <div
                         style={{ height: `${heightPercentage}%` }}
-                        className="w-full max-w-[40px] bg-gradient-to-t from-violet-600 to-indigo-400 hover:from-violet-500 hover:to-indigo-300 rounded-md transition duration-200 relative overflow-hidden shadow-sm shadow-violet-500/20"
+                        className="w-full max-w-[40px] bg-gradient-to-t from-emerald-600 to-teal-400 hover:from-emerald-500 hover:to-teal-300 rounded-md transition duration-200 relative overflow-hidden shadow-sm shadow-emerald-500/20"
                       />
                     </div>
                     <span className="text-[10px] sm:text-xs text-zinc-500 font-medium truncate max-w-full">
@@ -177,7 +177,7 @@ export const DashboardPage: React.FC = () => {
             </h2>
             <button
               onClick={() => handleNavigate("#/links")}
-              className="text-xs font-bold text-violet-400 hover:text-violet-300 flex items-center gap-0.5 transition cursor-pointer"
+              className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-0.5 transition cursor-pointer"
             >
               View all
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -205,7 +205,7 @@ export const DashboardPage: React.FC = () => {
                           href={getWorkingShortUrl(u.shortCode)}
                           target="_blank"
                           rel="noreferrer"
-                          className="hover:underline text-violet-400 hover:text-violet-300 transition-colors"
+                          className="hover:underline text-emerald-400 hover:text-emerald-300 transition-colors"
                         >
                           {getDisplayShortUrl(u.shortCode)}
                         </a>
@@ -230,7 +230,7 @@ export const DashboardPage: React.FC = () => {
             </h2>
             <button
               onClick={() => handleNavigate("#/links")}
-              className="text-xs font-bold text-violet-400 hover:text-violet-300 flex items-center gap-0.5 transition cursor-pointer"
+              className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-0.5 transition cursor-pointer"
             >
               View all
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -258,7 +258,7 @@ export const DashboardPage: React.FC = () => {
                           href={getWorkingShortUrl(u.shortCode)}
                           target="_blank"
                           rel="noreferrer"
-                          className="hover:underline text-violet-400 hover:text-violet-300 transition-colors"
+                          className="hover:underline text-emerald-400 hover:text-emerald-300 transition-colors"
                         >
                           {getDisplayShortUrl(u.shortCode)}
                         </a>
