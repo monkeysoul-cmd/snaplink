@@ -169,7 +169,7 @@ export const LinksPage: React.FC = () => {
             }}
             className="px-4 py-2 btn-gradient text-white font-semibold text-xs rounded-lg transition-all shadow-md shadow-violet-600/15 cursor-pointer"
           >
-            Create your first link
+            <span className="relative z-10">Create your first link</span>
           </button>
         </div>
       ) : (

@@ -21,7 +21,7 @@ const LS_EXPIRY_KEY = "linkcut_default_expiry";
 
 export const ProfilePage: React.FC = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
+  const { toast, notificationsEnabled, setNotificationsEnabled } = useToast();
 
   const [metrics, setMetrics] = useState<{ totalUrls: number; totalClicks: number } | null>(null);
   const [defaultExpiry, setDefaultExpiry] = useState<string>(
@@ -66,7 +66,7 @@ export const ProfilePage: React.FC = () => {
       localStorage.setItem(LS_EXPIRY_KEY, value);
       setSavingExpiry(false);
       const label = EXPIRY_OPTIONS.find(o => o.value === value)?.label ?? value;
-      toast(`Default link expiry set to "${label}"`, "success");
+      toast.success(`Default link expiry set to "${label}"`);
     }, 300);
   };
 
@@ -216,10 +216,10 @@ export const ProfilePage: React.FC = () => {
                   )}
                 </button>
 
-                {/* Dropdown menu */}
+                {/* Dropdown menu - opens upwards to prevent overlapping Danger zone */}
                 {expiryOpen && (
                   <div
-                    className="absolute right-0 top-full mt-2 z-50 w-44 glass-card rounded-xl border border-emerald-500/15 overflow-hidden shadow-2xl animate-scaleIn origin-top-right"
+                    className="absolute right-0 bottom-full mb-2 z-50 w-44 glass-card rounded-xl border border-emerald-500/20 overflow-hidden shadow-2xl animate-scaleIn origin-bottom-right bg-zinc-900/95 backdrop-blur-xl"
                     role="listbox"
                     aria-label="Default link expiry options"
                   >
@@ -248,18 +248,41 @@ export const ProfilePage: React.FC = () => {
                 )}
               </div>
 
-              {/* Notifications row */}
+              {/* Notifications row with functional toggle button */}
               <div className="flex items-center justify-between p-3 bg-black/[0.02] dark:bg-white/[0.03] rounded-xl border border-black/5 dark:border-white/[0.04] hover:border-emerald-500/20 transition-all duration-300">
                 <div className="flex items-center gap-3">
-                  <Bell className="w-4 h-4 text-zinc-500 shrink-0" />
+                  <Bell className={`w-4 h-4 shrink-0 transition-colors ${notificationsEnabled ? "text-emerald-500 dark:text-emerald-400" : "text-zinc-400"}`} />
                   <div>
                     <div className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Notifications</div>
-                    <div className="text-xs text-zinc-500 mt-0.5">In-app toast notifications active</div>
+                    <div className="text-xs text-zinc-500 mt-0.5">
+                      {notificationsEnabled ? "In-app toast notifications active" : "In-app toast notifications muted"}
+                    </div>
                   </div>
                 </div>
-                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/15 px-2.5 py-1 rounded-lg shrink-0 ml-3">
-                  On
-                </span>
+
+                <button
+                  id="notifications-toggle-btn"
+                  type="button"
+                  role="switch"
+                  aria-checked={notificationsEnabled}
+                  onClick={() => {
+                    const nextState = !notificationsEnabled;
+                    setNotificationsEnabled(nextState);
+                    if (nextState) {
+                      toast.success("Notifications enabled");
+                    }
+                  }}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
+                    notificationsEnabled ? "bg-emerald-500" : "bg-zinc-700"
+                  }`}
+                >
+                  <span className="sr-only">Toggle notifications</span>
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                      notificationsEnabled ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
               </div>
             </div>
           </div>
@@ -282,7 +305,7 @@ export const ProfilePage: React.FC = () => {
               </div>
               <button
                 id="delete-account-btn"
-                onClick={() => toast("To delete your account, please contact support.", "info")}
+                onClick={() => toast.info("To delete your account, please contact support.")}
                 className="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 border border-rose-500/30 hover:bg-rose-500/10 hover:border-rose-500/50 px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer shrink-0 ml-4 hover:scale-105 active:scale-95"
               >
                 Delete
