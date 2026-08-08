@@ -241,6 +241,165 @@
 .stagger-7  { animation-delay: 0.35s; }
 .stagger-8  { animation-delay: 0.4s; }
 
+/* ============================================================
+   MODERN ANIMATION EXPANSIONS
+   ============================================================ */
+
+/* ─── Tilt / Parallax card hover ─── */
+@keyframes tiltIn {
+  from { opacity: 0; transform: perspective(600px) rotateX(8deg) translateY(16px); }
+  to   { opacity: 1; transform: perspective(600px) rotateX(0deg) translateY(0); }
+}
+.animate-tiltIn { animation: tiltIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* ─── Elastic pop in ─── */
+@keyframes elasticPop {
+  0%   { transform: scale(0); opacity: 0; }
+  55%  { transform: scale(1.12); opacity: 1; }
+  75%  { transform: scale(0.96); }
+  90%  { transform: scale(1.03); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-elasticPop { animation: elasticPop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+/* ─── Slide in from bottom with spring ─── */
+@keyframes springUp {
+  0%   { opacity: 0; transform: translateY(40px) scale(0.97); }
+  60%  { opacity: 1; transform: translateY(-6px) scale(1.01); }
+  80%  { transform: translateY(3px) scale(0.99); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-springUp { animation: springUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* ─── Text reveal from clip mask ─── */
+@keyframes textReveal {
+  from { clip-path: inset(0 100% 0 0); opacity: 0; }
+  to   { clip-path: inset(0 0% 0 0);   opacity: 1; }
+}
+.animate-textReveal { animation: textReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* ─── Glowing border sweep ─── */
+@keyframes borderSweep {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ─── Spotlight / scan line effect ─── */
+@keyframes spotlightSweep {
+  0%   { transform: translateX(-150%); }
+  100% { transform: translateX(250%); }
+}
+
+/* ─── Gradient hue rotate ─── */
+@keyframes hueRotate {
+  from { filter: hue-rotate(0deg); }
+  to   { filter: hue-rotate(360deg); }
+}
+.animate-hueRotate { animation: hueRotate 8s linear infinite; }
+
+/* ─── Ripple rings ─── */
+@keyframes rippleRing {
+  0%   { transform: scale(0.5); opacity: 0.7; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* ─── Number counter roll ─── */
+@keyframes rollUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.animate-rollUp { animation: rollUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* ─── Magnetic glow pulse ─── */
+@keyframes magneticGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+  50%       { box-shadow: 0 0 32px 6px rgba(52, 211, 153, 0.18); }
+}
+.animate-magneticGlow { animation: magneticGlow 2.5s ease-in-out infinite; }
+
+/* ─── Neon flicker ─── */
+@keyframes neonFlicker {
+  0%, 95%, 100% { opacity: 1; }
+  96%            { opacity: 0.7; }
+  97%            { opacity: 1; }
+  98%            { opacity: 0.5; }
+  99%            { opacity: 1; }
+}
+.animate-neonFlicker { animation: neonFlicker 4s ease-in-out infinite; }
+
+/* ─── Particle drift ─── */
+@keyframes particleDrift {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.8; }
+  33%  { transform: translate(30px, -40px) scale(0.8); opacity: 0.5; }
+  66%  { transform: translate(-20px, -70px) scale(0.6); opacity: 0.3; }
+  100% { transform: translate(10px, -100px) scale(0.3); opacity: 0; }
+}
+
+/* ─── Rotating ring ─── */
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.animate-ringRotate { animation: ringRotate 3s linear infinite; }
+
+/* ─── Liquid blob morph (enhanced) ─── */
+@keyframes liquidMorph {
+  0%   { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: scale(1) rotate(0deg); }
+  20%  { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: scale(1.04) rotate(4deg); }
+  40%  { border-radius: 50% 30% 50% 70% / 40% 60% 40% 50%; transform: scale(0.96) rotate(-2deg); }
+  60%  { border-radius: 40% 60% 30% 70% / 60% 40% 60% 30%; transform: scale(1.02) rotate(3deg); }
+  80%  { border-radius: 70% 30% 60% 40% / 30% 70% 40% 60%; transform: scale(0.98) rotate(-1deg); }
+  100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: scale(1) rotate(0deg); }
+}
+.animate-liquidMorph { animation: liquidMorph 10s ease-in-out infinite; }
+
+/* ─── Grid line pulse ─── */
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.04; }
+  50%       { opacity: 0.1; }
+}
+
+/* ─── Shine sweep (for buttons and cards) ─── */
+@keyframes shineSweep {
+  0%   { left: -100%; }
+  100% { left: 120%; }
+}
+
+/* ─── Page slide transition ─── */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(12px) scale(0.99); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0) scale(1);       filter: blur(0); }
+}
+.animate-pageEnter {
+  animation: pageEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ─── Gradient text shimmer ─── */
+@keyframes gradientShimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradientShimmer {
+  background-size: 200% auto;
+  animation: gradientShimmer 3s ease infinite;
+}
+
+/* ─── Staggered item reveal ─── */
+.reveal-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-item.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+
 /* ===================================================
    GLASSMORPHISM SYSTEM
    =================================================== */
@@ -271,13 +430,14 @@ html:not(.dark) .glass-card {
 }
 
 .glass-card:hover {
-  transform: translateY(-3px) scale(1.005);
-  border-color: rgba(52, 211, 153, 0.3);
+  transform: translateY(-4px) scale(1.007);
+  border-color: rgba(52, 211, 153, 0.35);
   box-shadow:
-    0 0 0 1px rgba(52, 211, 153, 0.12),
-    0 20px 44px rgba(0, 0, 0, 0.35),
-    0 0 25px rgba(16, 185, 129, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 0 0 1px rgba(52, 211, 153, 0.15),
+    0 24px 52px rgba(0, 0, 0, 0.38),
+    0 0 40px rgba(16, 185, 129, 0.12),
+    0 0 80px rgba(16, 185, 129, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 html:not(.dark) .glass-card:hover {
@@ -288,6 +448,8 @@ html:not(.dark) .glass-card:hover {
     0 0 20px rgba(16, 185, 129, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 1);
 }
+
+
 
 /* Stat card — has a top accent bar */
 .stat-card {
@@ -401,6 +563,7 @@ html:not(.dark) .gradient-text-blue {
   background: linear-gradient(135deg, #047857 0%, #0f766e 50%, #0369a1 100%);
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 4px 18px rgba(5, 150, 105, 0.35);
 }
@@ -411,6 +574,7 @@ html:not(.dark) .gradient-text-blue {
   background: linear-gradient(135deg, #059669 0%, #0d9488 50%, #0891b2 100%);
   opacity: 0;
   transition: opacity 0.35s ease;
+  z-index: -1;
 }
 /* Shimmer sweep on hover */
 .btn-gradient::after {
@@ -421,6 +585,7 @@ html:not(.dark) .gradient-text-blue {
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
   transition: none;
+  z-index: -1;
 }
 .btn-gradient:hover::after {
   left: 140%;

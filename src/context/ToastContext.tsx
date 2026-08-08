@@ -11,6 +11,8 @@ export interface ToastMessage {
 }
 
 interface ToastContextProps {
+  notificationsEnabled: boolean;
+  setNotificationsEnabled: (enabled: boolean) => void;
   toast: {
     success: (message: string) => void;
     error: (message: string) => void;
@@ -22,12 +24,22 @@ const ToastContext = createContext<ToastContextProps | undefined>(undefined);
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [notificationsEnabled, setNotificationsEnabledState] = useState<boolean>(() => {
+    const saved = localStorage.getItem("linkcut_notifications_enabled");
+    return saved !== null ? saved === "true" : true;
+  });
+
+  const setNotificationsEnabled = useCallback((enabled: boolean) => {
+    setNotificationsEnabledState(enabled);
+    localStorage.setItem("linkcut_notifications_enabled", String(enabled));
+  }, []);
 
   const removeToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   const addToast = useCallback((type: ToastType, message: string) => {
+    if (!notificationsEnabled) return;
     const id = Math.random().toString(36).substring(2, 9);
     setToasts((prev) => [...prev, { id, type, message }]);
     
@@ -35,14 +47,14 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setTimeout(() => {
       removeToast(id);
     }, 4000);
-  }, [removeToast]);
+  }, [notificationsEnabled, removeToast]);
 
   const success = useCallback((msg: string) => addToast("success", msg), [addToast]);
   const error = useCallback((msg: string) => addToast("error", msg), [addToast]);
   const info = useCallback((msg: string) => addToast("info", msg), [addToast]);
 
   return (
-    <ToastContext.Provider value={{ toast: { success, error, info } }}>
+    <ToastContext.Provider value={{ notificationsEnabled, setNotificationsEnabled, toast: { success, error, info } }}>
       {children}
       
       {/* Toast Render Area */}

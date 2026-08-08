@@ -85,6 +85,23 @@ export const LandingPage: React.FC = () => {
       <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[150px] animate-blob" style={{ animationDelay: '4s' }} />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-teal-500/[0.06] rounded-full blur-[180px] animate-aurora" />
       <div className="absolute bottom-1/4 left-1/6 w-72 h-72 bg-cyan-400/[0.06] rounded-full blur-[100px] animate-blob" style={{ animationDelay: '8s' }} />
+      <div className="absolute top-3/4 right-1/6 w-48 h-48 bg-emerald-400/[0.05] rounded-full blur-[80px] animate-blob animate-liquidMorph" style={{ animationDelay: '2s' }} />
+
+      {/* Floating particles */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 rounded-full bg-emerald-400/30 animate-ping-slow"
+            style={{
+              left: `${10 + i * 12}%`,
+              top: `${20 + (i % 3) * 25}%`,
+              animationDelay: `${i * 0.7}s`,
+              animationDuration: `${2 + i * 0.4}s`,
+            }}
+          />
+        ))}
+      </div>
 
       {/* === HERO SECTION === */}
       <div className="relative z-10 py-10 px-4 sm:px-6 lg:px-8">
@@ -96,14 +113,23 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Heading */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] animate-slideUp">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] animate-springUp">
             <span className="text-white">Make every link </span>
             <br className="hidden sm:inline" />
-            <span className="gradient-text">count.</span>
+            <span
+              className="animate-gradientShimmer"
+              style={{
+                background: 'linear-gradient(135deg, #34d399, #2dd4bf, #22d3ee, #34d399)',
+                backgroundSize: '200% auto',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >count.</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg text-zinc-400 max-w-xl mx-auto leading-relaxed animate-fadeIn" style={{ animationDelay: '0.2s', opacity: 0 }}>
+          <p className="text-base sm:text-lg text-zinc-400 max-w-xl mx-auto leading-relaxed animate-fadeIn" style={{ animationDelay: '0.25s', opacity: 0 }}>
             Turn long ugly URLs into short branded links. Add passwords, set expiry dates, and see who's clicking — all for free.
           </p>
         </div>
@@ -199,16 +225,22 @@ export const LandingPage: React.FC = () => {
               return (
                 <div
                   key={feature.title}
-                  className={`glass-card rounded-2xl p-7 hover-lift hover-glow transition-all group animate-slideUp stagger-${i + 1}`}
+                  className={`glass-card rounded-2xl p-7 hover-lift hover-glow transition-all group animate-tiltIn stagger-${i + 1} relative overflow-hidden cursor-default`}
                   style={{ opacity: 0 }}
                 >
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-5 shadow-lg ${feature.glowColor} group-hover:scale-110 transition-transform`}>
+                  {/* Subtle corner glow */}
+                  <div className={`absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br ${feature.gradient} opacity-[0.08] rounded-full blur-2xl group-hover:opacity-[0.15] transition-opacity duration-500`} />
+
+                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-5 shadow-lg ${feature.glowColor} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                     <Icon className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className="font-bold text-lg mb-2 text-white">{feature.title}</h3>
-                  <p className="text-sm text-zinc-400 leading-relaxed">
+                  <h3 className="font-bold text-lg mb-2 text-white group-hover:text-emerald-100 transition-colors">{feature.title}</h3>
+                  <p className="text-sm text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors">
                     {feature.description}
                   </p>
+
+                  {/* Hover border accent */}
+                  <div className={`absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r ${feature.gradient} opacity-0 group-hover:opacity-70 transition-opacity duration-500 rounded-b-2xl`} />
                 </div>
               );
             })}
@@ -218,11 +250,11 @@ export const LandingPage: React.FC = () => {
           <div className="text-center pt-8">
             <button
               onClick={() => navigateTo(isAuthenticated ? "#/dashboard" : "#/register")}
-              className="px-8 py-4 btn-gradient text-white font-bold text-sm rounded-2xl shadow-lg shadow-emerald-600/25 cursor-pointer inline-flex items-center gap-2 transition-all hover:shadow-emerald-600/35"
+              className="px-8 py-4 btn-gradient text-white font-bold text-sm rounded-2xl shadow-lg shadow-emerald-600/25 cursor-pointer inline-flex items-center gap-2 transition-all hover:shadow-emerald-600/45 animate-magneticGlow group"
             >
-              <Zap className="w-4 h-4" />
+              <Zap className="w-4 h-4 group-hover:rotate-12 transition-transform" />
               <span>{isAuthenticated ? "Go to Dashboard" : "Get started — it's free"}</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
