@@ -64,7 +64,7 @@ export const LinksPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn p-4 sm:p-6 lg:p-8 text-zinc-100 transition-colors min-h-[calc(100vh-4rem)]">
+    <div className="space-y-6 animate-fadeIn p-4 sm:p-6 lg:p-8 text-zinc-900 dark:text-zinc-100 transition-colors min-h-[calc(100vh-4rem)]">
       {/* Header */}
       <div className="border-b border-white/[0.06] pb-5">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-display" id="links-page-title">

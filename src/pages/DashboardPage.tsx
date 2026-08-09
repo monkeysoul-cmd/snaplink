@@ -65,7 +65,7 @@ export const DashboardPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 animate-pageEnter p-4 sm:p-6 lg:p-8 text-zinc-100 transition-colors min-h-[calc(100vh-4rem)] relative">
+    <div className="space-y-6 animate-pageEnter p-4 sm:p-6 lg:p-8 text-zinc-900 dark:text-zinc-100 transition-colors min-h-[calc(100vh-4rem)] relative">
 
       {/* Ambient background orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden -z-10">

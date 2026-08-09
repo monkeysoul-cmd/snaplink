@@ -107,7 +107,7 @@ export const LandingPage: React.FC = () => {
       <div className="relative z-10 py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-8 pt-8 sm:pt-16 pb-12">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs font-semibold select-none text-emerald-300 backdrop-blur-sm animate-fadeIn">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs font-semibold select-none text-emerald-700 dark:text-emerald-300 backdrop-blur-sm animate-fadeIn">
             <Zap className="w-3.5 h-3.5 text-emerald-400" />
             Free link shortener — no limits
           </div>
