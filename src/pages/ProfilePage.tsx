@@ -78,7 +78,7 @@ export const ProfilePage: React.FC = () => {
   const selectedExpiry = EXPIRY_OPTIONS.find(o => o.value === defaultExpiry) ?? EXPIRY_OPTIONS[0];
 
   return (
-    <div className="space-y-6 p-4 sm:p-6 lg:p-8 text-zinc-100 transition-colors min-h-[calc(100vh-4rem)]">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8 text-zinc-900 dark:text-zinc-100 transition-colors min-h-[calc(100vh-4rem)]">
 
       {/* Header */}
       <div
@@ -254,7 +254,7 @@ export const ProfilePage: React.FC = () => {
                   <Bell className={`w-4 h-4 shrink-0 transition-colors ${notificationsEnabled ? "text-emerald-500 dark:text-emerald-400" : "text-zinc-400"}`} />
                   <div>
                     <div className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Notifications</div>
-                    <div className="text-xs text-zinc-500 mt-0.5">
+                    <div className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
                       {notificationsEnabled ? "In-app toast notifications active" : "In-app toast notifications muted"}
                     </div>
                   </div>
