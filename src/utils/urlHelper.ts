@@ -34,28 +34,26 @@ export const getDisplayShortUrl = (shortCode?: string): string => {
 };
 
 /**
- * Returns actual working live deployment URL (e.g. "https://url-shortner-lilac-seven.vercel.app/jP5kdJ")
- * that guarantees zero 404 errors when clicked or copied.
+ * Returns actual working live deployment URL always starting with snaplink.app
+ * (or VITE_SHORT_DOMAIN / VITE_APP_URL if configured), e.g. "https://snaplink.app/jP5kdJ"
+ * Never uses window.location.origin so local dev URLs never leak into shared links.
  */
 export const getWorkingShortUrl = (shortCode?: string): string => {
   const code = shortCode || "";
   const envDomain = getEnvVar("VITE_SHORT_DOMAIN") || getEnvVar("VITE_APP_URL");
 
+  // Use configured env domain if it's a real, non-placeholder value
   if (
-    envDomain && 
-    envDomain.trim() !== "" && 
-    !envDomain.includes("snaplink.app") &&
+    envDomain &&
+    envDomain.trim() !== "" &&
     !envDomain.includes("MY_APP_URL")
   ) {
     const clean = envDomain.trim().replace(/^https?:\/\//, "").replace(/\/$/, "");
     return `https://${clean}/${code}`;
   }
 
-  if (typeof window !== "undefined" && window.location?.origin && window.location.origin !== "null") {
-    return `${window.location.origin}/${code}`;
-  }
-
-  return `https://url-shortner-lilac-seven.vercel.app/${code}`;
+  // Always fall back to the branded snaplink.app domain
+  return `https://snaplink.app/${code}`;
 };
 
 /**
