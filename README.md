@@ -119,13 +119,59 @@ const UrlSchema = new mongoose.Schema({
 
 ---
 
-## Environment Variables (.env.example)
-Create a `.env` file at the root of the project with:
+## Environment Variables
+
+Create a `.env` file at the root of the project:
+
 ```env
-PORT=3000
+# MongoDB Atlas connection string
+MONGO_URI="mongodb+srv://user:pass@cluster.mongodb.net/linkcut"
+
+# JWT signing secret (keep this private and strong)
 JWT_SECRET="your-private-production-jwt-string"
-MONGO_URI="mongodb+srv://user:pass@cluster.mongodb.net/linkcut" # Optional fallback
+
+# Public Vercel deployment URL — used by the frontend to build working short links
+# Set this to your actual Vercel project URL (e.g. after renaming project to "snaplink")
+VITE_APP_URL="https://snaplink.vercel.app"
 ```
+
+> **Note:** `VITE_APP_URL` is the most important variable for production. Without it, copied short links
+> will use `window.location.origin` which still works on Vercel but won't if the domain ever changes.
+
+---
+
+## Installation & Local Execution
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Boot the dev server:**
+   ```bash
+   npm run dev
+   ```
+
+3. **Open application:**
+   Direct your browser to `http://localhost:3000` to interact with the full-stack system.
+
+---
+
+## Deployment (Vercel)
+
+1. Push your code to GitHub.
+2. Import the repo on [vercel.com](https://vercel.com).
+3. **Rename the Vercel project to `snaplink`** (Settings → General → Project Name) so your URL becomes `snaplink.vercel.app`.
+4. Add these **Environment Variables** in Vercel dashboard (Settings → Environment Variables):
+
+   | Key | Value |
+   |---|---|
+   | `MONGO_URI` | Your MongoDB Atlas connection string |
+   | `JWT_SECRET` | A strong random secret string |
+   | `VITE_APP_URL` | `https://snaplink.vercel.app` |
+
+5. Redeploy — all short links will now be `snaplink.vercel.app/abc123` and redirect correctly.
+
 
 ---
 

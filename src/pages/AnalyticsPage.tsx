@@ -58,13 +58,13 @@ export const AnalyticsPage: React.FC = () => {
   };
 
   const barColors = {
-    device: "from-indigo-500 to-violet-500",
-    browser: "from-emerald-500 to-teal-500",
-    country: "from-amber-500 to-orange-500",
+    device: "from-emerald-500 to-teal-500",
+    browser: "from-teal-500 to-cyan-500",
+    country: "from-emerald-600 to-green-500",
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn p-4 sm:p-6 lg:p-8 text-zinc-100 transition-colors min-h-[calc(100vh-4rem)]">
+    <div className="space-y-6 animate-fadeIn p-4 sm:p-6 lg:p-8 text-zinc-900 dark:text-zinc-100 transition-colors min-h-[calc(100vh-4rem)]">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
         <div>
