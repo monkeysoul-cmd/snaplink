@@ -116,7 +116,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
       {/* Standard View */}
       {!isEditing && (
         <>
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start justify-between gap-3">
             <div className="flex-1 space-y-1.5 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <button
@@ -158,7 +158,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
             </div>
 
             {/* Favorite + Clicks */}
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={handleFavoriteToggle}
                 className={`p-2 rounded-xl transition cursor-pointer ${
@@ -172,8 +172,8 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
                 <Star className="w-5 h-5 fill-current" />
               </button>
 
-              <div className="px-3 py-1.5 bg-white/[0.03] border border-white/[0.06] rounded-xl text-center select-none min-w-[70px]">
-                <div className="text-xs font-semibold text-zinc-500">Clicks</div>
+              <div className="px-2.5 py-1.5 bg-white/[0.03] border border-white/[0.06] rounded-xl text-center select-none min-w-[56px]">
+                <div className="text-[10px] font-semibold text-zinc-500">Clicks</div>
                 <div className="text-sm font-bold text-white">{url.clicks}</div>
               </div>
             </div>
@@ -195,15 +195,15 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
           )}
 
           {/* Action bar */}
-          <div className="flex items-center justify-between gap-4 border-t border-white/[0.06] pt-4 flex-wrap">
-            <span className="text-[11px] text-zinc-500 font-medium">
+          <div className="flex items-center justify-between gap-2 border-t border-white/[0.06] pt-4 flex-wrap">
+            <span className="text-[11px] text-zinc-500 font-medium shrink-0">
               Created {formatDate(url.createdAt)}
             </span>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 overflow-x-auto">
               <button
                 onClick={handleCopy}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl glass-input text-zinc-300 transition-all cursor-pointer hover:text-white hover:border-violet-500/20"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs font-semibold rounded-xl glass-input text-zinc-300 transition-all cursor-pointer hover:text-white hover:border-violet-500/20 shrink-0"
                 id={`copy-btn-${url.id}`}
               >
                 {copied ? (
@@ -221,7 +221,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
               <button
                 onClick={() => setShowQr(!showQr)}
-                className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                className={`p-1.5 sm:p-2 rounded-xl border transition-all cursor-pointer shrink-0 ${
                   showQr
                     ? "bg-violet-500/10 border-violet-500/20 text-violet-400"
                     : "glass-input text-zinc-400 hover:text-violet-400 hover:border-violet-500/20"
@@ -234,7 +234,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
               <button
                 onClick={() => setIsEditing(true)}
-                className="p-2 rounded-xl glass-input text-zinc-400 hover:text-violet-400 hover:border-violet-500/20 transition-all cursor-pointer"
+                className="p-1.5 sm:p-2 rounded-xl glass-input text-zinc-400 hover:text-violet-400 hover:border-violet-500/20 transition-all cursor-pointer shrink-0"
                 title="Edit"
                 id={`edit-btn-${url.id}`}
               >
@@ -243,7 +243,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
               <button
                 onClick={() => setIsDeletingConfirm(true)}
-                className="p-2 rounded-xl glass-input text-zinc-400 hover:text-rose-400 hover:border-rose-500/20 transition-all cursor-pointer"
+                className="p-1.5 sm:p-2 rounded-xl glass-input text-zinc-400 hover:text-rose-400 hover:border-rose-500/20 transition-all cursor-pointer shrink-0"
                 title="Delete"
                 id={`del-btn-${url.id}`}
               >
