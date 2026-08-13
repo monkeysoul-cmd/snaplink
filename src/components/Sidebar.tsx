@@ -120,7 +120,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
       </aside>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-[#060612]/90 dark:backdrop-blur-2xl border-t border-black/5 dark:border-white/[0.06] z-40 flex items-center justify-around px-2 pb-safe shadow-[0_-4px_24px_rgba(0,0,0,0.02)] dark:shadow-none">
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#060612]/90 dark:backdrop-blur-2xl border-t border-black/5 dark:border-white/[0.06] z-40 flex items-center justify-around px-2 shadow-[0_-4px_24px_rgba(0,0,0,0.02)] dark:shadow-none"
+        style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))', paddingTop: '0.5rem', minHeight: '4rem' }}
+      >
         {navItems.map((item) => {
           const isActive = currentPath === item.path;
 

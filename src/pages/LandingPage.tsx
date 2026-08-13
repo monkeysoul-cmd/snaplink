@@ -80,12 +80,15 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="w-full min-h-[calc(100vh-4rem)] transition-colors relative overflow-hidden">
       {/* === ANIMATED MESH BACKGROUND === */}
-      <div className="absolute inset-0 bg-[#020d0a]" />
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[150px] animate-blob" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[150px] animate-blob" style={{ animationDelay: '4s' }} />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-teal-500/[0.06] rounded-full blur-[180px] animate-aurora" />
-      <div className="absolute bottom-1/4 left-1/6 w-72 h-72 bg-cyan-400/[0.06] rounded-full blur-[100px] animate-blob" style={{ animationDelay: '8s' }} />
-      <div className="absolute top-3/4 right-1/6 w-48 h-48 bg-emerald-400/[0.05] rounded-full blur-[80px] animate-blob animate-liquidMorph" style={{ animationDelay: '2s' }} />
+      <div className="absolute inset-0 bg-[#020d0a] dark:bg-[#020d0a]" />
+      {/* Large blobs - constrained to container with overflow-hidden on parent */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-[min(500px,80vw)] h-[min(500px,80vw)] bg-emerald-600/10 rounded-full blur-[150px] animate-blob" />
+        <div className="absolute bottom-0 right-1/4 w-[min(600px,90vw)] h-[min(600px,90vw)] bg-teal-500/10 rounded-full blur-[150px] animate-blob" style={{ animationDelay: '4s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(800px,100vw)] h-[min(400px,60vw)] bg-teal-500/[0.06] rounded-full blur-[180px] animate-aurora" />
+        <div className="absolute bottom-1/4 left-1/6 w-72 h-72 bg-cyan-400/[0.06] rounded-full blur-[100px] animate-blob" style={{ animationDelay: '8s' }} />
+        <div className="absolute top-3/4 right-1/6 w-48 h-48 bg-emerald-400/[0.05] rounded-full blur-[80px] animate-blob animate-liquidMorph" style={{ animationDelay: '2s' }} />
+      </div>
 
       {/* Floating particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

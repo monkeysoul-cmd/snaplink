@@ -105,15 +105,15 @@ const AppContent: React.FC = () => {
       {/* Main Container Layout */}
       {isPrivatePath ? (
         // Dashboard Shell layout (Sidebar + main layout)
-        <div className="flex-1 flex flex-col md:flex-row max-w-7xl w-full mx-auto pb-16 md:pb-0">
+        <div className="flex-1 flex flex-col md:flex-row max-w-7xl w-full mx-auto pb-16 md:pb-0 min-w-0">
           <Sidebar currentPath={currentPath} />
-          <main className="flex-1 min-w-0">
+          <main className="flex-1 min-w-0 overflow-hidden">
             {renderPage()}
           </main>
         </div>
       ) : (
         // Guest pages layout (Home, login, unlock, register)
-        <main className="flex-1">
+        <main className="flex-1 min-w-0">
           {renderPage()}
         </main>
       )}

@@ -76,9 +76,9 @@ export const LinksPage: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="glass-card p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="glass-card p-4 rounded-2xl flex flex-col gap-3">
         {/* Search */}
-        <div className="relative flex-1 max-w-md">
+        <div className="relative w-full">
           <Search className="absolute left-3.5 top-3 text-zinc-500 w-4 h-4" />
           <input
             type="text"
@@ -94,7 +94,7 @@ export const LinksPage: React.FC = () => {
         </div>
 
         {/* Filter controls */}
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           <input
             type="text"
             value={tag}
@@ -102,7 +102,7 @@ export const LinksPage: React.FC = () => {
               setTag(e.target.value);
               handleFilterChange();
             }}
-            className="px-3.5 py-2.5 glass-input text-xs text-zinc-100 rounded-xl max-w-[120px] font-semibold placeholder-zinc-600 focus:outline-none"
+            className="px-3 py-2 glass-input text-xs text-zinc-100 rounded-xl w-28 sm:w-32 font-semibold placeholder-zinc-600 focus:outline-none"
             placeholder="Filter by tag"
             id="url-tag-input"
           />
@@ -112,7 +112,7 @@ export const LinksPage: React.FC = () => {
               setFavorite(!favorite);
               handleFilterChange();
             }}
-            className={`px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer border ${
+            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer border ${
               favorite
                 ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
                 : "glass-input text-zinc-400 hover:text-zinc-200 hover:border-violet-500/20"
@@ -120,7 +120,8 @@ export const LinksPage: React.FC = () => {
             id="fav-filter-btn"
           >
             <Star className={`w-3.5 h-3.5 ${favorite ? "fill-current text-amber-400" : ""}`} />
-            Favorites
+            <span className="hidden xs:inline">Favorites</span>
+            <span className="xs:hidden">Favs</span>
           </button>
 
           <select
@@ -129,7 +130,7 @@ export const LinksPage: React.FC = () => {
               setSort(e.target.value);
               handleFilterChange();
             }}
-            className="appearance-none px-4 py-2.5 glass-input rounded-xl text-xs font-semibold text-zinc-300 focus:outline-none cursor-pointer"
+            className="appearance-none px-3 py-2 glass-input rounded-xl text-xs font-semibold text-zinc-300 focus:outline-none cursor-pointer"
             id="url-sort-select"
           >
             <option value="createdAt_desc">Newest</option>
