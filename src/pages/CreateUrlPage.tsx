@@ -1,27 +1,26 @@
 import React, { useState } from "react";
-import { 
-  Calendar, Check, Copy, Lock, PlusCircle, 
-  QrCode, Tag, Link2, Eye, EyeOff, Star, ArrowRight
+import {
+  Calendar, Check, Copy, Lock, PlusCircle,
+  QrCode, Tag, Link2, Eye, EyeOff, Star, ArrowRight, Sparkles, Globe
 } from "lucide-react";
 import { api } from "../services/api.js";
 import { useToast } from "../context/ToastContext.js";
 import { UrlQrCode } from "../components/UrlQrCode.js";
-import { getDisplayShortUrl, getWorkingShortUrl, getRedirectUrl, getShortDomain } from "../utils/urlHelper.js";
+import { getDisplayShortUrl, getWorkingShortUrl, getShortDomain } from "../utils/urlHelper.js";
 
 export const CreateUrlPage: React.FC = () => {
   const { toast } = useToast();
-  
-  // Form Fields
+
   const [originalUrl, setOriginalUrl] = useState<string>("");
   const [customAlias, setCustomAlias] = useState<string>("");
   const [expiresAt, setExpiresAt] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [showPwd, setShowPwd] = useState<boolean>(false);
   const [tagsInput, setTagsInput] = useState<string>("");
   const [isPublic, setIsPublic] = useState<boolean>(true);
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Success State
   const [displayUrl, setDisplayUrl] = useState<string | null>(null);
   const [workingUrl, setWorkingUrl] = useState<string | null>(null);
   const [createdCode, setCreatedCode] = useState<string | null>(null);
@@ -29,45 +28,25 @@ export const CreateUrlPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!originalUrl.trim()) {
-      toast.error("Please paste a URL first.");
-      return;
-    }
-
+    if (!originalUrl.trim()) { toast.error("Please paste a URL first."); return; }
     setIsSubmitting(true);
-    setDisplayUrl(null);
-    setWorkingUrl(null);
-    setCreatedCode(null);
-
+    setDisplayUrl(null); setWorkingUrl(null); setCreatedCode(null);
     try {
-      const tags = tagsInput
-        .split(",")
-        .map((t) => t.trim())
-        .filter((t) => t.length > 0);
-
+      const tags = tagsInput.split(",").map((t) => t.trim()).filter((t) => t.length > 0);
       const res = await api.url.create({
         originalUrl: originalUrl.trim(),
         customAlias: customAlias.trim() || undefined,
         expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
         password: password.trim() || undefined,
-        tags,
-        isPublic,
-        isFavorite,
+        tags, isPublic, isFavorite,
       });
-
       setDisplayUrl(getDisplayShortUrl(res.shortCode));
       setWorkingUrl(getWorkingShortUrl(res.shortCode));
       setCreatedCode(res.shortCode);
       toast.success("Link created!");
-      
-      setOriginalUrl("");
-      setCustomAlias("");
-      setExpiresAt("");
-      setPassword("");
-      setTagsInput("");
-      setIsFavorite(false);
+      setOriginalUrl(""); setCustomAlias(""); setExpiresAt("");
+      setPassword(""); setTagsInput(""); setIsFavorite(false);
     } catch (error: any) {
-      console.error(error);
       toast.error(error.message || "Something went wrong.");
     } finally {
       setIsSubmitting(false);
@@ -79,17 +58,19 @@ export const CreateUrlPage: React.FC = () => {
     try {
       await navigator.clipboard.writeText(workingUrl);
       setCopied(true);
-      toast.success("Copied working link!");
+      toast.success("Copied!");
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      toast.error("Couldn't copy — try selecting it manually.");
+    } catch {
+      toast.error("Couldn't copy.");
     }
   };
 
+  const aliasLen = customAlias.length;
+
   return (
-    <div className="space-y-6 animate-fadeIn p-4 sm:p-6 lg:p-8 text-zinc-900 dark:text-zinc-100 transition-colors min-h-[calc(100vh-4rem)]">
-      {/* Header */}
-      <div className="border-b border-white/[0.06] pb-5">
+    <div className="space-y-6 animate-fadeIn p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)]">
+      {/* ── Header ── */}
+      <div className="border-b border-white/[0.05] pb-5">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-display" id="create-url-title">
           Shorten a link
         </h1>
@@ -99,131 +80,171 @@ export const CreateUrlPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Form */}
-        <div className="lg:col-span-2 glass-card p-5 sm:p-6 rounded-2xl space-y-6">
-          <form onSubmit={handleSubmit} className="space-y-5" id="create-url-form">
-            {/* Long URL */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider block flex items-center gap-1.5">
-                <Link2 className="w-3.5 h-3.5 text-violet-400" />
-                Long URL *
-              </label>
-              <input
-                type="text"
-                value={originalUrl}
-                onChange={(e) => setOriginalUrl(e.target.value)}
-                required
-                className="w-full px-4 py-3.5 glass-input text-sm text-zinc-100 rounded-xl font-medium placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none"
-                placeholder="https://example.com/your-really-long-url"
-                id="create-url-original"
-              />
-            </div>
+        {/* ── Form ── */}
+        <div className="lg:col-span-2 premium-card p-5 sm:p-7 space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" id="create-url-form">
 
-            {/* Custom back-half */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider block flex items-center gap-1.5">
-                ✏️ Custom back-half <span className="text-zinc-600 normal-case">(optional)</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-3.5 z-10 pointer-events-none text-zinc-800 dark:text-zinc-300 text-sm font-semibold select-none">
-                  {getShortDomain()} /
-                </span>
+            {/* Step 1 — URL */}
+            <div className="space-y-4">
+              <div className="form-section-label">
+                <Link2 className="w-3 h-3 text-emerald-400" />
+                Destination URL
+              </div>
+
+              <div className="space-y-1.5">
                 <input
                   type="text"
-                  value={customAlias}
-                  onChange={(e) => setCustomAlias(e.target.value)}
-                  className="w-full pl-[108px] pr-4 py-3.5 glass-input text-sm text-zinc-100 rounded-xl font-semibold placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none"
-                  placeholder="summer-sale"
-                  id="create-url-alias"
+                  value={originalUrl}
+                  onChange={(e) => setOriginalUrl(e.target.value)}
+                  required
+                  className="w-full px-4 py-4 glass-input text-sm text-zinc-100 rounded-xl font-medium placeholder-zinc-500 focus:outline-none"
+                  placeholder="https://example.com/your-really-long-url-that-needs-shortening"
+                  id="create-url-original"
                 />
+                {/* Live preview */}
+                {originalUrl && (
+                  <div className="flex items-center gap-2 px-1">
+                    <Globe className="w-3 h-3 text-zinc-600 shrink-0" />
+                    <span className="text-[10px] text-zinc-600 font-medium truncate">
+                      {(() => { try { return new URL(originalUrl).hostname; } catch { return originalUrl.slice(0, 40); } })()}
+                    </span>
+                  </div>
+                )}
               </div>
-              <p className="text-[10px] text-zinc-600 font-medium">
-                Pick something short and memorable.
-              </p>
             </div>
 
-            {/* Options grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              {/* Expiry */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider block flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-blue-400" /> Expires on <span className="text-zinc-600 normal-case">(optional)</span>
-                </label>
-                <input
-                  type="datetime-local"
-                  value={expiresAt}
-                  onChange={(e) => setExpiresAt(e.target.value)}
-                  className="w-full px-4 py-3 glass-input text-sm text-zinc-100 rounded-xl placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none"
-                  id="create-url-expiry"
-                />
+            {/* Step 2 — Customize */}
+            <div className="space-y-4">
+              <div className="form-section-label">
+                <Sparkles className="w-3 h-3 text-emerald-400" />
+                Customize
+                <span className="font-normal normal-case text-zinc-600 tracking-normal">optional</span>
               </div>
 
-              {/* Password */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider block flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-amber-400" /> Password protect <span className="text-zinc-600 normal-case">(optional)</span>
+              {/* Custom alias */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block">
+                  Custom back-half
                 </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 glass-input text-sm text-zinc-100 rounded-xl placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none"
-                  placeholder="••••••••"
-                  id="create-url-password"
-                />
+                <div className="flex items-center glass-input rounded-xl overflow-hidden focus-within:border-emerald-500/60 focus-within:shadow-[0_0_0_3px_rgba(52,211,153,0.15),0_0_20px_rgba(52,211,153,0.06)] focus-within:bg-[rgba(2,14,10,0.75)] transition-all">
+                  <span className="pl-4 pr-1 text-zinc-400 text-sm font-semibold select-none whitespace-nowrap shrink-0 border-r border-white/[0.08] pr-3 mr-0">
+                    {getShortDomain()}/
+                  </span>
+                  <input
+                    type="text"
+                    value={customAlias}
+                    onChange={(e) => setCustomAlias(e.target.value)}
+                    className="flex-1 min-w-0 px-3 py-3.5 bg-transparent border-none outline-none text-sm text-zinc-100 font-bold placeholder-zinc-600 focus:outline-none"
+                    placeholder="my-link"
+                    id="create-url-alias"
+                    maxLength={50}
+                  />
+                  <span className="pr-3 text-[10px] text-zinc-600 font-mono select-none shrink-0">{aliasLen}/50</span>
+                </div>
+                <p className="text-[10px] text-zinc-600 font-medium px-1">Pick something short and memorable.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Expiry */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-1">
+                    <Calendar className="w-2.5 h-2.5 text-blue-400" />
+                    Expires on
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={expiresAt}
+                    onChange={(e) => setExpiresAt(e.target.value)}
+                    className="w-full px-4 py-3 glass-input text-sm text-zinc-100 rounded-xl focus:outline-none"
+                    id="create-url-expiry"
+                  />
+                </div>
+
+                {/* Password */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-1">
+                    <Lock className="w-2.5 h-2.5 text-amber-400" />
+                    Password protect
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPwd ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-4 py-3 pr-10 glass-input text-sm text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-600"
+                      placeholder="••••••••"
+                      id="create-url-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPwd(!showPwd)}
+                      className="absolute right-3 top-3.5 text-zinc-500 hover:text-zinc-300 cursor-pointer transition-colors"
+                    >
+                      {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Tags */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider block flex items-center gap-1.5">
-                  <Tag className="w-3.5 h-3.5 text-emerald-400" /> Tags <span className="text-zinc-600 normal-case">(optional)</span>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-1">
+                  <Tag className="w-2.5 h-2.5 text-emerald-400" />
+                  Tags
                 </label>
                 <input
                   type="text"
                   value={tagsInput}
                   onChange={(e) => setTagsInput(e.target.value)}
-                  className="w-full px-4 py-3 glass-input text-sm text-zinc-100 rounded-xl placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none"
-                  placeholder="newsletter, pricing, q3"
+                  className="w-full px-4 py-3 glass-input text-sm text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-600"
+                  placeholder="marketing, social, q3"
                   id="create-url-tags"
                 />
-                <p className="text-[10px] text-zinc-600 font-medium leading-tight">
-                  Separate with commas to organize your links.
-                </p>
+                <p className="text-[10px] text-zinc-600 font-medium px-1">Separate with commas to organize your links.</p>
               </div>
 
-              {/* Settings */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider block">
-                  Options
-                </label>
-                <div className="flex gap-4 p-3.5 glass-input rounded-xl items-center">
-                  <label className="flex items-center gap-1.5 text-xs text-zinc-300 font-semibold cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={isPublic}
-                      onChange={(e) => setIsPublic(e.target.checked)}
-                      className="w-4 h-4 rounded text-violet-600 focus:ring-violet-500 border-zinc-700 cursor-pointer bg-transparent"
-                    />
-                    Public stats
-                  </label>
-                  
-                  <label className="flex items-center gap-1.5 text-xs text-zinc-300 font-semibold cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={isFavorite}
-                      onChange={(e) => setIsFavorite(e.target.checked)}
-                      className="w-4 h-4 rounded text-violet-600 focus:ring-violet-500 border-zinc-700 cursor-pointer bg-transparent"
-                    />
-                    Favorite
-                  </label>
-                </div>
+              {/* Toggles */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsPublic(!isPublic)}
+                  className={`flex items-center justify-between p-3.5 rounded-xl border transition select-none cursor-pointer group ${
+                    isPublic
+                      ? 'border-emerald-500/25 bg-emerald-500/8 text-emerald-300'
+                      : 'border-white/[0.06] bg-white/[0.02] text-zinc-500 hover:border-white/[0.1]'
+                  }`}
+                >
+                  <div className="text-left">
+                    <div className="text-xs font-bold">Public stats</div>
+                    <div className="text-[10px] opacity-70 mt-0.5">Visible analytics</div>
+                  </div>
+                  <div className={`w-9 h-5 rounded-full relative transition-colors ${isPublic ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
+                    <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${isPublic ? 'left-4' : 'left-0.5'}`} />
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsFavorite(!isFavorite)}
+                  className={`flex items-center justify-between p-3.5 rounded-xl border transition select-none cursor-pointer ${
+                    isFavorite
+                      ? 'border-amber-500/25 bg-amber-500/8 text-amber-300'
+                      : 'border-white/[0.06] bg-white/[0.02] text-zinc-500 hover:border-white/[0.1]'
+                  }`}
+                >
+                  <div className="text-left">
+                    <div className="text-xs font-bold">Favorite</div>
+                    <div className="text-[10px] opacity-70 mt-0.5">Pin to top</div>
+                  </div>
+                  <Star className={`w-5 h-5 transition-all ${isFavorite ? 'text-amber-400 fill-current scale-110' : ''}`} />
+                </button>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 btn-gradient disabled:opacity-50 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-violet-600/15 cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-4 btn-glow disabled:opacity-50 text-white font-bold text-sm rounded-xl cursor-pointer flex items-center justify-center gap-2"
               id="create-url-submit"
             >
               <span>{isSubmitting ? "Creating..." : "Shorten URL"}</span>
@@ -232,58 +253,70 @@ export const CreateUrlPage: React.FC = () => {
           </form>
         </div>
 
-        {/* Side panel */}
-        <div className="space-y-6">
+        {/* ── Side panel ── */}
+        <div className="space-y-5">
           {displayUrl && workingUrl && createdCode ? (
             <div className="animate-scaleIn space-y-4">
-              <div className="glass-card p-5 rounded-2xl space-y-4" style={{ borderColor: 'rgba(16, 185, 129, 0.15)' }}>
-                <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
-                  🎉 Link created!
+              <div className="premium-card p-5 space-y-4">
+                <div className="border-beam" />
+
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-soft" />
+                  <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
+                    Link created!
+                  </span>
                 </div>
-                
-                <div className="space-y-1.5 min-w-0">
+
+                <div className="space-y-1 min-w-0">
                   <a
                     href={workingUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-lg font-bold text-violet-300 hover:text-violet-200 hover:underline break-all block transition-colors"
+                    className="text-base font-bold text-emerald-400 hover:text-emerald-300 hover:underline break-all block transition-colors short-link-mono"
                   >
                     {displayUrl}
                   </a>
-                  <p className="text-[11px] text-zinc-500 font-mono break-all">
-                    Live link: {workingUrl}
-                  </p>
+                  <div className="link-preview-domain mt-1.5">
+                    <Globe className="w-2.5 h-2.5" />
+                    {workingUrl}
+                  </div>
                 </div>
 
                 <button
                   onClick={handleCopy}
-                  className="flex items-center justify-center gap-1.5 w-full py-2.5 glass-input text-xs text-zinc-300 font-semibold rounded-xl cursor-pointer transition hover:text-white hover:border-violet-500/30"
+                  className={`flex items-center justify-center gap-2 w-full py-2.5 text-xs font-bold rounded-xl cursor-pointer transition-all ${
+                    copied
+                      ? 'bg-emerald-500/15 border border-emerald-500/25 text-emerald-400'
+                      : 'btn-glass'
+                  }`}
                 >
-                  {copied ? (
-                    <>
-                      <Check className="w-4 h-4 text-emerald-400" />
-                      <span className="text-emerald-400">Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-4 h-4 text-zinc-500" />
-                      <span>Copy link</span>
-                    </>
-                  )}
+                  {copied
+                    ? <><Check className="w-4 h-4" /> Copied!</>
+                    : <><Copy className="w-4 h-4" /> Copy link</>
+                  }
                 </button>
               </div>
 
-              {/* QR Code */}
               <UrlQrCode shortUrl={workingUrl} shortCode={createdCode} />
             </div>
           ) : (
-            <div className="glass-card p-6 rounded-2xl text-center space-y-4">
-              <div className="text-4xl animate-float">✂️</div>
-              <div className="space-y-1">
+            <div className="premium-card p-7 text-center space-y-5">
+              <div className="empty-state-icon">
+                <PlusCircle className="w-7 h-7 text-emerald-400 animate-pulse-soft" />
+              </div>
+              <div className="space-y-1.5">
                 <h3 className="font-bold text-sm text-zinc-200 font-display">Ready to shorten</h3>
                 <p className="text-xs text-zinc-500 max-w-[200px] mx-auto leading-relaxed">
-                  Paste a URL and hit shorten — your QR code will appear here.
+                  Paste a URL and hit shorten — your QR code and short link will appear here.
                 </p>
+              </div>
+              <div className="flex flex-col gap-2 text-[10px] text-zinc-600">
+                {["Custom aliases", "Password protection", "Click analytics"].map((f) => (
+                  <div key={f} className="flex items-center gap-2 justify-center">
+                    <Check className="w-3 h-3 text-emerald-500" />
+                    <span>{f}</span>
+                  </div>
+                ))}
               </div>
             </div>
           )}
