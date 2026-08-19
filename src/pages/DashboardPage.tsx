@@ -107,10 +107,10 @@ export const DashboardPage: React.FC = () => {
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 animate-fadeIn">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-display" id="dashboard-title">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white font-display" id="dashboard-title">
             Your Dashboard
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 mt-1 font-medium">
             Here's how your links are performing.
           </p>
         </div>
@@ -119,10 +119,10 @@ export const DashboardPage: React.FC = () => {
           <button
             onClick={() => fetchDashboardData(true)}
             disabled={isRefreshing}
-            className="p-2.5 glass-card rounded-xl text-zinc-500 hover:text-emerald-400 transition cursor-pointer disabled:opacity-50 hover:scale-110 active:scale-95"
+            className="p-2.5 glass-card rounded-xl text-zinc-700 dark:text-zinc-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer disabled:opacity-50 hover:scale-110 active:scale-95"
             title="Refresh"
           >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-emerald-400" : ""}`} />
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-emerald-500" : ""}`} />
           </button>
 
           <button
@@ -151,7 +151,7 @@ export const DashboardPage: React.FC = () => {
                   <Icon className={`w-5 h-5 ${card.iconColor} relative z-10`} />
                 </div>
                 {/* Mini sparkline placeholder */}
-                <div className="flex items-end gap-0.5 h-6 opacity-40 group-hover:opacity-70 transition-opacity">
+                <div className="flex items-end gap-0.5 h-6 opacity-50 group-hover:opacity-80 transition-opacity">
                   {[3, 5, 4, 7, 6, 8, card.value > 0 ? 10 : 2].map((h, j) => (
                     <div
                       key={j}
@@ -163,7 +163,7 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               <div>
-                <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">
+                <div className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest mb-1">
                   {card.label}
                 </div>
                 <div
@@ -182,23 +182,23 @@ export const DashboardPage: React.FC = () => {
       <div className="premium-card p-5 sm:p-7 animate-fadeInUp" style={{ animationDelay: "0.2s", opacity: 0 }}>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2 font-display">
-              <TrendingUp className="w-4 h-4 text-emerald-400" />
+            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2 font-display">
+              <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               Clicks this week
             </h2>
-            <p className="text-[11px] text-zinc-500 mt-0.5">
+            <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5 font-medium">
               Daily click activity over the last 7 days
             </p>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-soft" />
-            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Live</span>
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse-soft" />
+            <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Live</span>
           </div>
         </div>
 
         {dailyClicks.length === 0 ? (
-          <div className="h-56 flex flex-col items-center justify-center text-sm text-zinc-600 border border-dashed border-white/[0.05] rounded-xl gap-2">
-            <TrendingUp className="w-6 h-6 text-zinc-700" />
+          <div className="h-56 flex flex-col items-center justify-center text-sm text-zinc-600 dark:text-zinc-400 border border-dashed border-emerald-500/20 dark:border-white/[0.05] rounded-xl gap-2 font-medium">
+            <TrendingUp className="w-6 h-6 text-zinc-400 dark:text-zinc-500" />
             No clicks yet. Share some links to see data here!
           </div>
         ) : (
@@ -234,7 +234,7 @@ export const DashboardPage: React.FC = () => {
                         {/* Tooltip */}
                         <div className="absolute -top-14 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:-translate-y-1 bg-zinc-900 border border-emerald-500/20 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg shadow-xl pointer-events-none z-20 text-center min-w-[52px] flex flex-col gap-0.5">
                           <span className="text-emerald-400 font-mono text-sm">{d.clicks}</span>
-                          <span className="text-zinc-500">clicks</span>
+                          <span className="text-zinc-300">clicks</span>
                           <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-900 border-r border-b border-emerald-500/20 rotate-45" />
                         </div>
 
@@ -255,7 +255,7 @@ export const DashboardPage: React.FC = () => {
                         </div>
                       </div>
 
-                      <span className="text-[9px] sm:text-[10px] text-zinc-600 font-medium truncate max-w-full group-hover:text-zinc-400 transition-colors font-mono">
+                      <span className="text-[9px] sm:text-[10px] text-zinc-600 dark:text-zinc-400 font-semibold truncate max-w-full group-hover:text-zinc-900 dark:group-hover:text-zinc-200 transition-colors font-mono">
                         {d.label}
                       </span>
                     </div>
@@ -272,12 +272,12 @@ export const DashboardPage: React.FC = () => {
         {/* Top Performers */}
         <div className="premium-card p-5 sm:p-6 space-y-5 animate-fadeInUp" style={{ animationDelay: "0.3s", opacity: 0 }}>
           <div className="flex items-center justify-between">
-            <h2 className="text-sm sm:text-base font-bold text-white flex items-center gap-2 font-display">
+            <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2 font-display">
               <span className="text-base">🏆</span> Top performers
             </h2>
             <button
               onClick={() => handleNavigate("#/links")}
-              className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-0.5 transition cursor-pointer hover:gap-1.5"
+              className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-0.5 transition cursor-pointer hover:gap-1.5"
             >
               View all
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -287,16 +287,16 @@ export const DashboardPage: React.FC = () => {
           {mostVisited.length === 0 ? (
             <div className="text-center py-8 space-y-3">
               <div className="empty-state-icon">
-                <TrendingUp className="w-6 h-6 text-emerald-400" />
+                <TrendingUp className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
               </div>
-              <p className="text-xs text-zinc-500">No links to rank yet. Create your first one!</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">No links to rank yet. Create your first one!</p>
             </div>
           ) : (
             <div className="space-y-2">
               {mostVisited.map((u, rowIdx) => (
                 <div
                   key={u.id}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.04] hover:bg-white/[0.03] hover:border-emerald-500/15 transition-all group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-black/5 dark:border-white/[0.04] bg-black/[0.01] dark:bg-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.03] hover:border-emerald-500/20 transition-all group"
                 >
                   {/* Rank badge */}
                   <div
@@ -320,18 +320,18 @@ export const DashboardPage: React.FC = () => {
                       href={getWorkingShortUrl(u.shortCode)}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs font-bold text-emerald-400 hover:text-emerald-300 hover:underline transition-colors short-link-mono block truncate"
+                      className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline transition-colors short-link-mono block truncate"
                     >
                       {getDisplayShortUrl(u.shortCode)}
                     </a>
-                    <span className="block text-[10px] text-zinc-600 font-medium truncate">{u.originalUrl}</span>
+                    <span className="block text-[10px] text-zinc-600 dark:text-zinc-400 font-medium truncate">{u.originalUrl}</span>
                   </div>
 
                   <div className="shrink-0 text-right">
-                    <div className="text-sm font-extrabold text-white group-hover:text-emerald-300 transition-colors font-mono">
+                    <div className="text-sm font-extrabold text-zinc-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors font-mono">
                       {u.clicks.toLocaleString()}
                     </div>
-                    <div className="text-[9px] text-zinc-600 uppercase tracking-wider">clicks</div>
+                    <div className="text-[9px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold">clicks</div>
                   </div>
                 </div>
               ))}
@@ -342,12 +342,12 @@ export const DashboardPage: React.FC = () => {
         {/* Recent Links */}
         <div className="premium-card p-5 sm:p-6 space-y-5 animate-fadeInUp" style={{ animationDelay: "0.38s", opacity: 0 }}>
           <div className="flex items-center justify-between">
-            <h2 className="text-sm sm:text-base font-bold text-white flex items-center gap-2 font-display">
+            <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2 font-display">
               <span className="text-base">🕐</span> Recent links
             </h2>
             <button
               onClick={() => handleNavigate("#/links")}
-              className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-0.5 transition cursor-pointer hover:gap-1.5"
+              className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-0.5 transition cursor-pointer hover:gap-1.5"
             >
               View all
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -357,16 +357,16 @@ export const DashboardPage: React.FC = () => {
           {recentUrls.length === 0 ? (
             <div className="text-center py-8 space-y-3">
               <div className="empty-state-icon">
-                <Link2 className="w-6 h-6 text-emerald-400" />
+                <Link2 className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
               </div>
-              <p className="text-xs text-zinc-500">Nothing here yet. Go shorten a link!</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">Nothing here yet. Go shorten a link!</p>
             </div>
           ) : (
             <div className="space-y-2">
               {recentUrls.map((u, rowIdx) => (
                 <div
                   key={u.id}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.04] hover:bg-white/[0.03] hover:border-emerald-500/15 transition-all group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-black/5 dark:border-white/[0.04] bg-black/[0.01] dark:bg-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.03] hover:border-emerald-500/20 transition-all group"
                   style={{ animationDelay: `${rowIdx * 40}ms` }}
                 >
                   {/* Timeline dot */}
@@ -377,18 +377,17 @@ export const DashboardPage: React.FC = () => {
                       href={getWorkingShortUrl(u.shortCode)}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs font-bold text-emerald-400 hover:text-emerald-300 hover:underline transition-colors short-link-mono block truncate"
+                      className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline transition-colors short-link-mono block truncate"
                     >
                       {getDisplayShortUrl(u.shortCode)}
                     </a>
-                    <span className="block text-[10px] text-zinc-600 font-medium truncate">{u.originalUrl}</span>
+                    <span className="block text-[10px] text-zinc-600 dark:text-zinc-400 font-medium truncate">{u.originalUrl}</span>
                   </div>
 
                   <div className="shrink-0 text-right">
-                    <div className="text-[10px] text-zinc-500 whitespace-nowrap group-hover:text-zinc-400 transition-colors font-mono">
+                    <div className="text-[10px] text-zinc-600 dark:text-zinc-400 whitespace-nowrap group-hover:text-zinc-900 dark:group-hover:text-zinc-200 transition-colors font-mono font-medium">
                       {new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </div>
-                    <div className="text-[9px] text-zinc-600">{u.clicks} clicks</div>
                   </div>
                 </div>
               ))}

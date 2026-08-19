@@ -111,7 +111,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={() => window.open(workingShortLink, "_blank")}
-                  className="text-base sm:text-lg font-bold text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1.5 cursor-pointer short-link-mono transition-colors group/link"
+                  className="text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline flex items-center gap-1.5 cursor-pointer short-link-mono transition-colors group/link"
                   id={`link-short-${url.id}`}
                 >
                   {displayShortLink}
@@ -142,7 +142,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
               </div>
 
               {/* Original URL */}
-              <p className="text-xs text-zinc-500 truncate max-w-full font-medium">
+              <p className="text-xs text-zinc-600 dark:text-zinc-300 truncate max-w-full font-medium">
                 {url.originalUrl}
               </p>
             </div>
@@ -153,8 +153,8 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
                 onClick={handleFavoriteToggle}
                 className={`p-2 rounded-xl transition cursor-pointer border ${
                   url.isFavorite
-                    ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                    : "text-zinc-600 hover:bg-white/[0.04] border-transparent hover:border-amber-500/20 hover:text-amber-400"
+                    ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                    : "text-zinc-500 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/[0.04] border-transparent hover:border-amber-500/20 hover:text-amber-500"
                 }`}
                 title={url.isFavorite ? "Remove from favorites" : "Add to favorites"}
                 id={`fav-toggle-${url.id}`}
@@ -162,12 +162,12 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
                 <Star className={`w-4 h-4 ${url.isFavorite ? 'fill-current' : ''}`} />
               </button>
 
-              <div className="px-3 py-1.5 bg-white/[0.03] border border-white/[0.06] rounded-xl text-center select-none min-w-[56px]">
+              <div className="px-3 py-1.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/[0.06] rounded-xl text-center select-none min-w-[56px]">
                 <div className="flex items-center gap-1 justify-center">
-                  <MousePointerClick className="w-2.5 h-2.5 text-zinc-500" />
-                  <div className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Clicks</div>
+                  <MousePointerClick className="w-2.5 h-2.5 text-zinc-500 dark:text-zinc-400" />
+                  <div className="text-[9px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Clicks</div>
                 </div>
-                <div className="text-sm font-extrabold text-white font-mono">{url.clicks.toLocaleString()}</div>
+                <div className="text-sm font-extrabold text-zinc-900 dark:text-white font-mono">{url.clicks.toLocaleString()}</div>
               </div>
             </div>
           </div>
@@ -175,11 +175,11 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
           {/* Tags */}
           {url.tags.length > 0 && (
             <div className="flex items-center gap-1.5 flex-wrap">
-              <Tag className="w-3 h-3 text-zinc-600 mr-0.5 shrink-0" />
+              <Tag className="w-3 h-3 text-zinc-500 dark:text-zinc-400 mr-0.5 shrink-0" />
               {url.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/8 text-emerald-400 rounded-full border border-emerald-500/15"
+                  className="px-2.5 py-0.5 text-[11px] font-bold bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 rounded-full border border-emerald-500/25"
                 >
                   {tag}
                 </span>
@@ -188,8 +188,8 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
           )}
 
           {/* Action bar */}
-          <div className="flex items-center justify-between gap-2 border-t border-white/[0.05] pt-3">
-            <span className="text-[10px] text-zinc-600 font-medium shrink-0 font-mono">
+          <div className="flex items-center justify-between gap-2 border-t border-black/5 dark:border-white/[0.05] pt-3">
+            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium shrink-0 font-mono">
               {formatDate(url.createdAt)}
             </span>
 
@@ -200,13 +200,13 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
                 onClick={handleCopy}
                 className={`relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer group/btn ${
                   copied
-                    ? 'bg-emerald-500/15 border border-emerald-500/25 text-emerald-400'
-                    : 'glass-input text-zinc-400 hover:text-white hover:border-emerald-500/20'
+                    ? 'bg-emerald-500/15 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400'
+                    : 'glass-input text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:border-emerald-500/20'
                 }`}
                 id={`copy-btn-${url.id}`}
               >
                 {copied ? (
-                  <><Check className="w-3.5 h-3.5 text-emerald-400" /><span className="text-emerald-400">Copied!</span></>
+                  <><Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /><span className="text-emerald-700 dark:text-emerald-400">Copied!</span></>
                 ) : (
                   <><Copy className="w-3.5 h-3.5" /><span className="hidden sm:inline">Copy</span></>
                 )}
@@ -218,8 +218,8 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
                 title="QR Code"
                 className={`p-1.5 sm:p-2 rounded-lg border transition-all cursor-pointer shrink-0 ${
                   showQr
-                    ? "bg-violet-500/12 border-violet-500/25 text-violet-400"
-                    : "glass-input text-zinc-500 hover:text-violet-400 hover:border-violet-500/20"
+                    ? "bg-violet-500/15 border-violet-500/30 text-violet-700 dark:text-violet-400"
+                    : "glass-input text-zinc-600 dark:text-zinc-400 hover:text-violet-600 dark:hover:text-violet-400 hover:border-violet-500/20"
                 }`}
                 id={`qr-btn-${url.id}`}
               >
@@ -230,7 +230,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
               <button
                 onClick={() => setIsEditing(true)}
                 title="Edit"
-                className="p-1.5 sm:p-2 rounded-lg glass-input text-zinc-500 hover:text-emerald-400 hover:border-emerald-500/20 transition-all cursor-pointer shrink-0"
+                className="p-1.5 sm:p-2 rounded-lg glass-input text-zinc-600 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/20 transition-all cursor-pointer shrink-0"
                 id={`edit-btn-${url.id}`}
               >
                 <Edit className="w-3.5 h-3.5" />
@@ -240,7 +240,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
               <button
                 onClick={() => setIsDeletingConfirm(true)}
                 title="Delete"
-                className="p-1.5 sm:p-2 rounded-lg glass-input text-zinc-500 hover:text-rose-400 hover:border-rose-500/20 transition-all cursor-pointer shrink-0"
+                className="p-1.5 sm:p-2 rounded-lg glass-input text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-500/20 transition-all cursor-pointer shrink-0"
                 id={`del-btn-${url.id}`}
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -250,25 +250,25 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
           {/* QR drawer */}
           {showQr && (
-            <div className="border-t border-white/[0.05] pt-4 animate-fadeIn">
+            <div className="border-t border-black/5 dark:border-white/[0.05] pt-4 animate-fadeIn">
               <UrlQrCode shortUrl={workingShortLink} shortCode={url.shortCode} />
             </div>
           )}
 
           {/* Delete confirmation */}
           {isDeletingConfirm && (
-            <div className="p-4 bg-rose-500/6 border border-rose-500/18 rounded-xl animate-scaleIn space-y-3">
-              <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
+            <div className="p-4 bg-rose-500/10 border border-rose-500/25 rounded-xl animate-scaleIn space-y-3">
+              <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold text-sm">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 Delete this link permanently?
               </div>
-              <p className="text-xs text-rose-300/70 leading-relaxed">
+              <p className="text-xs text-zinc-700 dark:text-rose-200/80 leading-relaxed font-medium">
                 This will delete <span className="font-semibold font-mono">/{url.shortCode}</span> and all its click data. This can't be undone.
               </p>
               <div className="flex gap-2 justify-end">
                 <button
                   onClick={() => setIsDeletingConfirm(false)}
-                  className="px-4 py-1.5 text-xs font-semibold text-zinc-400 hover:bg-white/[0.04] rounded-lg cursor-pointer transition-all"
+                  className="px-4 py-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/[0.04] rounded-lg cursor-pointer transition-all"
                 >
                   Cancel
                 </button>
@@ -288,28 +288,28 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
       {/* Edit Form */}
       {isEditing && (
         <form onSubmit={handleSaveEdit} className="space-y-5 animate-fadeIn" id={`edit-form-${url.id}`}>
-          <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-            <span className="text-sm font-bold text-white flex items-center gap-2">
-              <Edit className="w-4 h-4 text-emerald-400" />
+          <div className="flex items-center justify-between border-b border-black/5 dark:border-white/[0.06] pb-3">
+            <span className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+              <Edit className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               Edit link
             </span>
             <button
               type="button"
               onClick={() => setIsEditing(false)}
-              className="p-1.5 rounded-lg hover:bg-white/[0.04] text-zinc-500 hover:text-zinc-200 cursor-pointer transition-all"
+              className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/[0.04] text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 cursor-pointer transition-all"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           <div className="space-y-1.5">
-            <div className="form-section-label">Destination URL</div>
+            <div className="form-section-label font-bold text-xs uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Destination URL</div>
             <input
               type="url"
               value={editUrl}
               onChange={(e) => setEditUrl(e.target.value)}
               required
-              className="w-full px-4 py-3 glass-input text-sm text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-600 font-medium"
+              className="w-full px-4 py-3 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-500 font-medium"
               placeholder="https://example.com/your-link"
             />
           </div>

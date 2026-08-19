@@ -73,11 +73,11 @@ export const ProfilePage: React.FC = () => {
     <div className="space-y-6 p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)] animate-pageEnter">
 
       {/* ── Header ── */}
-      <div className="border-b border-white/[0.05] pb-5 animate-fadeIn">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-display" id="profile-page-title">
+      <div className="border-b border-black/5 dark:border-white/[0.05] pb-5 animate-fadeIn">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white font-display" id="profile-page-title">
           Settings
         </h1>
-        <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+        <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 mt-1 font-medium">
           Manage your account and preferences.
         </p>
       </div>
@@ -97,35 +97,35 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           <div className="space-y-1">
-            <h2 className="text-xl font-bold text-white font-display">{user?.name}</h2>
-            <p className="text-xs text-zinc-500">{user?.email}</p>
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-white font-display">{user?.name}</h2>
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">{user?.email}</p>
           </div>
 
           {/* Stats strip */}
-          <div className="grid grid-cols-2 gap-3 border-t border-white/[0.05] pt-5">
+          <div className="grid grid-cols-2 gap-3 border-t border-black/5 dark:border-white/[0.05] pt-5">
             <div className="stat-tile stat-tile-emerald p-4 text-center cursor-default group">
               <div className="flex items-center justify-center gap-1 mb-1.5">
-                <Link2 className="w-3.5 h-3.5 text-emerald-400" />
+                <Link2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <div className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Links</div>
-              <div className="text-2xl font-extrabold text-white mt-1 font-mono animate-count-pop">
+              <div className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest">Links</div>
+              <div className="text-2xl font-extrabold text-zinc-900 dark:text-white mt-1 font-mono animate-count-pop">
                 {metrics ? metrics.totalUrls : "—"}
               </div>
             </div>
             <div className="stat-tile stat-tile-teal p-4 text-center cursor-default">
               <div className="flex items-center justify-center gap-1 mb-1.5">
-                <MousePointerClick className="w-3.5 h-3.5 text-teal-400" />
+                <MousePointerClick className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
               </div>
-              <div className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Clicks</div>
-              <div className="text-2xl font-extrabold text-white mt-1 font-mono animate-count-pop">
+              <div className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest">Clicks</div>
+              <div className="text-2xl font-extrabold text-zinc-900 dark:text-white mt-1 font-mono animate-count-pop">
                 {metrics ? metrics.totalClicks.toLocaleString() : "—"}
               </div>
             </div>
           </div>
 
           {user && (
-            <div className="flex items-center gap-2 text-xs text-zinc-500 justify-center border-t border-white/[0.05] pt-4">
-              <Calendar className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400 font-medium justify-center border-t border-black/5 dark:border-white/[0.05] pt-4">
+              <Calendar className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-500 shrink-0" />
               Joined {formatDate(user.createdAt)}
             </div>
           )}
@@ -136,31 +136,31 @@ export const ProfilePage: React.FC = () => {
 
           {/* Account information */}
           <div className="premium-card p-5 sm:p-6 space-y-4 animate-fadeInUp" style={{ animationDelay: "0.1s", animationFillMode: "both" }}>
-            <h3 className="font-bold text-base text-white flex items-center gap-2.5 font-display">
+            <h3 className="font-bold text-base text-zinc-900 dark:text-white flex items-center gap-2.5 font-display">
               <div className="icon-ring icon-ring-emerald w-8 h-8">
-                <User className="w-4 h-4 text-emerald-400 relative z-10" />
+                <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400 relative z-10" />
               </div>
               Account information
             </h3>
 
             <div className="space-y-2.5">
-              <div className="flex items-center gap-3.5 p-3.5 bg-white/[0.02] rounded-xl border border-white/[0.04] hover:border-emerald-500/15 transition-all duration-300 group">
-                <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/12 shrink-0 group-hover:bg-emerald-500/18 transition-colors">
-                  <User className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="flex items-center gap-3.5 p-3.5 bg-black/[0.01] dark:bg-white/[0.02] rounded-xl border border-black/5 dark:border-white/[0.04] hover:border-emerald-500/20 transition-all duration-300 group">
+                <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/15 shrink-0 group-hover:bg-emerald-500/20 transition-colors">
+                  <User className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div>
-                  <div className="text-[9px] text-zinc-500 uppercase tracking-widest font-bold">Full name</div>
-                  <div className="text-sm font-semibold text-zinc-200 mt-0.5">{user?.name ?? "—"}</div>
+                  <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-widest font-bold">Full name</div>
+                  <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5">{user?.name ?? "—"}</div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3.5 p-3.5 bg-white/[0.02] rounded-xl border border-white/[0.04] hover:border-teal-500/15 transition-all duration-300 group">
-                <div className="p-2 rounded-lg bg-teal-500/10 border border-teal-500/12 shrink-0 group-hover:bg-teal-500/18 transition-colors">
-                  <Mail className="w-3.5 h-3.5 text-teal-400" />
+              <div className="flex items-center gap-3.5 p-3.5 bg-black/[0.01] dark:bg-white/[0.02] rounded-xl border border-black/5 dark:border-white/[0.04] hover:border-teal-500/20 transition-all duration-300 group">
+                <div className="p-2 rounded-lg bg-teal-500/10 border border-teal-500/15 shrink-0 group-hover:bg-teal-500/20 transition-colors">
+                  <Mail className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                 </div>
                 <div>
-                  <div className="text-[9px] text-zinc-500 uppercase tracking-widest font-bold">Email address</div>
-                  <div className="text-sm font-semibold text-zinc-200 mt-0.5">{user?.email ?? "—"}</div>
+                  <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-widest font-bold">Email address</div>
+                  <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5">{user?.email ?? "—"}</div>
                 </div>
               </div>
             </div>
@@ -168,9 +168,9 @@ export const ProfilePage: React.FC = () => {
 
           {/* Preferences */}
           <div className="premium-card p-5 sm:p-6 space-y-4 animate-fadeInUp" style={{ animationDelay: "0.18s", animationFillMode: "both" }}>
-            <h3 className="font-bold text-base text-white flex items-center gap-2.5 font-display">
+            <h3 className="font-bold text-base text-zinc-900 dark:text-white flex items-center gap-2.5 font-display">
               <div className="icon-ring icon-ring-teal w-8 h-8">
-                <Settings className="w-4 h-4 text-teal-400 relative z-10" />
+                <Settings className="w-4 h-4 text-teal-600 dark:text-teal-400 relative z-10" />
               </div>
               Preferences
             </h3>
@@ -179,13 +179,13 @@ export const ProfilePage: React.FC = () => {
               {/* Default expiry dropdown */}
               <div
                 ref={dropdownRef}
-                className="relative flex items-center justify-between p-3.5 bg-white/[0.02] rounded-xl border border-white/[0.04] hover:border-emerald-500/15 transition-all duration-300"
+                className="relative flex items-center justify-between p-3.5 bg-black/[0.01] dark:bg-white/[0.02] rounded-xl border border-black/5 dark:border-white/[0.04] hover:border-emerald-500/20 transition-all duration-300"
               >
                 <div className="flex items-center gap-3">
-                  <Globe className="w-4 h-4 text-zinc-500 shrink-0" />
+                  <Globe className="w-4 h-4 text-zinc-500 dark:text-zinc-400 shrink-0" />
                   <div>
-                    <div className="text-sm font-semibold text-zinc-200">Default link expiry</div>
-                    <div className="text-[10px] text-zinc-500 mt-0.5">Applied when creating new links</div>
+                    <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Default link expiry</div>
+                    <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 font-medium">Applied when creating new links</div>
                   </div>
                 </div>
 
@@ -201,9 +201,9 @@ export const ProfilePage: React.FC = () => {
                     <span className="w-3.5 h-3.5 border-2 border-emerald-500/40 border-t-emerald-500 rounded-full animate-spin inline-block" />
                   ) : (
                     <>
-                      <selectedExpiry.icon className="w-3 h-3" />
+                      <selectedExpiry.icon className="w-3.5 h-3.5" />
                       {selectedExpiry.label}
-                      <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${expiryOpen ? "rotate-180" : ""}`} />
+                      <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${expiryOpen ? "rotate-180" : ""}`} />
                     </>
                   )}
                 </button>
@@ -221,15 +221,15 @@ export const ProfilePage: React.FC = () => {
                         onClick={() => handleExpiryChange(opt.value)}
                         className={`w-full text-left px-3 py-2.5 flex items-center justify-between text-sm transition-all duration-150 cursor-pointer ${
                           opt.value === defaultExpiry
-                            ? "bg-emerald-500/15 text-emerald-400 font-semibold"
-                            : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
+                            ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold"
+                            : "text-zinc-700 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-100"
                         }`}
                       >
                         <span className="flex items-center gap-2">
                           <opt.icon className="w-3.5 h-3.5 opacity-70" />
                           {opt.label}
                         </span>
-                        {opt.value === defaultExpiry && <Check className="w-3.5 h-3.5 text-emerald-400" />}
+                        {opt.value === defaultExpiry && <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />}
                       </button>
                     ))}
                   </div>
@@ -237,12 +237,12 @@ export const ProfilePage: React.FC = () => {
               </div>
 
               {/* Notifications toggle */}
-              <div className="flex items-center justify-between p-3.5 bg-white/[0.02] rounded-xl border border-white/[0.04] hover:border-emerald-500/15 transition-all duration-300">
+              <div className="flex items-center justify-between p-3.5 bg-black/[0.01] dark:bg-white/[0.02] rounded-xl border border-black/5 dark:border-white/[0.04] hover:border-emerald-500/20 transition-all duration-300">
                 <div className="flex items-center gap-3">
-                  <Bell className={`w-4 h-4 shrink-0 transition-colors ${notificationsEnabled ? "text-emerald-400" : "text-zinc-500"}`} />
+                  <Bell className={`w-4 h-4 shrink-0 transition-colors ${notificationsEnabled ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400 dark:text-zinc-500"}`} />
                   <div>
-                    <div className="text-sm font-semibold text-zinc-200">Notifications</div>
-                    <div className="text-[10px] text-zinc-500 mt-0.5">
+                    <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Notifications</div>
+                    <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 font-medium">
                       {notificationsEnabled ? "In-app toast notifications active" : "Notifications are muted"}
                     </div>
                   </div>
@@ -259,7 +259,7 @@ export const ProfilePage: React.FC = () => {
                     if (nextState) toast.success("Notifications enabled");
                   }}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ${
-                    notificationsEnabled ? "bg-emerald-500" : "bg-zinc-700"
+                    notificationsEnabled ? "bg-emerald-500" : "bg-zinc-400 dark:bg-zinc-700"
                   }`}
                 >
                   <span className="sr-only">Toggle notifications</span>
@@ -275,24 +275,24 @@ export const ProfilePage: React.FC = () => {
 
           {/* Danger Zone */}
           <div className="premium-card p-5 sm:p-6 space-y-4 animate-fadeInUp" style={{ animationDelay: "0.26s", animationFillMode: "both", borderColor: 'rgba(239,68,68,0.2)' }}>
-            <h3 className="font-bold text-base text-rose-400 flex items-center gap-2.5 font-display">
+            <h3 className="font-bold text-base text-rose-600 dark:text-rose-400 flex items-center gap-2.5 font-display">
               <div className="icon-ring w-8 h-8" style={{ background: 'rgba(239,68,68,0.15)' }}>
-                <Trash2 className="w-4 h-4 text-rose-400 relative z-10" />
+                <Trash2 className="w-4 h-4 text-rose-600 dark:text-rose-400 relative z-10" />
               </div>
               Danger zone
             </h3>
 
-            <div className="flex items-center justify-between p-3.5 bg-rose-500/[0.04] rounded-xl border border-rose-500/12 hover:border-rose-500/25 hover:bg-rose-500/[0.07] transition-all duration-300">
+            <div className="flex items-center justify-between p-3.5 bg-rose-500/[0.05] rounded-xl border border-rose-500/15 hover:border-rose-500/30 hover:bg-rose-500/[0.08] transition-all duration-300">
               <div className="min-w-0">
-                <div className="text-sm font-semibold text-zinc-200">Delete account</div>
-                <p className="text-[10px] text-zinc-500 mt-0.5 leading-relaxed">
+                <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Delete account</div>
+                <p className="text-[10px] text-zinc-600 dark:text-zinc-400 mt-0.5 leading-relaxed font-medium">
                   Permanently removes your account and all links. Cannot be undone.
                 </p>
               </div>
               <button
                 id="delete-account-btn"
                 onClick={() => toast.info("To delete your account, please contact support.")}
-                className="text-xs font-bold text-rose-400 hover:text-rose-300 border border-rose-500/30 hover:bg-rose-500/10 hover:border-rose-500/50 px-3 py-1.5 rounded-lg transition-all cursor-pointer shrink-0 ml-4 hover:scale-105 active:scale-95"
+                className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 border border-rose-500/30 hover:bg-rose-500/10 hover:border-rose-500/50 px-3 py-1.5 rounded-lg transition-all cursor-pointer shrink-0 ml-4 hover:scale-105 active:scale-95"
               >
                 Delete
               </button>

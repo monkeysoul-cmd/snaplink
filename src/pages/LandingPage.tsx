@@ -1,29 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Check, Copy, ArrowRight, Zap, BarChart3, Lock, Tag, Link2, Sparkles, TrendingUp, Globe, Shield } from "lucide-react";
+import React, { useState } from "react";
+import { Check, Copy, ArrowRight, Zap, BarChart3, Lock, Tag, Sparkles, Shield, Link2 } from "lucide-react";
 import { api } from "../services/api.js";
 import { useAuth } from "../context/AuthContext.js";
 import { useToast } from "../context/ToastContext.js";
 import { getDisplayShortUrl, getWorkingShortUrl } from "../utils/urlHelper.js";
-
-/* ─── Animated counter hook ─── */
-function useCountUp(end: number, duration = 2000, start = 0) {
-  const [count, setCount] = useState(start);
-  const ref = useRef<boolean>(false);
-  useEffect(() => {
-    if (ref.current) return;
-    ref.current = true;
-    const startTime = performance.now();
-    const tick = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const ease = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(start + (end - start) * ease));
-      if (progress < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }, [end, duration, start]);
-  return count;
-}
 
 export const LandingPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -34,10 +14,6 @@ export const LandingPage: React.FC = () => {
   const [isShortening, setIsShortening] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   const [showBurst, setShowBurst] = useState<boolean>(false);
-
-  const links = useCountUp(2_400_000);
-  const clicks = useCountUp(18_700_000);
-  const users = useCountUp(94_000);
 
   const handleShorten = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,22 +77,16 @@ export const LandingPage: React.FC = () => {
     },
   ];
 
-  const stats = [
-    { label: "Links shortened", value: links, suffix: "+", format: (n: number) => n >= 1_000_000 ? `${(n/1_000_000).toFixed(1)}M` : n.toLocaleString(), icon: Link2 },
-    { label: "Total clicks tracked", value: clicks, suffix: "+", format: (n: number) => n >= 1_000_000 ? `${(n/1_000_000).toFixed(1)}M` : n.toLocaleString(), icon: TrendingUp },
-    { label: "Happy users", value: users, suffix: "+", format: (n: number) => n >= 1_000 ? `${(n/1_000).toFixed(0)}K` : n.toLocaleString(), icon: Globe },
-  ];
-
   return (
     <div className="w-full min-h-[calc(100vh-4rem)] relative overflow-hidden">
-      {/* ── Deep background ── */}
-      <div className="absolute inset-0 bg-[#020d0a]" />
+      {/* ── Background ── */}
+      <div className="absolute inset-0 bg-[#f0fdf4] dark:bg-[#020d0a] transition-colors" />
 
       {/* ── Animated mesh orbs ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-[min(600px,90vw)] h-[min(600px,90vw)] bg-emerald-600/10 rounded-full blur-[160px] animate-blob" />
-        <div className="absolute bottom-0 right-1/5 w-[min(500px,80vw)] h-[min(500px,80vw)] bg-teal-500/8 rounded-full blur-[140px] animate-blob" style={{ animationDelay: '5s' }} />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[min(900px,110vw)] h-[300px] bg-cyan-500/5 rounded-full blur-[120px] animate-aurora" />
+        <div className="absolute top-0 left-1/4 w-[min(600px,90vw)] h-[min(600px,90vw)] bg-emerald-600/10 dark:bg-emerald-600/10 rounded-full blur-[160px] animate-blob" />
+        <div className="absolute bottom-0 right-1/5 w-[min(500px,80vw)] h-[min(500px,80vw)] bg-teal-500/8 dark:bg-teal-500/8 rounded-full blur-[140px] animate-blob" style={{ animationDelay: '5s' }} />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[min(900px,110vw)] h-[300px] bg-cyan-500/5 dark:bg-cyan-500/5 rounded-full blur-[120px] animate-aurora" />
         <div className="absolute top-2/3 left-1/6 w-64 h-64 bg-emerald-400/5 rounded-full blur-[80px] animate-blob animate-liquidMorph" style={{ animationDelay: '3s' }} />
       </div>
 
@@ -128,7 +98,7 @@ export const LandingPage: React.FC = () => {
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full bg-emerald-400/20 animate-ping-slow"
+            className="absolute rounded-full bg-emerald-500/30 dark:bg-emerald-400/20 animate-ping-slow"
             style={{
               width: `${2 + (i % 3)}px`,
               height: `${2 + (i % 3)}px`,
@@ -146,20 +116,20 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-5xl mx-auto text-center space-y-8 pt-10 sm:pt-20 pb-16">
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs font-bold text-emerald-400 backdrop-blur-sm animate-fadeIn select-none">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/25 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 backdrop-blur-sm animate-fadeIn select-none shadow-sm">
             <Sparkles className="w-3.5 h-3.5" />
             Free link shortener — unlimited links, zero limits
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse-soft" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse-soft" />
           </div>
 
           {/* Headline — word-by-word stagger */}
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-extrabold tracking-tight leading-[1.05] font-display animate-springUp">
-            <span className="text-white">Make every</span>
+            <span className="text-zinc-900 dark:text-white">Make every</span>
             <br />
             <span
               className="animate-gradientShimmer"
               style={{
-                background: 'linear-gradient(135deg, #34d399 0%, #2dd4bf 40%, #22d3ee 70%, #a78bfa 100%)',
+                background: 'linear-gradient(135deg, #059669 0%, #0d9488 40%, #0284c7 70%, #7c3aed 100%)',
                 backgroundSize: '200% auto',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -172,10 +142,10 @@ export const LandingPage: React.FC = () => {
 
           {/* Subtitle */}
           <p
-            className="text-base sm:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed animate-fadeIn"
+            className="text-base sm:text-xl text-zinc-700 dark:text-zinc-300 max-w-2xl mx-auto leading-relaxed animate-fadeIn font-medium"
             style={{ animationDelay: '0.2s', opacity: 0 }}
           >
-            Turn long ugly URLs into <span className="text-zinc-200 font-medium">short branded links</span> in seconds.
+            Turn long ugly URLs into <span className="text-zinc-900 dark:text-white font-bold">short branded links</span> in seconds.
             Add passwords, set expiry dates, and see who's clicking — all for free.
           </p>
         </div>
@@ -190,8 +160,8 @@ export const LandingPage: React.FC = () => {
 
           <form onSubmit={handleShorten} className="space-y-4">
             <div className="space-y-2">
-              <label className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-500 uppercase tracking-widest">
-                <Link2 className="w-3 h-3 text-emerald-400" />
+              <label className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest">
+                <Link2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 Paste your long URL
               </label>
 
@@ -202,14 +172,14 @@ export const LandingPage: React.FC = () => {
                     value={longUrl}
                     onChange={(e) => setLongUrl(e.target.value)}
                     required
-                    className="w-full px-4 py-4 glass-input text-sm text-zinc-100 rounded-xl placeholder-zinc-600 focus:outline-none font-medium pr-10"
+                    className="w-full px-4 py-4 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none font-medium pr-10"
                     placeholder="https://example.com/a-very-long-url-that-nobody-wants-to-type"
                   />
                   {longUrl && (
                     <button
                       type="button"
                       onClick={() => setLongUrl("")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400 transition cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer"
                     >
                       ×
                     </button>
@@ -230,21 +200,21 @@ export const LandingPage: React.FC = () => {
 
           {/* Result */}
           {shortenedUrl && (
-            <div className="mt-6 p-5 bg-emerald-500/8 border border-emerald-500/18 rounded-2xl animate-scaleIn space-y-3 relative overflow-hidden">
+            <div className="mt-6 p-5 bg-emerald-500/10 border border-emerald-500/25 rounded-2xl animate-scaleIn space-y-3 relative overflow-hidden">
               {/* Success burst ring */}
               {showBurst && <div className="success-burst" style={{ left: '50%', top: '50%', transform: 'translate(-50%,-50%)' }} />}
 
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-soft shrink-0" />
-                    <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Your short link is ready!</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse-soft shrink-0" />
+                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Your short link is ready!</span>
                   </div>
                   <a
                     href={workingUrl || shortenedUrl || "#"}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-lg font-bold text-teal-300 hover:text-teal-200 hover:underline break-all transition-colors short-link-mono block"
+                    className="text-lg font-bold text-emerald-600 dark:text-teal-300 hover:underline break-all transition-colors short-link-mono block"
                   >
                     {shortenedUrl}
                   </a>
@@ -252,11 +222,11 @@ export const LandingPage: React.FC = () => {
 
                 <button
                   onClick={handleCopy}
-                  className="p-3 glass-card rounded-xl text-zinc-300 cursor-pointer transition hover:text-white hover:scale-110 shrink-0 active:scale-95"
+                  className="p-3 glass-card rounded-xl text-zinc-700 dark:text-zinc-200 cursor-pointer transition hover:text-zinc-900 dark:hover:text-white hover:scale-110 shrink-0 active:scale-95"
                   title="Copy"
                 >
                   {copied
-                    ? <Check className="w-4 h-4 text-emerald-400" />
+                    ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     : <Copy className="w-4 h-4" />
                   }
                 </button>
@@ -264,11 +234,11 @@ export const LandingPage: React.FC = () => {
 
               {/* Sign-up nudge */}
               {!isAuthenticated && (
-                <div className="border-t border-emerald-500/10 pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <span className="text-xs text-zinc-500">Want custom aliases, QR codes & detailed analytics?</span>
+                <div className="border-t border-emerald-500/15 pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <span className="text-xs text-zinc-700 dark:text-zinc-300 font-medium">Want custom aliases, QR codes & detailed analytics?</span>
                   <button
                     onClick={() => navigateTo("#/register")}
-                    className="font-bold text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer shrink-0 transition-colors"
+                    className="font-bold text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1 cursor-pointer shrink-0 transition-colors"
                   >
                     Sign up free
                     <ArrowRight className="w-3 h-3" />
@@ -279,38 +249,19 @@ export const LandingPage: React.FC = () => {
           )}
         </div>
 
-        {/* ═══════════════ STATS BAND ═══════════════ */}
-        <div className="max-w-4xl mx-auto mb-24 animate-fadeInUp" style={{ animationDelay: '0.4s', opacity: 0 }}>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {stats.map(({ label, value, format, icon: Icon }, i) => (
-              <div
-                key={label}
-                className="premium-card p-6 text-center group cursor-default"
-                style={{ animationDelay: `${i * 0.1}s` }}
-              >
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Icon className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-                </div>
-                <div className="stats-number mb-1">{format(value)}</div>
-                <div className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">{label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* ═══════════════ FEATURES BENTO GRID ═══════════════ */}
         <div className="max-w-5xl mx-auto space-y-16 relative z-10 pb-24">
           <div className="text-center space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/[0.04] border border-white/[0.07] rounded-full text-[11px] font-bold text-zinc-500 uppercase tracking-widest">
-              <Shield className="w-3 h-3 text-emerald-400" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/60 dark:bg-white/[0.04] border border-emerald-500/20 dark:border-white/[0.07] rounded-full text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest shadow-sm">
+              <Shield className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
               Features
             </div>
-            <h2 className="text-3xl sm:text-5xl font-bold text-white font-display tracking-tight">
+            <h2 className="text-3xl sm:text-5xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">
               Everything you need,
               <br />
               <span className="gradient-text">nothing you don't.</span>
             </h2>
-            <p className="text-zinc-500 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
+            <p className="text-zinc-700 dark:text-zinc-300 text-sm sm:text-base max-w-lg mx-auto leading-relaxed font-medium">
               Powerful features wrapped in a beautiful interface. No complexity, just results.
             </p>
           </div>
@@ -344,10 +295,10 @@ export const LandingPage: React.FC = () => {
                     <Icon className="w-5 h-5 text-white relative z-10" />
                   </div>
 
-                  <h3 className="font-bold text-lg mb-2 text-white font-display group-hover:text-emerald-100 transition-colors">
+                  <h3 className="font-bold text-lg mb-2 text-zinc-900 dark:text-white font-display group-hover:text-emerald-600 dark:group-hover:text-emerald-100 transition-colors">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors">
+                  <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
                     {feature.description}
                   </p>
 
@@ -372,7 +323,7 @@ export const LandingPage: React.FC = () => {
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
             {!isAuthenticated && (
-              <p className="text-xs text-zinc-600 mt-3">No credit card required. Always free.</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-3 font-medium">No credit card required. Always free.</p>
             )}
           </div>
         </div>

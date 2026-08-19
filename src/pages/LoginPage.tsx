@@ -142,10 +142,10 @@ const FloatingInput: React.FC<FloatingInputProps> = ({ id, type, value, onChange
     transform: active ? "none" : "translateY(-50%)",
     left: 0,
     fontSize: active ? "0.65rem" : "0.85rem",
-    fontWeight: active ? 700 : 400,
+    fontWeight: active ? 700 : 500,
     color: active
       ? (isDark ? "#34d399" : "#059669")
-      : (isDark ? "rgba(255,255,255,0.28)" : "rgba(6,78,59,0.6)"),
+      : (isDark ? "rgba(255,255,255,0.75)" : "#475569"),
     letterSpacing: active ? "0.04em" : "normal",
     textTransform: active ? "uppercase" : "none",
     pointerEvents: "none",
@@ -172,7 +172,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({ id, type, value, onChange
         </div>
         {showToggle && (
           <button type="button" onClick={() => setShow((s) => !s)} tabIndex={-1}
-            style={{ color: isDark ? "rgba(255,255,255,0.28)" : "rgba(71,85,105,0.5)", background: "none", border: "none", cursor: "pointer", padding: "0.25rem", display: "flex", alignItems: "center", flexShrink: 0, transition: "color 0.2s" }}>
+            style={{ color: isDark ? "rgba(255,255,255,0.7)" : "#475569", background: "none", border: "none", cursor: "pointer", padding: "0.25rem", display: "flex", alignItems: "center", flexShrink: 0, transition: "color 0.2s" }}>
             {show ? <EyeOff size={15} /> : <Eye size={15} />}
           </button>
         )}
@@ -228,17 +228,17 @@ export const LoginPage: React.FC = () => {
   const badgeBg = isDark ? "rgba(52,211,153,0.1)" : "rgba(16,185,129,0.1)";
   const badgeBorder = isDark ? "rgba(52,211,153,0.25)" : "rgba(16,185,129,0.25)";
   const badgeColor = isDark ? "#34d399" : "#065f46";
-  const titleColor = isDark ? "#ecfdf5" : "#022c22";
-  const subColor = isDark ? "rgba(255,255,255,0.38)" : "rgba(6,78,59,0.6)";
-  const leftTitleColor = isDark ? "#ecfdf5" : "#022c22";
-  const leftSubColor = isDark ? "rgba(255,255,255,0.45)" : "rgba(6,78,59,0.6)";
-  const pillBg = isDark ? "rgba(20,184,166,0.12)" : "rgba(16,185,129,0.08)";
-  const pillBorder = isDark ? "rgba(20,184,166,0.22)" : "rgba(16,185,129,0.18)";
-  const pillColor = isDark ? "rgba(255,255,255,0.5)" : "rgba(6,78,59,0.7)";
+  const titleColor = isDark ? "#f8fafc" : "#0f172a";
+  const subColor = isDark ? "#cbd5e1" : "#334155";
+  const leftTitleColor = isDark ? "#f8fafc" : "#0f172a";
+  const leftSubColor = isDark ? "#cbd5e1" : "#334155";
+  const pillBg = isDark ? "rgba(20,184,166,0.15)" : "rgba(16,185,129,0.1)";
+  const pillBorder = isDark ? "rgba(20,184,166,0.3)" : "rgba(16,185,129,0.25)";
+  const pillColor = isDark ? "#f1f5f9" : "#0f172a";
   const pillIconColor = isDark ? "#34d399" : "#059669";
-  const dividerColor = isDark ? "rgba(255,255,255,0.15)" : "rgba(6,78,59,0.5)";
-  const footerColor = isDark ? "rgba(255,255,255,0.3)" : "rgba(6,78,59,0.6)";
-  const footerLinkColor = isDark ? "#34d399" : "#065f46";
+  const dividerColor = isDark ? "rgba(255,255,255,0.25)" : "rgba(15,23,42,0.2)";
+  const footerColor = isDark ? "#cbd5e1" : "#475569";
+  const footerLinkColor = isDark ? "#34d399" : "#059669";
   const blob1Bg = isDark
     ? "radial-gradient(circle, rgba(52,211,153,0.18), transparent 70%)"
     : "radial-gradient(circle, rgba(110,231,183,0.22), transparent 70%)";
