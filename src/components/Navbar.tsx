@@ -86,7 +86,7 @@ export const Navbar: React.FC = () => {
 
           {/* ── Desktop nav links (authenticated) ── */}
           {navLinks.length > 0 && (
-            <nav className="navbar-links-desktop" aria-label="Main navigation">
+            <nav className="navbar-links-desktop hidden md:flex flex-row items-center gap-1 shrink-0" aria-label="Main navigation">
               {navLinks.map(({ label, path, icon: Icon }) => {
                 const active = currentHash.startsWith(path);
                 return (
