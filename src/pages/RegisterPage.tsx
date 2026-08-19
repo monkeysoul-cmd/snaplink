@@ -54,10 +54,10 @@ const FloatingInput: React.FC<FloatingInputProps> = ({ id, type, value, onChange
     position: "absolute",
     top: active ? 4 : "50%",
     transform: active ? "none" : "translateY(-50%)",
-    left: 0, fontSize: active ? "0.65rem" : "0.85rem", fontWeight: active ? 700 : 400,
+    left: 0, fontSize: active ? "0.65rem" : "0.85rem", fontWeight: active ? 700 : 500,
     color: active
       ? (isDark ? "#34d399" : "#059669")
-      : (isDark ? "rgba(255,255,255,0.28)" : "rgba(6,78,59,0.6)"),
+      : (isDark ? "rgba(255,255,255,0.75)" : "#475569"),
     letterSpacing: active ? "0.04em" : "normal",
     textTransform: active ? "uppercase" : "none",
     pointerEvents: "none",
@@ -83,7 +83,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({ id, type, value, onChange
         </div>
         {showToggle && (
           <button type="button" onClick={() => setShow((s) => !s)} tabIndex={-1}
-            style={{ color: isDark ? "rgba(255,255,255,0.28)" : "rgba(71,85,105,0.5)", background: "none", border: "none", cursor: "pointer", padding: "0.25rem", display: "flex", alignItems: "center", flexShrink: 0, transition: "color 0.2s" }}>
+            style={{ color: isDark ? "rgba(255,255,255,0.7)" : "#475569", background: "none", border: "none", cursor: "pointer", padding: "0.25rem", display: "flex", alignItems: "center", flexShrink: 0, transition: "color 0.2s" }}>
             {show ? <EyeOff size={15} /> : <Eye size={15} />}
           </button>
         )}
@@ -103,7 +103,7 @@ const PasswordStrength: React.FC<{ password: string; isDark: boolean }> = ({ pas
     <div style={{ marginTop: "0.5rem" }}>
       <div style={{ display: "flex", gap: 4, marginBottom: "0.3rem" }}>
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} style={{ flex: 1, height: 3, borderRadius: 99, background: i <= strength ? colors[strength] : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"), transition: "background 0.3s" }} />
+          <div key={i} style={{ flex: 1, height: 3, borderRadius: 99, background: i <= strength ? colors[strength] : (isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)"), transition: "background 0.3s" }} />
         ))}
       </div>
       <span style={{ fontSize: "0.7rem", color: colors[strength], fontWeight: 600 }}>{labels[strength]}</span>
@@ -161,14 +161,14 @@ export const RegisterPage: React.FC = () => {
   const badgeBg = isDark ? "rgba(52,211,153,0.1)" : "rgba(16,185,129,0.1)";
   const badgeBorder = isDark ? "rgba(52,211,153,0.25)" : "rgba(16,185,129,0.25)";
   const badgeColor = isDark ? "#34d399" : "#065f46";
-  const titleColor = isDark ? "#ecfdf5" : "#022c22";
-  const subColor = isDark ? "rgba(255,255,255,0.38)" : "rgba(6,78,59,0.6)";
-  const perkColor = isDark ? "rgba(255,255,255,0.38)" : "rgba(6,78,59,0.6)";
+  const titleColor = isDark ? "#f8fafc" : "#0f172a";
+  const subColor = isDark ? "#cbd5e1" : "#334155";
+  const perkColor = isDark ? "#e2e8f0" : "#334155";
   const perkCheck = isDark ? "#34d399" : "#059669";
-  const footerColor = isDark ? "rgba(255,255,255,0.3)" : "rgba(6,78,59,0.6)";
-  const footerLinkColor = isDark ? "#34d399" : "#065f46";
-  const dividerLineColor = isDark ? "rgba(20,184,166,0.22)" : "rgba(16,185,129,0.15)";
-  const dividerTextColor = isDark ? "rgba(255,255,255,0.13)" : "rgba(6,78,59,0.55)";
+  const footerColor = isDark ? "#cbd5e1" : "#475569";
+  const footerLinkColor = isDark ? "#34d399" : "#059669";
+  const dividerLineColor = isDark ? "rgba(20,184,166,0.25)" : "rgba(16,185,129,0.2)";
+  const dividerTextColor = isDark ? "#94a3b8" : "#64748b";
   const matchColor = password === confirmPassword ? (isDark ? "#34d399" : "#059669") : (isDark ? "#ef4444" : "#b91c1c");
 
   const blob1Bg = isDark
