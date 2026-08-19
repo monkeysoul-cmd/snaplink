@@ -1245,9 +1245,29 @@ html:not(.dark) .navbar-logo-text {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}.navbar-link {
+}
+
+/* ══════════════════════════════════════════════
+   DESKTOP NAV LINKS
+   ══════════════════════════════════════════════ */
+.navbar-links-desktop {
+  display: none;
+  align-items: center;
+  flex-direction: row;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .navbar-links-desktop {
+    display: flex;
+  }
+}
+
+.navbar-link {
   position: relative;
-  display: flex;
+  display: inline-flex;
+  flex-direction: row;
   align-items: center;
   gap: 0.375rem;
   padding: 0.4rem 0.85rem;
@@ -1256,6 +1276,8 @@ html:not(.dark) .navbar-logo-text {
   font-weight: 600;
   color: #cbd5e1;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: color 0.2s, background 0.2s;
   overflow: hidden;
 }
