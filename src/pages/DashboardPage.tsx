@@ -58,8 +58,8 @@ export const DashboardPage: React.FC = () => {
       value: metrics.totalUrls,
       tileClass: "stat-tile-emerald",
       iconRingClass: "icon-ring-emerald",
-      iconColor: "text-emerald-400",
-      valueColor: "text-emerald-300",
+      iconColor: "text-emerald-500",
+      valueColor: "text-emerald-400",
     },
     {
       icon: MousePointerClick,
@@ -67,8 +67,8 @@ export const DashboardPage: React.FC = () => {
       value: metrics.totalClicks,
       tileClass: "stat-tile-teal",
       iconRingClass: "icon-ring-teal",
-      iconColor: "text-teal-400",
-      valueColor: "text-teal-300",
+      iconColor: "text-teal-500",
+      valueColor: "text-teal-400",
     },
     {
       icon: Zap,
@@ -76,8 +76,8 @@ export const DashboardPage: React.FC = () => {
       value: metrics.activeUrls,
       tileClass: "stat-tile-cyan",
       iconRingClass: "icon-ring-cyan",
-      iconColor: "text-cyan-400",
-      valueColor: "text-cyan-300",
+      iconColor: "text-cyan-500",
+      valueColor: "text-cyan-400",
     },
     {
       icon: Star,
@@ -85,8 +85,8 @@ export const DashboardPage: React.FC = () => {
       value: metrics.favoriteUrls,
       tileClass: "stat-tile-green",
       iconRingClass: "icon-ring-green",
-      iconColor: "text-green-400",
-      valueColor: "text-green-300",
+      iconColor: "text-green-500",
+      valueColor: "text-green-400",
     },
   ];
 
@@ -131,7 +131,7 @@ export const DashboardPage: React.FC = () => {
             id="dash-create-btn"
           >
             <PlusCircle className="w-4 h-4" />
-            New Link
+            <span>New Link</span>
           </button>
         </div>
       </div>
