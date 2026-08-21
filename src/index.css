@@ -1188,8 +1188,8 @@ html:not(.dark) .navbar-scrolled {
 
 /* ── Inner layout ── */
 .navbar-inner {
-  max-width: 80rem;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
   padding: 0 1rem;
   height: 3.75rem;
   display: flex;
@@ -1202,7 +1202,7 @@ html:not(.dark) .navbar-scrolled {
   .navbar-inner { padding: 0 1.5rem; }
 }
 @media (min-width: 1024px) {
-  .navbar-inner { padding: 0 2rem; height: 4rem; }
+  .navbar-inner { padding: 0 1.5rem; height: 4rem; }
 }
 
 /* ══════════════════════════════════════════════

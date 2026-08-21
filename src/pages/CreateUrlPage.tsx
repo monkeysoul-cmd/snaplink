@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   Calendar, Check, Copy, Lock, PlusCircle,
-  QrCode, Tag, Link2, Eye, EyeOff, Star, ArrowRight, Sparkles, Globe
+  QrCode, Tag, Link2, Eye, EyeOff, Star, ArrowRight, Settings2, Globe
 } from "lucide-react";
 import { api } from "../services/api.js";
 import { useToast } from "../context/ToastContext.js";
@@ -116,7 +116,7 @@ export const CreateUrlPage: React.FC = () => {
             {/* Step 2 — Customize */}
             <div className="space-y-4">
               <div className="form-section-label font-bold text-xs uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
+                <Settings2 className="w-3.5 h-3.5" />
                 Customize
                 <span className="font-normal normal-case text-zinc-500 dark:text-zinc-400 tracking-normal text-[11px]">(optional)</span>
               </div>

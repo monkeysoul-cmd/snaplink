@@ -64,8 +64,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <aside ref={sidebarRef} className="hidden md:flex flex-col w-64 border-r border-black/5 dark:border-white/[0.06] bg-white dark:bg-[#060612]/50 dark:backdrop-blur-sm h-[calc(100vh-4rem)] p-4 sticky top-16 justify-between select-none shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-none">
+      {/* Desktop Sidebar — Fixed to viewport left */}
+      <aside
+        ref={sidebarRef}
+        className="hidden md:flex flex-col w-64 fixed top-16 left-0 bottom-0 z-30 border-r border-black/5 dark:border-white/[0.06] bg-white/95 dark:bg-[#060612]/95 backdrop-blur-xl p-4 justify-between select-none shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-none overflow-y-auto"
+      >
         <div className="flex flex-col gap-1">
           <div className="px-3 mb-4 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
             Menu

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Check, Copy, ArrowRight, Zap, BarChart3, Lock, Tag, Sparkles, Shield, Link2 } from "lucide-react";
+import { Check, Copy, ArrowRight, Zap, BarChart3, Lock, Tag, Shield, Link2 } from "lucide-react";
 import { api } from "../services/api.js";
 import { useAuth } from "../context/AuthContext.js";
 import { useToast } from "../context/ToastContext.js";
@@ -117,7 +117,7 @@ export const LandingPage: React.FC = () => {
 
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/25 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 backdrop-blur-sm animate-fadeIn select-none shadow-sm">
-            <Sparkles className="w-3.5 h-3.5" />
+            <Zap className="w-3.5 h-3.5" />
             Free link shortener — unlimited links, zero limits
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse-soft" />
           </div>
