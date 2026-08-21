@@ -104,10 +104,10 @@ const AppContent: React.FC = () => {
 
       {/* Main Container Layout */}
       {isPrivatePath ? (
-        // Dashboard Shell layout (Sidebar + main layout)
-        <div className="flex-1 flex flex-col md:flex-row max-w-7xl w-full mx-auto pb-16 md:pb-0 min-w-0">
+        // Dashboard Shell layout (Fixed Sidebar + Scrolling Main Content)
+        <div className="flex-1 w-full min-w-0 md:pl-64 flex flex-col pb-16 md:pb-0">
           <Sidebar currentPath={currentPath} />
-          <main className="flex-1 min-w-0 overflow-hidden">
+          <main className="flex-1 w-full max-w-7xl mx-auto min-w-0">
             {renderPage()}
           </main>
         </div>

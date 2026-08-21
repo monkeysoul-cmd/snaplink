@@ -11,13 +11,10 @@ export const Navbar: React.FC = () => {
   const lastScrollY = useRef<number>(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Scroll-aware: shrink + hide on scroll down, show on scroll up
+  // Scroll-aware: add shadow & denser glass on scroll
   useEffect(() => {
     const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 20);
-      setVisible(y < lastScrollY.current || y < 60);
-      lastScrollY.current = y;
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -62,7 +59,7 @@ export const Navbar: React.FC = () => {
   return (
     <>
       <header
-        className={`navbar-root ${scrolled ? "navbar-scrolled" : ""} ${visible ? "navbar-visible" : "navbar-hidden"}`}
+        className={`navbar-root ${scrolled ? "navbar-scrolled" : ""}`}
         ref={menuRef}
       >
         {/* Animated top accent line */}
