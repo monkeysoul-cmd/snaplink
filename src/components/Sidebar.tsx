@@ -67,9 +67,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
       {/* Desktop Sidebar — Fixed to viewport left */}
       <aside
         ref={sidebarRef}
-        className="hidden md:flex flex-col w-64 fixed top-16 left-0 bottom-0 z-30 border-r border-black/5 dark:border-white/[0.06] bg-white/95 dark:bg-[#060612]/95 backdrop-blur-xl p-4 justify-between select-none shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-none overflow-y-auto"
+        className="hidden md:flex flex-col w-64 fixed top-0 left-0 bottom-0 z-30 border-r border-black/5 dark:border-white/[0.06] bg-white/95 dark:bg-[#060612]/95 backdrop-blur-xl p-4 justify-between select-none shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-none overflow-y-auto"
       >
         <div className="flex flex-col gap-1">
+          {/* ── Logo ── */}
+          <button
+            onClick={() => handleNavigate("#/")}
+            className="navbar-logo group mb-6 mt-2"
+            id="sidebar-logo"
+            aria-label="Go home"
+          >
+            <span className="navbar-logo-icon group-hover:rotate-[20deg] group-hover:scale-110">
+              ✂️
+            </span>
+            <span className="navbar-logo-text">SnapLink</span>
+            <span className="navbar-logo-underline" />
+          </button>
+
           <div className="px-3 mb-4 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
             Menu
           </div>

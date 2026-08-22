@@ -3,7 +3,11 @@ import { LogIn, LogOut, UserPlus, Menu, X, LayoutDashboard, Scissors, Zap } from
 import { useAuth } from "../context/AuthContext.js";
 import { ThemeToggle } from "./ThemeToggle.js";
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  isPrivatePath?: boolean;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [scrolled, setScrolled] = useState<boolean>(false);
@@ -59,27 +63,17 @@ export const Navbar: React.FC = () => {
   return (
     <>
       <header
-        className={`navbar-root ${scrolled ? "navbar-scrolled" : ""}`}
+        className={`navbar-root w-full ${scrolled ? "navbar-scrolled" : ""} ${isPrivatePath ? "md:ml-64 md:w-[calc(100%-16rem)]" : ""}`}
         ref={menuRef}
       >
         {/* Animated top accent line */}
         <div className="navbar-accent-line" />
 
         <div className="navbar-inner">
-          {/* ── Logo ── */}
-          <button
-            onClick={() => handleNavigate("#/")}
-            className="navbar-logo group"
-            id="nav-logo"
-            aria-label="Go home"
-          >
-            <span className="navbar-logo-icon group-hover:rotate-[20deg] group-hover:scale-110">
-              ✂️
-            </span>
-            <span className="navbar-logo-text">SnapLink</span>
-            {/* Animated underline */}
-            <span className="navbar-logo-underline" />
-          </button>
+
+
+          {/* Spacer to balance flex layout on desktop since logo is in Sidebar */}
+          <div className="flex-1 hidden md:block"></div>
 
           {/* ── Desktop nav links (authenticated) ── */}
           {navLinks.length > 0 && (
@@ -103,39 +97,25 @@ export const Navbar: React.FC = () => {
           )}
 
           {/* ── Right actions ── */}
-          <div className="navbar-actions">
+          <div className="navbar-actions flex-1 justify-end">
             <ThemeToggle />
 
             {isAuthenticated && user ? (
-              <div className="flex items-center gap-2">
-                {/* Profile avatar */}
-                <button
-                  onClick={() => handleNavigate("#/profile")}
-                  className="navbar-avatar-btn group"
-                  title={user.name}
-                  id="nav-profile"
-                  aria-label="Your profile"
-                >
-                  <div className="navbar-avatar">
-                    {getInitials(user.name)}
-                    <span className="navbar-avatar-ring" />
-                  </div>
-                  <span className="navbar-username">{user.name}</span>
-                </button>
-
-                {/* Logout */}
-                <button
-                  onClick={logout}
-                  className="navbar-icon-btn navbar-icon-btn-danger"
-                  title="Log out"
-                  id="nav-logout"
-                  aria-label="Log out"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
+              <button
+                onClick={() => handleNavigate("#/profile")}
+                className="navbar-avatar-btn group ml-4 md:ml-6"
+                title={user.name}
+                id="nav-profile"
+                aria-label="Your profile"
+              >
+                <div className="navbar-avatar">
+                  {getInitials(user.name)}
+                  <span className="navbar-avatar-ring" />
+                </div>
+                <span className="navbar-username">{user.name}</span>
+              </button>
             ) : (
-              <div className="flex items-center gap-2">
+              <>
                 <button
                   onClick={() => handleNavigate("#/login")}
                   className="navbar-ghost-btn"
@@ -152,7 +132,7 @@ export const Navbar: React.FC = () => {
                   <UserPlus className="w-3.5 h-3.5" />
                   <span>Sign up</span>
                 </button>
-              </div>
+              </>
             )}
 
             {/* ── Hamburger (mobile) ── */}
@@ -217,13 +197,7 @@ export const Navbar: React.FC = () => {
                     <p className="text-xs text-zinc-500">View profile</p>
                   </div>
                 </button>
-                <button
-                  onClick={logout}
-                  className="navbar-icon-btn navbar-icon-btn-danger"
-                  aria-label="Log out"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
+
               </div>
             ) : (
               <div className="navbar-mobile-auth-row gap-2">
