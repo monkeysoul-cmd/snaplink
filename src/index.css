@@ -1130,7 +1130,6 @@ html:not(.dark) .progress-track { background: rgba(16,185,129,0.12); }
   position: sticky;
   top: 0;
   z-index: 50;
-  width: 100%;
   /* Glassmorphism */
   background: rgba(6, 6, 18, 0.72);
   backdrop-filter: blur(24px) saturate(180%);

@@ -100,7 +100,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#060612] text-zinc-900 dark:text-zinc-100 transition-colors flex flex-col font-sans relative">
-      <Navbar />
+      <Navbar isPrivatePath={isPrivatePath} />
 
       {/* Main Container Layout */}
       {isPrivatePath ? (
