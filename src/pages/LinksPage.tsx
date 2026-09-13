@@ -150,8 +150,7 @@ export const LinksPage: React.FC = () => {
           {hasActiveFilters && (
             <button
               onClick={handleClearFilters}
-              className="filter-chip filter-chip-active text-rose-600 dark:text-rose-400 border-rose-500/25 hover:border-rose-500/40"
-              style={{ background: 'rgba(239,68,68,0.1)', color: '#f87171' }}
+              className="filter-chip filter-chip-active bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/25 hover:border-rose-500/40 cursor-pointer"
             >
               <X className="w-3 h-3" />
               Clear all

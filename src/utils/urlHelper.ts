@@ -17,10 +17,20 @@ const getEnvVar = (key: string): string => {
 };
 
 export const getShortDomain = (): string => {
+  // If running locally on localhost, prioritize local host
+  if (typeof window !== "undefined" && (window.location?.hostname === "localhost" || window.location?.hostname === "127.0.0.1")) {
+    return window.location.host;
+  }
+
   const envDomain = getEnvVar("VITE_SHORT_DOMAIN") || getEnvVar("VITE_APP_URL");
   if (envDomain && envDomain.trim() !== "" && !envDomain.includes("MY_APP_URL")) {
     return envDomain.trim().replace(/^https?:\/\//, "").replace(/\/$/, "");
   }
+
+  if (typeof window !== "undefined" && window.location?.host && window.location.host !== "null") {
+    return window.location.host;
+  }
+
   return "snaplink.vercel.app";
 };
 
@@ -36,26 +46,33 @@ export const getDisplayShortUrl = (shortCode?: string): string => {
 /**
  * Returns actual working live URL (e.g. "https://snaplink.vercel.app/jP5kdJ")
  * Priority:
- *   1. VITE_APP_URL or VITE_SHORT_DOMAIN env var (set in Vercel dashboard)
- *   2. window.location.origin (correct on any real deployment)
- *   3. Hardcoded fallback to snaplink.vercel.app
+ *   1. localhost / 127.0.0.1 (ensures local dev links route to local server)
+ *   2. VITE_APP_URL or VITE_SHORT_DOMAIN env var (set in Vercel dashboard)
+ *   3. window.location.origin (correct on any real deployment)
+ *   4. Hardcoded fallback to snaplink.vercel.app
  */
 export const getWorkingShortUrl = (shortCode?: string): string => {
   const code = shortCode || "";
+
+  // 1. If running locally on localhost/127.0.0.1, prioritize local server origin
+  if (typeof window !== "undefined" && (window.location?.hostname === "localhost" || window.location?.hostname === "127.0.0.1")) {
+    return `${window.location.origin}/${code}`;
+  }
+
   const envDomain = getEnvVar("VITE_APP_URL") || getEnvVar("VITE_SHORT_DOMAIN");
 
-  // 1. Use configured env domain if it's a real, non-placeholder value
+  // 2. Use configured env domain if it's a real, non-placeholder value
   if (envDomain && envDomain.trim() !== "" && !envDomain.includes("MY_APP_URL")) {
     const clean = envDomain.trim().replace(/^https?:\/\//, "").replace(/\/$/, "");
     return `https://${clean}/${code}`;
   }
 
-  // 2. Use the current host (works perfectly on any Vercel / production deployment)
+  // 3. Use the current host (works perfectly on any Vercel / production deployment)
   if (typeof window !== "undefined" && window.location?.origin && window.location.origin !== "null") {
     return `${window.location.origin}/${code}`;
   }
 
-  // 3. Hardcoded fallback
+  // 4. Hardcoded fallback
   return `https://snaplink.vercel.app/${code}`;
 };
 

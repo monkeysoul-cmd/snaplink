@@ -35,12 +35,12 @@ export const UrlQrCode: React.FC<UrlQrCodeProps> = ({ shortUrl, shortCode }) => 
 
   return (
     <div className="flex flex-col items-center gap-4 p-5 glass-card rounded-2xl text-center">
-      <div className="flex items-center gap-2 font-semibold text-zinc-100 text-sm">
-        <QrCode className="w-5 h-5 text-violet-400" />
+      <div className="flex items-center gap-2 font-semibold text-zinc-900 dark:text-zinc-100 text-sm">
+        <QrCode className="w-5 h-5 text-violet-500 dark:text-violet-400" />
         QR Code Scanner Link
       </div>
       
-      <div className="relative w-44 h-44 flex items-center justify-center border border-white/[0.06] p-2 rounded-xl bg-white overflow-hidden">
+      <div className="relative w-44 h-44 flex items-center justify-center border border-black/10 dark:border-white/[0.06] p-2 rounded-xl bg-white overflow-hidden shadow-sm">
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-zinc-900 z-10">
             <Loader2 className="w-6 h-6 text-emerald-500 animate-spin" />
@@ -55,7 +55,7 @@ export const UrlQrCode: React.FC<UrlQrCodeProps> = ({ shortUrl, shortCode }) => 
         />
       </div>
 
-      <div className="text-xs text-zinc-500 break-all px-2 max-w-[200px]">
+      <div className="text-xs text-zinc-600 dark:text-zinc-400 font-medium break-all px-2 max-w-[200px]">
         {shortUrl}
       </div>
 

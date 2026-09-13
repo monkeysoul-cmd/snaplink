@@ -54,7 +54,7 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
 
     const allClicks: ClickWithMetadata[] = [];
     urls.forEach((url) => {
-      url.clickAnalytics.forEach((click) => {
+      (url.clickAnalytics || []).forEach((click) => {
         allClicks.push({
           timestamp: click.timestamp,
           browser: click.browser || "Other",

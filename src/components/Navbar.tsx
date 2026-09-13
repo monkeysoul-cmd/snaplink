@@ -70,10 +70,23 @@ export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false }) => {
         <div className="navbar-accent-line" />
 
         <div className="navbar-inner">
-
+          {/* ── Logo ──
+              Always visible on guest pages; on private pages visible only on mobile screens (desktop has it in Sidebar) */}
+          <button
+            onClick={() => handleNavigate("#/")}
+            className={`navbar-logo group cursor-pointer ${isPrivatePath ? "flex md:hidden" : "flex"}`}
+            id="nav-logo"
+            aria-label="Go home"
+          >
+            <span className="navbar-logo-icon group-hover:rotate-[20deg] group-hover:scale-110 transition-transform">
+              ✂️
+            </span>
+            <span className="navbar-logo-text">SnapLink</span>
+            <span className="navbar-logo-underline" />
+          </button>
 
           {/* Spacer to balance flex layout on desktop since logo is in Sidebar */}
-          <div className="flex-1 hidden md:block"></div>
+          {isPrivatePath && <div className="flex-1 hidden md:block"></div>}
 
           {/* ── Desktop nav links (authenticated) ── */}
           {navLinks.length > 0 && (

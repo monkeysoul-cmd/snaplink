@@ -69,7 +69,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
       await api.url.update(url.id, {
         originalUrl: editUrl,
         customAlias: editAlias.trim() || null,
-        expiresAt: editExpiry ? new Date(editExpiry).toISOString() : null,
+        expiresAt: editExpiry && !isNaN(new Date(editExpiry).getTime()) ? new Date(editExpiry).toISOString() : null,
         password: editPassword.trim() || undefined,
         tags: tagList,
         isActive: editIsActive,
@@ -318,12 +318,12 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
             <div className="space-y-1.5">
               <div className="form-section-label">Custom alias</div>
               <div className="relative">
-                <span className="absolute left-3 top-3 text-zinc-600 text-sm font-semibold select-none">/</span>
+                <span className="absolute left-3 top-3 text-zinc-500 dark:text-zinc-400 text-sm font-semibold select-none">/</span>
                 <input
                   type="text"
                   value={editAlias}
                   onChange={(e) => setEditAlias(e.target.value)}
-                  className="w-full pl-6 pr-3 py-3 glass-input text-sm text-zinc-100 rounded-xl font-semibold focus:outline-none placeholder-zinc-600"
+                  className="w-full pl-6 pr-3 py-3 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl font-semibold focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-500"
                   placeholder="my-link"
                 />
               </div>
@@ -335,13 +335,13 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
                 type="datetime-local"
                 value={editExpiry}
                 onChange={(e) => setEditExpiry(e.target.value)}
-                className="w-full px-4 py-3 glass-input text-sm text-zinc-100 rounded-xl focus:outline-none"
+                className="w-full px-4 py-3 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none font-medium"
               />
             </div>
 
             <div className="space-y-1.5">
               <div className="form-section-label flex items-center gap-1.5">
-                <Lock className="w-2.5 h-2.5 text-amber-400" />
+                <Lock className="w-2.5 h-2.5 text-amber-500 dark:text-amber-400" />
                 Password
               </div>
               <div className="relative">
@@ -349,13 +349,13 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
                   type={showEditPwd ? "text" : "password"}
                   value={editPassword}
                   onChange={(e) => setEditPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-10 glass-input text-sm text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-600"
+                  className="w-full px-4 py-3 pr-10 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-500 font-medium"
                   placeholder="Leave blank to keep current"
                 />
                 <button
                   type="button"
                   onClick={() => setShowEditPwd(!showEditPwd)}
-                  className="absolute right-3 top-3.5 text-zinc-500 hover:text-zinc-300 cursor-pointer transition-colors"
+                  className="absolute right-3 top-3.5 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 cursor-pointer transition-colors"
                 >
                   {showEditPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -364,59 +364,59 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
             <div className="space-y-1.5">
               <div className="form-section-label flex items-center gap-1.5">
-                <Tag className="w-2.5 h-2.5 text-emerald-400" />
+                <Tag className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400" />
                 Tags
               </div>
               <input
                 type="text"
                 value={editTags}
                 onChange={(e) => setEditTags(e.target.value)}
-                className="w-full px-4 py-3 glass-input text-sm text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-600"
+                className="w-full px-4 py-3 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-500 font-medium"
                 placeholder="marketing, social"
               />
             </div>
           </div>
 
           {/* Toggles */}
-          <div className="grid grid-cols-2 gap-3 border-t border-white/[0.05] pt-4">
+          <div className="grid grid-cols-2 gap-3 border-t border-black/5 dark:border-white/[0.05] pt-4">
             <button
               type="button"
               onClick={() => setEditIsActive(!editIsActive)}
-              className="flex items-center justify-between p-3 rounded-xl border border-white/[0.06] hover:bg-white/[0.03] hover:border-emerald-500/15 transition select-none cursor-pointer group"
+              className="flex items-center justify-between p-3 rounded-xl border border-black/10 dark:border-white/[0.06] hover:bg-black/[0.03] dark:hover:bg-white/[0.03] hover:border-emerald-500/15 transition select-none cursor-pointer group"
             >
               <div>
-                <div className="text-xs font-bold text-zinc-200">Active</div>
-                <div className="text-[10px] text-zinc-500">Enable redirects</div>
+                <div className="text-xs font-bold text-zinc-800 dark:text-zinc-200">Active</div>
+                <div className="text-[10px] text-zinc-500 dark:text-zinc-400">Enable redirects</div>
               </div>
               {editIsActive
                 ? <ToggleRight className="w-7 h-7 text-emerald-400 group-hover:scale-110 transition-transform" />
-                : <ToggleLeft className="w-7 h-7 text-zinc-600 group-hover:scale-110 transition-transform" />
+                : <ToggleLeft className="w-7 h-7 text-zinc-400 dark:text-zinc-600 group-hover:scale-110 transition-transform" />
               }
             </button>
 
             <button
               type="button"
               onClick={() => setEditIsPublic(!editIsPublic)}
-              className="flex items-center justify-between p-3 rounded-xl border border-white/[0.06] hover:bg-white/[0.03] hover:border-emerald-500/15 transition select-none cursor-pointer group"
+              className="flex items-center justify-between p-3 rounded-xl border border-black/10 dark:border-white/[0.06] hover:bg-black/[0.03] dark:hover:bg-white/[0.03] hover:border-emerald-500/15 transition select-none cursor-pointer group"
             >
               <div>
-                <div className="text-xs font-bold text-zinc-200">Public</div>
-                <div className="text-[10px] text-zinc-500">Show analytics</div>
+                <div className="text-xs font-bold text-zinc-800 dark:text-zinc-200">Public</div>
+                <div className="text-[10px] text-zinc-500 dark:text-zinc-400">Show analytics</div>
               </div>
               {editIsPublic
                 ? <ToggleRight className="w-7 h-7 text-emerald-400 group-hover:scale-110 transition-transform" />
-                : <ToggleLeft className="w-7 h-7 text-zinc-600 group-hover:scale-110 transition-transform" />
+                : <ToggleLeft className="w-7 h-7 text-zinc-400 dark:text-zinc-600 group-hover:scale-110 transition-transform" />
               }
             </button>
           </div>
 
           {/* Save / Cancel */}
-          <div className="flex gap-2 justify-end border-t border-white/[0.05] pt-3">
+          <div className="flex gap-2 justify-end border-t border-black/5 dark:border-white/[0.05] pt-3">
             <button
               type="button"
               disabled={isSaving}
               onClick={() => setIsEditing(false)}
-              className="px-4 py-2 text-sm font-semibold text-zinc-400 hover:bg-white/[0.04] rounded-xl cursor-pointer transition"
+              className="px-4 py-2 text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/[0.04] rounded-xl cursor-pointer transition"
             >
               Cancel
             </button>

@@ -82,8 +82,8 @@ const DonutChart: React.FC<{
         </svg>
         {/* Center label */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="text-lg font-extrabold text-white font-mono">{total}</div>
-          <div className="text-[9px] text-zinc-500 uppercase tracking-wider">{label}</div>
+          <div className="text-lg font-extrabold text-zinc-900 dark:text-white font-mono">{total}</div>
+          <div className="text-[9px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold">{label}</div>
         </div>
       </div>
 
@@ -92,8 +92,8 @@ const DonutChart: React.FC<{
         {data.slice(0, 5).map((d) => (
           <div key={d.name} className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: d.color }} />
-            <span className="text-[11px] text-zinc-400 font-medium truncate max-w-[80px]">{d.name}</span>
-            <span className="text-[11px] font-bold text-zinc-300 font-mono ml-auto">{d.percentage}%</span>
+            <span className="text-[11px] text-zinc-600 dark:text-zinc-400 font-medium truncate max-w-[80px]">{d.name}</span>
+            <span className="text-[11px] font-bold text-zinc-800 dark:text-zinc-300 font-mono ml-auto">{d.percentage}%</span>
           </div>
         ))}
       </div>
