@@ -1,9 +1,16 @@
 import { Router, Request, Response } from "express";
+import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Url } from "../config/db.js";
 import { authenticateToken, AuthenticatedRequest } from "../middleware/auth.js";
 import { generateShortCode, isValidUrl, normalizeUrl } from "../utils/helpers.js";
+
+function parseExpiryDate(val: any): string | null {
+  if (!val || typeof val !== "string" && !(val instanceof Date)) return null;
+  const d = new Date(val);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || "linkcut_secret_jwt_key_2026_prod";
@@ -99,7 +106,7 @@ router.post("/", async (req: Request, res: Response): Promise<void> => {
       userId: userId || null,
       originalUrl: normalizedOriginal,
       shortCode: finalShortCode,
-      expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
+      expiresAt: parseExpiryDate(expiresAt),
       isActive: true,
       passwordHash,
       tags: Array.isArray(tags) ? tags.map((t: string) => t.trim().toLowerCase()) : [],
@@ -187,6 +194,11 @@ router.get("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
     const userId = req.user!.id;
     const { id } = req.params;
 
+    if (!mongoose.isValidObjectId(id)) {
+      res.status(404).json({ message: "URL not found" });
+      return;
+    }
+
     const url = await Url.findById(id);
     if (!url) {
       res.status(404).json({ message: "URL not found" });
@@ -211,6 +223,12 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
   try {
     const userId = req.user!.id;
     const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      res.status(404).json({ message: "URL not found" });
+      return;
+    }
+
     const {
       originalUrl,
       customAlias,
@@ -266,7 +284,7 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
     }
 
     if (expiresAt !== undefined) {
-      updates.expiresAt = expiresAt ? new Date(expiresAt).toISOString() : null;
+      updates.expiresAt = parseExpiryDate(expiresAt);
     }
 
     if (isActive !== undefined) {
@@ -307,6 +325,11 @@ router.delete("/:id", authenticateToken as any, async (req: AuthenticatedRequest
   try {
     const userId = req.user!.id;
     const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      res.status(404).json({ message: "URL not found" });
+      return;
+    }
 
     const url = await Url.findById(id);
     if (!url) {

@@ -36,7 +36,7 @@ export const CreateUrlPage: React.FC = () => {
       const res = await api.url.create({
         originalUrl: originalUrl.trim(),
         customAlias: customAlias.trim() || undefined,
-        expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
+        expiresAt: expiresAt && !isNaN(new Date(expiresAt).getTime()) ? new Date(expiresAt).toISOString() : null,
         password: password.trim() || undefined,
         tags, isPublic, isFavorite,
       });

@@ -51,7 +51,7 @@ const UserSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-export const User = mongoose.model('User', UserSchema);
+export const User: mongoose.Model<any> = mongoose.models.User || mongoose.model('User', UserSchema);
 
 const ClickAnalyticSchema = new mongoose.Schema({
   timestamp: { type: String, required: true },
@@ -85,4 +85,4 @@ UrlSchema.index(
   { unique: true, partialFilterExpression: { customAlias: { $type: "string" } } }
 );
 
-export const Url = mongoose.model('Url', UrlSchema);
+export const Url: mongoose.Model<any> = mongoose.models.Url || mongoose.model('Url', UrlSchema);

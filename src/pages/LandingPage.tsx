@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Check, Copy, ArrowRight, Zap, BarChart3, Lock, Tag, Shield, Link2 } from "lucide-react";
 import { api } from "../services/api.js";
 import { useAuth } from "../context/AuthContext.js";
@@ -14,6 +14,21 @@ export const LandingPage: React.FC = () => {
   const [isShortening, setIsShortening] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   const [showBurst, setShowBurst] = useState<boolean>(false);
+  const [redirectError, setRedirectError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const err = params.get("error");
+    if (err === "inactive") {
+      setRedirectError("This shortened link has been deactivated by its owner.");
+      toast.error("This shortened link is inactive.");
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+    } else if (err === "expired") {
+      setRedirectError("This shortened link has expired and is no longer accessible.");
+      toast.error("This shortened link has expired.");
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+    }
+  }, []);
 
   const handleShorten = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,6 +129,23 @@ export const LandingPage: React.FC = () => {
       {/* ═══════════════ HERO SECTION ═══════════════ */}
       <div className="relative z-10 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center space-y-8 pt-10 sm:pt-20 pb-16">
+
+          {/* Redirection Error Notice */}
+          {redirectError && (
+            <div className="max-w-xl mx-auto p-4 bg-amber-500/10 border border-amber-500/25 rounded-2xl flex items-center justify-between gap-3 text-amber-800 dark:text-amber-300 text-xs sm:text-sm font-semibold animate-scaleIn shadow-lg">
+              <div className="flex items-center gap-2.5">
+                <span className="text-base">⚠️</span>
+                <span>{redirectError}</span>
+              </div>
+              <button
+                onClick={() => setRedirectError(null)}
+                className="p-1 rounded-lg hover:bg-amber-500/15 transition-colors cursor-pointer text-amber-700 dark:text-amber-400"
+                aria-label="Dismiss message"
+              >
+                ✕
+              </button>
+            </div>
+          )}
 
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/25 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 backdrop-blur-sm animate-fadeIn select-none shadow-sm">

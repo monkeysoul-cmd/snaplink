@@ -133,7 +133,7 @@ export const RegisterPage: React.FC = () => {
     setIsSubmitting(true); setErrorMsg(null);
     try {
       await register(name.trim(), email.trim(), password);
-      toast.success("You're in! Welcome to LinkCut 🎉");
+      toast.success("You're in! Welcome to SnapLink 🎉");
       window.location.hash = "#/dashboard";
     } catch (err: any) {
       const msg = err.message || "Oops, something went wrong. Give it another shot!";

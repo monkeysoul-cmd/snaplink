@@ -1,4 +1,5 @@
 import { Router, Request, Response } from "express";
+import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import { User } from "../config/db.js";
 import { generateToken, authenticateToken, AuthenticatedRequest } from "../middleware/auth.js";
@@ -22,6 +23,11 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
     }
 
     const trimmedEmail = email.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      res.status(400).json({ message: "Please provide a valid email address" });
+      return;
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email: trimmedEmail });
@@ -106,7 +112,7 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
 // GET /api/auth/me (Protected)
 router.get("/me", authenticateToken as any, async (req: AuthenticatedRequest, res: Response) => {
   try {
-    if (!req.user) {
+    if (!req.user || !mongoose.isValidObjectId(req.user.id)) {
       res.status(401).json({ message: "Not authenticated" });
       return;
     }

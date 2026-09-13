@@ -60,7 +60,7 @@ async function startServer() {
   // Bind to port 3000 and host 0.0.0.0 (required for Cloud Run routing)
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`=======================================================`);
-    console.log(`  LinkCut URL Shortener server is live on port ${PORT}`);
+    console.log(`  SnapLink URL Shortener server is live on port ${PORT}`);
     console.log(`  Local URL: http://localhost:${PORT}`);
     console.log(`=======================================================`);
   });
