@@ -10,7 +10,7 @@ import redirectRouter from "./server/routes/redirect.js";
 async function startServer() {
   await connectDB();
   const app = express();
-  const PORT = 3000;
+  const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
   // Middleware for body parsing
   app.use(express.json());
@@ -49,15 +49,15 @@ async function startServer() {
     
     // Fallback any unhandled non-API paths to client-side index.html router
     app.get("*", (req, res, next) => {
-      // Exclude API and shortcode paths from index.html fallback
-      if (req.path.startsWith("/api/") || req.path.length <= 1) {
+      // Exclude API paths from index.html fallback
+      if (req.path.startsWith("/api/")) {
         return next();
       }
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
 
-  // Bind to port 3000 and host 0.0.0.0 (required for Cloud Run routing)
+  // Bind to configured port and host 0.0.0.0 (required for Cloud Run / Docker routing)
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`=======================================================`);
     console.log(`  SnapLink URL Shortener server is live on port ${PORT}`);

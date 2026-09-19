@@ -17,7 +17,9 @@ router.post("/api/url/:shortCode/verify", async (req: Request, res: Response): P
       return;
     }
 
-    const url = await Url.findOne({ shortCode });
+    const url = await Url.findOne({
+      $or: [{ shortCode }, { customAlias: shortCode }]
+    });
     if (!url) {
       res.status(404).json({ message: "Short URL not found" });
       return;
@@ -36,7 +38,8 @@ router.post("/api/url/:shortCode/verify", async (req: Request, res: Response): P
 
     // Capture User-Agent analytics
     const userAgent = req.headers["user-agent"] || "";
-    const ip = (req.headers["x-forwarded-for"] as string) || req.socket.remoteAddress || "127.0.0.1";
+    const forwarded = req.headers["x-forwarded-for"];
+    const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim() || req.socket.remoteAddress || "127.0.0.1";
     const { browser, device, country } = parseUserAgent(userAgent);
 
     // Record click
@@ -127,7 +130,8 @@ router.get("/:shortCode", async (req: Request, res: Response, next: import("expr
 
     // 4. Capture User-Agent analytics
     const userAgent = req.headers["user-agent"] || "";
-    const ip = (req.headers["x-forwarded-for"] as string) || req.socket.remoteAddress || "127.0.0.1";
+    const forwarded = req.headers["x-forwarded-for"];
+    const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim() || req.socket.remoteAddress || "127.0.0.1";
     const { browser, device, country } = parseUserAgent(userAgent);
 
     // Record click

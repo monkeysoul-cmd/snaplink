@@ -15,6 +15,14 @@ interface UrlCardProps {
   onDelete: () => void;
 }
 
+const toLocalDatetime = (dateStr?: string | null): string => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return "";
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
 export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState<boolean>(false);
@@ -25,10 +33,9 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
   // Edit state
   const [editUrl, setEditUrl] = useState<string>(url.originalUrl);
   const [editAlias, setEditAlias] = useState<string>(url.customAlias || "");
-  const [editExpiry, setEditExpiry] = useState<string>(
-    url.expiresAt ? new Date(url.expiresAt).toISOString().substring(0, 16) : ""
-  );
+  const [editExpiry, setEditExpiry] = useState<string>(toLocalDatetime(url.expiresAt));
   const [editPassword, setEditPassword] = useState<string>("");
+  const [removePassword, setRemovePassword] = useState<boolean>(false);
   const [editTags, setEditTags] = useState<string>(url.tags.join(", "));
   const [editIsActive, setEditIsActive] = useState<boolean>(url.isActive);
   const [editIsPublic, setEditIsPublic] = useState<boolean>(url.isPublic);
@@ -66,17 +73,25 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
     setIsSaving(true);
     try {
       const tagList = editTags.split(",").map((t) => t.trim()).filter((t) => t.length > 0);
+      let finalPassword: string | null | undefined = undefined;
+      if (removePassword) {
+        finalPassword = null;
+      } else if (editPassword.trim()) {
+        finalPassword = editPassword.trim();
+      }
+
       await api.url.update(url.id, {
         originalUrl: editUrl,
         customAlias: editAlias.trim() || null,
         expiresAt: editExpiry && !isNaN(new Date(editExpiry).getTime()) ? new Date(editExpiry).toISOString() : null,
-        password: editPassword.trim() || undefined,
+        password: finalPassword,
         tags: tagList,
         isActive: editIsActive,
         isPublic: editIsPublic,
       });
       toast.success("Link updated!");
       setIsEditing(false);
+      setRemovePassword(false);
       onUpdate();
     } catch (error: any) {
       toast.error(error.message || "Couldn't save changes.");
@@ -340,26 +355,44 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
             </div>
 
             <div className="space-y-1.5">
-              <div className="form-section-label flex items-center gap-1.5">
-                <Lock className="w-2.5 h-2.5 text-amber-500 dark:text-amber-400" />
-                Password
+              <div className="form-section-label flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Lock className="w-2.5 h-2.5 text-amber-500 dark:text-amber-400" />
+                  Password
+                </span>
+                {url.passwordHash && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRemovePassword(!removePassword);
+                      if (!removePassword) setEditPassword("");
+                    }}
+                    className={`text-[10px] font-semibold cursor-pointer transition-colors ${
+                      removePassword ? "text-rose-500 font-bold" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+                    }`}
+                  >
+                    {removePassword ? "✕ Password will be removed" : "Remove password"}
+                  </button>
+                )}
               </div>
-              <div className="relative">
-                <input
-                  type={showEditPwd ? "text" : "password"}
-                  value={editPassword}
-                  onChange={(e) => setEditPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-10 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-500 font-medium"
-                  placeholder="Leave blank to keep current"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowEditPwd(!showEditPwd)}
-                  className="absolute right-3 top-3.5 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 cursor-pointer transition-colors"
-                >
-                  {showEditPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
+              {!removePassword && (
+                <div className="relative">
+                  <input
+                    type={showEditPwd ? "text" : "password"}
+                    value={editPassword}
+                    onChange={(e) => setEditPassword(e.target.value)}
+                    className="w-full px-4 py-3 pr-10 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-500 font-medium"
+                    placeholder={url.passwordHash ? "Leave blank to keep current" : "Set new password"}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowEditPwd(!showEditPwd)}
+                    className="absolute right-3 top-3.5 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 cursor-pointer transition-colors"
+                  >
+                    {showEditPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="space-y-1.5">

@@ -3,7 +3,7 @@ import {
   Calendar, User, Mail,
   Bell, Trash2, Globe, Settings,
   ChevronDown, Check, Clock, Infinity,
-  Link2, MousePointerClick,
+  Link2, MousePointerClick, LogOut,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.js";
 import { api } from "../services/api.js";
@@ -21,7 +21,7 @@ const EXPIRY_OPTIONS = [
 const LS_EXPIRY_KEY = "linkcut_default_expiry";
 
 export const ProfilePage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { toast, notificationsEnabled, setNotificationsEnabled } = useToast();
 
   const [metrics, setMetrics] = useState<{ totalUrls: number; totalClicks: number } | null>(null);
@@ -270,6 +270,31 @@ export const ProfilePage: React.FC = () => {
                   />
                 </button>
               </div>
+            </div>
+          </div>
+
+          {/* Session & Security */}
+          <div className="premium-card p-5 sm:p-6 space-y-4 animate-fadeInUp" style={{ animationDelay: "0.22s", animationFillMode: "both" }}>
+            <h3 className="font-bold text-base text-zinc-900 dark:text-white flex items-center gap-2.5 font-display">
+              <div className="icon-ring icon-ring-emerald w-8 h-8">
+                <LogOut className="w-4 h-4 text-emerald-600 dark:text-emerald-400 relative z-10" />
+              </div>
+              Session & security
+            </h3>
+
+            <div className="flex items-center justify-between p-3.5 bg-black/[0.01] dark:bg-white/[0.02] rounded-xl border border-black/5 dark:border-white/[0.04] hover:border-emerald-500/20 transition-all duration-300">
+              <div>
+                <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Log out</div>
+                <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 font-medium">End your active session on this device</div>
+              </div>
+              <button
+                id="profile-logout-btn"
+                onClick={logout}
+                className="btn-glass flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-lg cursor-pointer hover:text-rose-500 hover:border-rose-500/30 transition-colors"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Log out
+              </button>
             </div>
           </div>
 

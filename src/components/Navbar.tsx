@@ -206,11 +206,19 @@ export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false }) => {
                 >
                   <div className="navbar-avatar text-xs">{getInitials(user.name)}</div>
                   <div>
-                    <p className="text-sm font-semibold text-white">{user.name}</p>
-                    <p className="text-xs text-zinc-500">View profile</p>
+                    <p className="text-sm font-semibold text-zinc-900 dark:text-white">{user.name}</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">View profile</p>
                   </div>
                 </button>
 
+                <button
+                  onClick={logout}
+                  className="navbar-icon-btn navbar-icon-btn-danger"
+                  title="Log out"
+                  aria-label="Log out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
             ) : (
               <div className="navbar-mobile-auth-row gap-2">
