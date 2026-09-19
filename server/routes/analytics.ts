@@ -83,19 +83,23 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
       }
     });
 
-    const dailyClicks = Object.keys(dailyClicksMap).map((date) => {
-      // Convert 'YYYY-MM-DD' to a friendlier label like 'Jul 16'
-      const [year, month, day] = date.split("-");
-      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-      const formattedLabel = `${months[dateObj.getMonth()]} ${dateObj.getDate()}`;
-      
-      return {
-        date,
-        label: formattedLabel,
-        clicks: dailyClicksMap[date],
-      };
-    });
+    const dailyClicks = Object.keys(dailyClicksMap)
+      .sort((a, b) => a.localeCompare(b))
+      .map((date) => {
+        // Convert 'YYYY-MM-DD' to a friendlier label like 'Jul 16'
+        const [year, month, day] = date.split("-");
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        const formattedLabel = `${months[dateObj.getMonth()]} ${dateObj.getDate()}`;
+        
+        return {
+          date,
+          label: formattedLabel,
+          clicks: dailyClicksMap[date],
+        };
+      });
+
+    const breakdownTotal = allClicks.length > 0 ? allClicks.length : (totalClicks > 0 ? totalClicks : 0);
 
     // 6. Device Breakdown
     const devicesMap: { [device: string]: number } = { Desktop: 0, Mobile: 0, Tablet: 0 };
@@ -110,7 +114,7 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
     const deviceStats = Object.keys(devicesMap).map((name) => ({
       name,
       count: devicesMap[name],
-      percentage: totalClicks > 0 ? Math.round((devicesMap[name] / totalClicks) * 100) : 0,
+      percentage: breakdownTotal > 0 ? Math.round((devicesMap[name] / breakdownTotal) * 100) : 0,
     }));
 
     // 7. Browser Breakdown
@@ -123,7 +127,7 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
       .map((name) => ({
         name,
         count: browsersMap[name],
-        percentage: totalClicks > 0 ? Math.round((browsersMap[name] / totalClicks) * 100) : 0,
+        percentage: breakdownTotal > 0 ? Math.round((browsersMap[name] / breakdownTotal) * 100) : 0,
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5); // Top 5 browsers
@@ -138,7 +142,7 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
       .map((name) => ({
         name,
         count: countriesMap[name],
-        percentage: totalClicks > 0 ? Math.round((countriesMap[name] / totalClicks) * 100) : 0,
+        percentage: breakdownTotal > 0 ? Math.round((countriesMap[name] / breakdownTotal) * 100) : 0,
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5); // Top 5 countries

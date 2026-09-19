@@ -8,7 +8,15 @@
     <title>SnapLink - URL Shortener & Analytics</title>
     <style>
       html, body { background-color: #060612; }
+      html:not(.dark), html:not(.dark) body { background-color: #f0fdf4; }
     </style>
+    <script>
+      try {
+        if (localStorage.getItem("linkcut_theme") === "light") {
+          document.documentElement.classList.remove("dark");
+        }
+      } catch (_) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

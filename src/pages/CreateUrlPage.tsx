@@ -8,12 +8,36 @@ import { useToast } from "../context/ToastContext.js";
 import { UrlQrCode } from "../components/UrlQrCode.js";
 import { getDisplayShortUrl, getWorkingShortUrl, getShortDomain } from "../utils/urlHelper.js";
 
+const computeDefaultExpiry = (pref: string | null): string => {
+  if (!pref || pref === "never") return "";
+  const now = new Date();
+  switch (pref) {
+    case "1d": now.setDate(now.getDate() + 1); break;
+    case "7d": now.setDate(now.getDate() + 7); break;
+    case "30d": now.setDate(now.getDate() + 30); break;
+    case "90d": now.setDate(now.getDate() + 90); break;
+    case "1y": now.setFullYear(now.getFullYear() + 1); break;
+    default: return "";
+  }
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+};
+
+const getNowLocalDatetime = (): string => {
+  const now = new Date();
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+};
+
 export const CreateUrlPage: React.FC = () => {
   const { toast } = useToast();
 
   const [originalUrl, setOriginalUrl] = useState<string>("");
   const [customAlias, setCustomAlias] = useState<string>("");
-  const [expiresAt, setExpiresAt] = useState<string>("");
+  const [expiresAt, setExpiresAt] = useState<string>(() => {
+    const saved = localStorage.getItem("linkcut_default_expiry");
+    return computeDefaultExpiry(saved);
+  });
   const [password, setPassword] = useState<string>("");
   const [showPwd, setShowPwd] = useState<boolean>(false);
   const [tagsInput, setTagsInput] = useState<string>("");
@@ -29,6 +53,10 @@ export const CreateUrlPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!originalUrl.trim()) { toast.error("Please paste a URL first."); return; }
+    if (expiresAt && new Date(expiresAt).getTime() <= Date.now()) {
+      toast.error("Expiration date must be in the future.");
+      return;
+    }
     setIsSubmitting(true);
     setDisplayUrl(null); setWorkingUrl(null); setCreatedCode(null);
     try {
@@ -44,7 +72,8 @@ export const CreateUrlPage: React.FC = () => {
       setWorkingUrl(getWorkingShortUrl(res.shortCode));
       setCreatedCode(res.shortCode);
       toast.success("Link created!");
-      setOriginalUrl(""); setCustomAlias(""); setExpiresAt("");
+      setOriginalUrl(""); setCustomAlias("");
+      setExpiresAt(computeDefaultExpiry(localStorage.getItem("linkcut_default_expiry")));
       setPassword(""); setTagsInput(""); setIsFavorite(false);
     } catch (error: any) {
       toast.error(error.message || "Something went wrong.");
@@ -154,6 +183,7 @@ export const CreateUrlPage: React.FC = () => {
                   <input
                     type="datetime-local"
                     value={expiresAt}
+                    min={getNowLocalDatetime()}
                     onChange={(e) => setExpiresAt(e.target.value)}
                     className="w-full px-4 py-3 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none font-medium"
                     id="create-url-expiry"

@@ -6,10 +6,40 @@ import { Url } from "../config/db.js";
 import { authenticateToken, AuthenticatedRequest } from "../middleware/auth.js";
 import { generateShortCode, isValidUrl, normalizeUrl } from "../utils/helpers.js";
 
-function parseExpiryDate(val: any): string | null {
-  if (!val || typeof val !== "string" && !(val instanceof Date)) return null;
+const RESERVED_ALIASES = new Set([
+  "api", "dashboard", "create", "links", "analytics", "profile",
+  "unlock", "login", "register", "404", "index", "assets", "dist", "favicon.ico"
+]);
+
+function validateCustomAlias(alias: string): string | null {
+  const trimmed = alias.trim().replace(/\s+/g, "-");
+  if (trimmed.length < 3) {
+    return "Custom alias must be at least 3 characters long";
+  }
+  if (trimmed.length > 50) {
+    return "Custom alias cannot exceed 50 characters";
+  }
+  if (!/^[a-zA-Z0-9_-]+$/.test(trimmed)) {
+    return "Custom alias can only contain letters, numbers, hyphens, and underscores";
+  }
+  if (RESERVED_ALIASES.has(trimmed.toLowerCase())) {
+    return "This alias is reserved and cannot be used";
+  }
+  return null;
+}
+
+function parseExpiryDate(val: any): { iso: string | null; error?: string } {
+  if (!val || (typeof val !== "string" && !(val instanceof Date))) {
+    return { iso: null };
+  }
   const d = new Date(val);
-  return isNaN(d.getTime()) ? null : d.toISOString();
+  if (isNaN(d.getTime())) {
+    return { iso: null, error: "Invalid expiration date format" };
+  }
+  if (d.getTime() <= Date.now()) {
+    return { iso: null, error: "Expiration date must be in the future" };
+  }
+  return { iso: d.toISOString() };
 }
 
 const router = Router();
@@ -54,16 +84,28 @@ router.post("/", async (req: Request, res: Response): Promise<void> => {
 
     const userId = getOptionalUserId(req);
 
-    // If custom alias is provided, validate uniqueness
+    // Validate expiration date if provided
+    let parsedExpiry: string | null = null;
+    if (expiresAt) {
+      const expiryResult = parseExpiryDate(expiresAt);
+      if (expiryResult.error) {
+        res.status(400).json({ message: expiryResult.error });
+        return;
+      }
+      parsedExpiry = expiryResult.iso;
+    }
+
+    // If custom alias is provided, validate format and uniqueness
     let finalShortCode = "";
     const hasCustomAlias = Boolean(customAlias && customAlias.trim() !== "");
 
     if (hasCustomAlias) {
-      const trimmedAlias = customAlias.trim().replace(/\s+/g, "-");
-      if (trimmedAlias.length < 3) {
-        res.status(400).json({ message: "Custom alias must be at least 3 characters long" });
+      const aliasError = validateCustomAlias(customAlias);
+      if (aliasError) {
+        res.status(400).json({ message: aliasError });
         return;
       }
+      const trimmedAlias = customAlias.trim().replace(/\s+/g, "-");
       
       // Check if alias already in use
       const existing = await Url.findOne({
@@ -106,7 +148,7 @@ router.post("/", async (req: Request, res: Response): Promise<void> => {
       userId: userId || null,
       originalUrl: normalizedOriginal,
       shortCode: finalShortCode,
-      expiresAt: parseExpiryDate(expiresAt),
+      expiresAt: parsedExpiry,
       isActive: true,
       passwordHash,
       tags: Array.isArray(tags) ? tags.map((t: string) => t.trim().toLowerCase()) : [],
@@ -142,7 +184,8 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
     const query: any = { userId };
 
     if (search) {
-      const searchRegex = new RegExp(search, 'i');
+      const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = new RegExp(escaped, 'i');
       query.$or = [
         { originalUrl: searchRegex },
         { shortCode: searchRegex },
@@ -205,8 +248,8 @@ router.get("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
       return;
     }
 
-    // Ensure user owns this link
-    if (url.userId && url.userId.toString() !== userId) {
+    // Ensure user owns this link (prevent unauthorized access to anonymous links)
+    if (!url.userId || url.userId.toString() !== userId) {
       res.status(403).json({ message: "Access denied. You do not own this URL." });
       return;
     }
@@ -246,7 +289,7 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
       return;
     }
 
-    if (url.userId && url.userId.toString() !== userId) {
+    if (!url.userId || url.userId.toString() !== userId) {
       res.status(403).json({ message: "Access denied. You do not own this URL." });
       return;
     }
@@ -265,7 +308,32 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
     if (customAlias !== undefined) {
       if (customAlias === null || customAlias.trim() === "") {
         updates.customAlias = null;
+        // If the shortCode was identical to the customAlias being removed, regenerate a unique 6-char short code
+        if (url.customAlias && url.shortCode === url.customAlias) {
+          let attempts = 0;
+          let newCode = "";
+          while (attempts < 10) {
+            const code = generateShortCode(6);
+            const existing = await Url.findOne({
+              $or: [{ shortCode: code }, { customAlias: code }],
+              _id: { $ne: id }
+            });
+            if (!existing) {
+              newCode = code;
+              break;
+            }
+            attempts++;
+          }
+          if (newCode) {
+            updates.shortCode = newCode;
+          }
+        }
       } else {
+        const aliasError = validateCustomAlias(customAlias);
+        if (aliasError) {
+          res.status(400).json({ message: aliasError });
+          return;
+        }
         const trimmedAlias = customAlias.trim().replace(/\s+/g, "-");
         // Check uniqueness if changed
         if (trimmedAlias !== url.customAlias && trimmedAlias !== url.shortCode) {
@@ -284,7 +352,16 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
     }
 
     if (expiresAt !== undefined) {
-      updates.expiresAt = parseExpiryDate(expiresAt);
+      if (expiresAt === null || expiresAt === "") {
+        updates.expiresAt = null;
+      } else {
+        const expiryResult = parseExpiryDate(expiresAt);
+        if (expiryResult.error) {
+          res.status(400).json({ message: expiryResult.error });
+          return;
+        }
+        updates.expiresAt = expiryResult.iso;
+      }
     }
 
     if (isActive !== undefined) {
@@ -337,7 +414,7 @@ router.delete("/:id", authenticateToken as any, async (req: AuthenticatedRequest
       return;
     }
 
-    if (url.userId && url.userId.toString() !== userId) {
+    if (!url.userId || url.userId.toString() !== userId) {
       res.status(403).json({ message: "Access denied. You do not own this URL." });
       return;
     }
