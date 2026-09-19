@@ -17,11 +17,10 @@ A highly optimized, feature-rich, full-stack URL shortener web application with 
 ├── package.json              # App scripts and dependency manifests
 ├── tsconfig.json             # TypeScript compiler rules
 ├── vite.config.ts            # Vite asset Bundler configurations
-├── server.ts                 # Master full-stack Express + Vite server entrypoint
-│
-├── server/                   # Backend API Server Modules
+├── backend/                  # Backend API Server & Modules
+│   ├── server.ts             # Master full-stack Express + Vite server entrypoint
 │   ├── config/
-│   │   └── db.ts             # Local JSON DB engine & production Mongoose templates
+│   │   └── db.ts             # MongoDB Mongoose connection and database models
 │   ├── middleware/
 │   │   └── auth.ts           # JWT authentication validator
 │   ├── routes/

@@ -1,11 +1,11 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { connectDB } from "./server/config/db.js";
-import authRouter from "./server/routes/auth.js";
-import urlRouter from "./server/routes/url.js";
-import analyticsRouter from "./server/routes/analytics.js";
-import redirectRouter from "./server/routes/redirect.js";
+import { connectDB } from "./config/db.js";
+import authRouter from "./routes/auth.js";
+import urlRouter from "./routes/url.js";
+import analyticsRouter from "./routes/analytics.js";
+import redirectRouter from "./routes/redirect.js";
 
 async function startServer() {
   await connectDB();

@@ -1,9 +1,9 @@
 import express from "express";
-import { connectDB } from "../server/config/db.js";
-import authRouter from "../server/routes/auth.js";
-import urlRouter from "../server/routes/url.js";
-import analyticsRouter from "../server/routes/analytics.js";
-import redirectRouter from "../server/routes/redirect.js";
+import { connectDB } from "../backend/config/db.js";
+import authRouter from "../backend/routes/auth.js";
+import urlRouter from "../backend/routes/url.js";
+import analyticsRouter from "../backend/routes/analytics.js";
+import redirectRouter from "../backend/routes/redirect.js";
 
 const app = express();
 
