@@ -85,47 +85,39 @@ export const ProfilePage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
         {/* ── Profile Summary Card ── */}
-        <div className="lg:col-span-1 premium-card p-6 text-center space-y-6 animate-slideInLeft" style={{ animationDelay: "0.05s", animationFillMode: "both" }}>
+        <div className="lg:col-span-1 glass-card p-6 text-center space-y-6">
 
-          {/* Avatar with gradient ring */}
+          {/* Avatar */}
           <div className="relative flex items-center justify-center pt-2">
-            <div className="profile-avatar-lg">
+            <div className="w-20 h-20 rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center font-bold text-xl shadow-md">
               {initials}
             </div>
-            {/* Ping ring */}
-            <span className="absolute w-24 h-24 rounded-3xl border border-emerald-500/20 animate-ping-slow pointer-events-none" />
           </div>
 
           <div className="space-y-1">
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-white font-display">{user?.name}</h2>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">{user?.email}</p>
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">{user?.name}</h2>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">{user?.email}</p>
           </div>
 
           {/* Stats strip */}
-          <div className="grid grid-cols-2 gap-3 border-t border-black/5 dark:border-white/[0.05] pt-5">
-            <div className="stat-tile stat-tile-emerald p-4 text-center cursor-default group">
-              <div className="flex items-center justify-center gap-1 mb-1.5">
-                <Link2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              </div>
-              <div className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest">Links</div>
-              <div className="text-2xl font-extrabold text-zinc-900 dark:text-white mt-1 font-mono animate-count-pop">
+          <div className="grid grid-cols-2 gap-3 border-t border-black/[0.06] dark:border-white/[0.08] pt-5">
+            <div className="p-3 text-center rounded-xl bg-zinc-900/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.08]">
+              <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Links</div>
+              <div className="text-xl font-semibold text-zinc-900 dark:text-white mt-0.5 font-mono">
                 {metrics ? metrics.totalUrls : "—"}
               </div>
             </div>
-            <div className="stat-tile stat-tile-teal p-4 text-center cursor-default">
-              <div className="flex items-center justify-center gap-1 mb-1.5">
-                <MousePointerClick className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
-              </div>
-              <div className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest">Clicks</div>
-              <div className="text-2xl font-extrabold text-zinc-900 dark:text-white mt-1 font-mono animate-count-pop">
+            <div className="p-3 text-center rounded-xl bg-zinc-900/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.08]">
+              <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Clicks</div>
+              <div className="text-xl font-semibold text-zinc-900 dark:text-white mt-0.5 font-mono">
                 {metrics ? metrics.totalClicks.toLocaleString() : "—"}
               </div>
             </div>
           </div>
 
           {user && (
-            <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400 font-medium justify-center border-t border-black/5 dark:border-white/[0.05] pt-4">
-              <Calendar className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 justify-center border-t border-black/[0.06] dark:border-white/[0.08] pt-4 font-mono">
+              <Calendar className="w-3.5 h-3.5 shrink-0" />
               Joined {formatDate(user.createdAt)}
             </div>
           )}
@@ -135,43 +127,39 @@ export const ProfilePage: React.FC = () => {
         <div className="lg:col-span-2 space-y-4">
 
           {/* Account information */}
-          <div className="premium-card p-5 sm:p-6 space-y-4 animate-fadeInUp" style={{ animationDelay: "0.1s", animationFillMode: "both" }}>
-            <h3 className="font-bold text-base text-zinc-900 dark:text-white flex items-center gap-2.5 font-display">
-              <div className="icon-ring icon-ring-emerald w-8 h-8">
-                <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400 relative z-10" />
-              </div>
+          <div className="glass-card p-5 sm:p-6 space-y-4">
+            <h3 className="font-semibold text-base text-zinc-900 dark:text-white flex items-center gap-2">
+              <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               Account information
             </h3>
 
             <div className="space-y-2.5">
-              <div className="flex items-center gap-3.5 p-3.5 bg-black/[0.01] dark:bg-white/[0.02] rounded-xl border border-black/5 dark:border-white/[0.04] hover:border-emerald-500/20 transition-all duration-300 group">
-                <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/15 shrink-0 group-hover:bg-emerald-500/20 transition-colors">
-                  <User className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <div className="flex items-center gap-3.5 p-3.5 bg-black/[0.02] dark:bg-white/[0.02] rounded-xl border border-black/[0.06] dark:border-white/[0.06]">
+                <div className="p-2 rounded-lg bg-zinc-900/[0.04] dark:bg-white/[0.06] shrink-0 text-zinc-600 dark:text-zinc-400">
+                  <User className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-widest font-bold">Full name</div>
-                  <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5">{user?.name ?? "—"}</div>
+                  <div className="text-xs text-zinc-400 font-medium">Full name</div>
+                  <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{user?.name ?? "—"}</div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3.5 p-3.5 bg-black/[0.01] dark:bg-white/[0.02] rounded-xl border border-black/5 dark:border-white/[0.04] hover:border-teal-500/20 transition-all duration-300 group">
-                <div className="p-2 rounded-lg bg-teal-500/10 border border-teal-500/15 shrink-0 group-hover:bg-teal-500/20 transition-colors">
-                  <Mail className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+              <div className="flex items-center gap-3.5 p-3.5 bg-black/[0.02] dark:bg-white/[0.02] rounded-xl border border-black/[0.06] dark:border-white/[0.06]">
+                <div className="p-2 rounded-lg bg-zinc-900/[0.04] dark:bg-white/[0.06] shrink-0 text-zinc-600 dark:text-zinc-400">
+                  <Mail className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-widest font-bold">Email address</div>
-                  <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5">{user?.email ?? "—"}</div>
+                  <div className="text-xs text-zinc-400 font-medium">Email address</div>
+                  <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{user?.email ?? "—"}</div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Preferences */}
-          <div className="premium-card p-5 sm:p-6 space-y-4 animate-fadeInUp" style={{ animationDelay: "0.18s", animationFillMode: "both" }}>
-            <h3 className="font-bold text-base text-zinc-900 dark:text-white flex items-center gap-2.5 font-display">
-              <div className="icon-ring icon-ring-teal w-8 h-8">
-                <Settings className="w-4 h-4 text-teal-600 dark:text-teal-400 relative z-10" />
-              </div>
+          <div className="glass-card p-5 sm:p-6 space-y-4">
+            <h3 className="font-semibold text-base text-zinc-900 dark:text-white flex items-center gap-2">
+              <Settings className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               Preferences
             </h3>
 
