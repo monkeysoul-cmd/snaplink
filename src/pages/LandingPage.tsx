@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Check, Copy, ArrowRight, Zap, BarChart3, Lock, Tag, Shield, Link2 } from "lucide-react";
+import { Check, Copy, ArrowRight, BarChart3, Lock, Tag, Link2 } from "lucide-react";
 import { api } from "../services/api.js";
 import { useAuth } from "../context/AuthContext.js";
 import { useToast } from "../context/ToastContext.js";
@@ -13,7 +13,6 @@ export const LandingPage: React.FC = () => {
   const [workingUrl, setWorkingUrl] = useState<string | null>(null);
   const [isShortening, setIsShortening] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
-  const [showBurst, setShowBurst] = useState<boolean>(false);
   const [redirectError, setRedirectError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,9 +39,7 @@ export const LandingPage: React.FC = () => {
       const fullWorking = getWorkingShortUrl(data.shortCode);
       setShortenedUrl(fullShort);
       setWorkingUrl(fullWorking);
-      setShowBurst(true);
-      setTimeout(() => setShowBurst(false), 700);
-      toast.success("Link shortened!");
+      toast.success("Link shortened");
     } catch (error: any) {
       toast.error(error.message || "Something went wrong.");
     } finally {
@@ -56,7 +53,7 @@ export const LandingPage: React.FC = () => {
     try {
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
-      toast.success("Copied!");
+      toast.success("Copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Couldn't copy — try selecting it manually.");
@@ -69,74 +66,36 @@ export const LandingPage: React.FC = () => {
     {
       icon: BarChart3,
       title: "Click analytics",
-      description: "See exactly who's clicking your links — devices, browsers, and countries. Beautiful charts, zero setup.",
-      gradient: "linear-gradient(135deg, #10b981, #34d399)",
-      ringClass: "icon-ring-emerald",
-      accent: "#34d399",
+      description: "Inspect who is clicking your links: devices, browsers, and geographic locations with tabular accuracy.",
     },
     {
       icon: Lock,
-      title: "Password protection",
-      description: "Lock any link with a password or set it to auto-expire. Share confidently knowing you're in control.",
-      gradient: "linear-gradient(135deg, #14b8a6, #2dd4bf)",
-      ringClass: "icon-ring-teal",
-      accent: "#2dd4bf",
+      title: "Password & expiry",
+      description: "Protect sensitive links behind a password or schedule links to expire automatically on a specific date.",
     },
     {
       icon: Tag,
       title: "Custom aliases",
-      description: "Ditch the random characters. Use memorable words like /summer-sale that people actually want to click.",
-      gradient: "linear-gradient(135deg, #06b6d4, #67e8f9)",
-      ringClass: "icon-ring-cyan",
-      accent: "#67e8f9",
+      description: "Replace random characters with clean, readable slugs that represent your content and brand.",
     },
   ];
 
   return (
     <div className="w-full min-h-[calc(100vh-4rem)] relative overflow-hidden">
-      {/* ── Background ── */}
-      <div className="absolute inset-0 bg-[#f0fdf4] dark:bg-[#020d0a] transition-colors" />
-
-      {/* ── Animated mesh orbs ── */}
+      {/* ── Ambient background light (soft optical wash for glassmorphism) ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-[min(600px,90vw)] h-[min(600px,90vw)] bg-emerald-600/10 dark:bg-emerald-600/10 rounded-full blur-[160px] animate-blob" />
-        <div className="absolute bottom-0 right-1/5 w-[min(500px,80vw)] h-[min(500px,80vw)] bg-teal-500/8 dark:bg-teal-500/8 rounded-full blur-[140px] animate-blob" style={{ animationDelay: '5s' }} />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[min(900px,110vw)] h-[300px] bg-cyan-500/5 dark:bg-cyan-500/5 rounded-full blur-[120px] animate-aurora" />
-        <div className="absolute top-2/3 left-1/6 w-64 h-64 bg-emerald-400/5 rounded-full blur-[80px] animate-blob animate-liquidMorph" style={{ animationDelay: '3s' }} />
-      </div>
-
-      {/* ── Scanline effect ── */}
-      <div className="scanline absolute inset-0" />
-
-      {/* ── Floating particles ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-emerald-500/30 dark:bg-emerald-400/20 animate-ping-slow"
-            style={{
-              width: `${2 + (i % 3)}px`,
-              height: `${2 + (i % 3)}px`,
-              left: `${8 + i * 8}%`,
-              top: `${15 + (i % 4) * 20}%`,
-              animationDelay: `${i * 0.6}s`,
-              animationDuration: `${2.5 + i * 0.3}s`,
-            }}
-          />
-        ))}
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-emerald-500/[0.04] dark:bg-emerald-500/[0.05] rounded-full blur-[140px]" />
+        <div className="absolute top-1/2 -left-40 w-[500px] h-[500px] bg-teal-500/[0.03] dark:bg-teal-500/[0.03] rounded-full blur-[160px]" />
       </div>
 
       {/* ═══════════════ HERO SECTION ═══════════════ */}
       <div className="relative z-10 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto text-center space-y-8 pt-10 sm:pt-20 pb-16">
+        <div className="max-w-4xl mx-auto text-center space-y-6 pt-10 sm:pt-16 pb-12">
 
           {/* Redirection Error Notice */}
           {redirectError && (
-            <div className="max-w-xl mx-auto p-4 bg-amber-500/10 border border-amber-500/25 rounded-2xl flex items-center justify-between gap-3 text-amber-800 dark:text-amber-300 text-xs sm:text-sm font-semibold animate-scaleIn shadow-lg">
-              <div className="flex items-center gap-2.5">
-                <span className="text-base">⚠️</span>
-                <span>{redirectError}</span>
-              </div>
+            <div className="max-w-xl mx-auto p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-between gap-3 text-amber-800 dark:text-amber-300 text-xs sm:text-sm font-medium">
+              <span>{redirectError}</span>
               <button
                 onClick={() => setRedirectError(null)}
                 className="p-1 rounded-lg hover:bg-amber-500/15 transition-colors cursor-pointer text-amber-700 dark:text-amber-400"
@@ -148,70 +107,48 @@ export const LandingPage: React.FC = () => {
           )}
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/25 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 backdrop-blur-sm animate-fadeIn select-none shadow-sm">
-            <Zap className="w-3.5 h-3.5" />
-            Free link shortener — unlimited links, zero limits
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse-soft" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-zinc-900/[0.03] dark:bg-white/[0.06] border border-zinc-900/10 dark:border-white/10 rounded-full text-xs font-medium text-zinc-700 dark:text-zinc-300 backdrop-blur-md shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
+            Fast link shortener with real-time analytics
           </div>
 
-          {/* Headline — word-by-word stagger */}
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-extrabold tracking-tight leading-[1.05] font-display animate-springUp">
-            <span className="text-zinc-900 dark:text-white">Make every</span>
+          {/* Headline */}
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.1] text-zinc-900 dark:text-white">
+            Shorten links.
             <br />
-            <span
-              className="animate-gradientShimmer"
-              style={{
-                background: 'linear-gradient(135deg, #059669 0%, #0d9488 40%, #0284c7 70%, #7c3aed 100%)',
-                backgroundSize: '200% auto',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              link count.
-            </span>
+            <span className="text-zinc-500 dark:text-zinc-400">Track every click.</span>
           </h1>
 
           {/* Subtitle */}
-          <p
-            className="text-base sm:text-xl text-zinc-700 dark:text-zinc-300 max-w-2xl mx-auto leading-relaxed animate-fadeIn font-medium"
-            style={{ animationDelay: '0.2s', opacity: 0 }}
-          >
-            Turn long ugly URLs into <span className="text-zinc-900 dark:text-white font-bold">short branded links</span> in seconds.
-            Add passwords, set expiry dates, and see who's clicking — all for free.
+          <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 max-w-xl mx-auto font-normal leading-relaxed">
+            Turn long URLs into clean, memorable links. Protect them with passwords, set expiry dates, and inspect visitor metrics.
           </p>
         </div>
 
-        {/* ═══════════════ SHORTENER BOX ═══════════════ */}
-        <div
-          className="hero-box max-w-2xl mx-auto p-6 sm:p-8 mb-24 animate-slideUp"
-          style={{ animationDelay: '0.3s', opacity: 0 }}
-        >
-          {/* Animated border beam */}
-          <div className="border-beam" />
-
+        {/* ═══════════════ SHORTENER GLASS BOX ═══════════════ */}
+        <div className="hero-box max-w-2xl mx-auto p-6 sm:p-8 mb-20">
           <form onSubmit={handleShorten} className="space-y-4">
             <div className="space-y-2">
-              <label className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest">
-                <Link2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                Paste your long URL
+              <label className="flex items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                <Link2 className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
+                Paste long URL
               </label>
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
                   <input
-                    type="text"
+                    type="url"
                     value={longUrl}
                     onChange={(e) => setLongUrl(e.target.value)}
                     required
-                    className="w-full px-4 py-4 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none font-medium pr-10"
-                    placeholder="https://example.com/a-very-long-url-that-nobody-wants-to-type"
+                    className="w-full px-4 py-3.5 glass-input text-sm rounded-xl placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none font-medium pr-10"
+                    placeholder="https://example.com/very-long-url-to-shorten"
                   />
                   {longUrl && (
                     <button
                       type="button"
                       onClick={() => setLongUrl("")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer text-base"
                     >
                       ×
                     </button>
@@ -221,32 +158,29 @@ export const LandingPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isShortening}
-                  className="px-7 py-4 btn-glow text-white font-bold text-sm rounded-xl cursor-pointer flex items-center justify-center gap-2 shrink-0 disabled:opacity-60"
+                  className="px-6 py-3.5 btn-glow text-sm rounded-xl cursor-pointer flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
                 >
-                  <span>{isShortening ? "Working..." : "Shorten it"}</span>
-                  <ArrowRight className={`w-4 h-4 transition-transform ${isShortening ? 'animate-pulse' : ''}`} />
+                  <span>{isShortening ? "Shortening..." : "Shorten"}</span>
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
           </form>
 
-          {/* Result */}
+          {/* Result Box */}
           {shortenedUrl && (
-            <div className="mt-6 p-5 bg-emerald-500/10 border border-emerald-500/25 rounded-2xl animate-scaleIn space-y-3 relative overflow-hidden">
-              {/* Success burst ring */}
-              {showBurst && <div className="success-burst" style={{ left: '50%', top: '50%', transform: 'translate(-50%,-50%)' }} />}
-
+            <div className="mt-5 p-4 rounded-xl bg-zinc-900/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-md space-y-3">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse-soft shrink-0" />
-                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Your short link is ready!</span>
+                  <div className="flex items-center gap-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 shrink-0" />
+                    <span>Short link ready</span>
                   </div>
                   <a
                     href={workingUrl || shortenedUrl || "#"}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-lg font-bold text-emerald-600 dark:text-teal-300 hover:underline break-all transition-colors short-link-mono block"
+                    className="text-base font-mono font-medium text-zinc-900 dark:text-white hover:underline break-all block"
                   >
                     {shortenedUrl}
                   </a>
@@ -254,8 +188,8 @@ export const LandingPage: React.FC = () => {
 
                 <button
                   onClick={handleCopy}
-                  className="p-3 glass-card rounded-xl text-zinc-700 dark:text-zinc-200 cursor-pointer transition hover:text-zinc-900 dark:hover:text-white hover:scale-110 shrink-0 active:scale-95"
-                  title="Copy"
+                  className="p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 cursor-pointer transition shrink-0 active:scale-95"
+                  title="Copy short link"
                 >
                   {copied
                     ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
@@ -266,13 +200,13 @@ export const LandingPage: React.FC = () => {
 
               {/* Sign-up nudge */}
               {!isAuthenticated && (
-                <div className="border-t border-emerald-500/15 pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <span className="text-xs text-zinc-700 dark:text-zinc-300 font-medium">Want custom aliases, QR codes & detailed analytics?</span>
+                <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                  <span className="text-zinc-500 dark:text-zinc-400">Need custom aliases, QR codes & analytics?</span>
                   <button
                     onClick={() => navigateTo("#/register")}
-                    className="font-bold text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1 cursor-pointer shrink-0 transition-colors"
+                    className="font-medium text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer shrink-0"
                   >
-                    Sign up free
+                    Create free account
                     <ArrowRight className="w-3 h-3" />
                   </button>
                 </div>
@@ -281,64 +215,36 @@ export const LandingPage: React.FC = () => {
           )}
         </div>
 
-        {/* ═══════════════ FEATURES BENTO GRID ═══════════════ */}
-        <div className="max-w-5xl mx-auto space-y-16 relative z-10 pb-24">
-          <div className="text-center space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/60 dark:bg-white/[0.04] border border-emerald-500/20 dark:border-white/[0.07] rounded-full text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest shadow-sm">
-              <Shield className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-              Features
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">
-              Everything you need,
-              <br />
-              <span className="gradient-text">nothing you don't.</span>
+        {/* ═══════════════ FEATURES GRID ═══════════════ */}
+        <div className="max-w-4xl mx-auto space-y-12 pb-20">
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-zinc-900 dark:text-white tracking-tight">
+              Built for clarity and control
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 text-sm sm:text-base max-w-lg mx-auto leading-relaxed font-medium">
-              Powerful features wrapped in a beautiful interface. No complexity, just results.
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-md mx-auto">
+              Everything you need to share links confidently and understand your audience.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {features.map((feature, i) => {
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {features.map((feature) => {
               const Icon = feature.icon;
               return (
                 <div
                   key={feature.title}
-                  className={`bento-tile p-7 group animate-tiltIn stagger-${i + 1} cursor-default`}
-                  style={{ opacity: 0 }}
+                  className="bento-tile p-6 flex flex-col justify-between cursor-default"
                 >
-                  {/* Top accent line on hover */}
-                  <div
-                    className="absolute top-0 left-0 right-0 h-[1.5px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-t-3xl"
-                    style={{ background: `linear-gradient(90deg, transparent, ${feature.accent}, transparent)` }}
-                  />
-
-                  {/* Ambient glow */}
-                  <div
-                    className="absolute -top-12 -right-12 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
-                    style={{ background: `radial-gradient(circle, ${feature.accent}18, transparent 70%)` }}
-                  />
-
-                  {/* Icon */}
-                  <div
-                    className={`feature-icon mb-5`}
-                    style={{ background: feature.gradient }}
-                  >
-                    <Icon className="w-5 h-5 text-white relative z-10" />
+                  <div>
+                    <div className="w-9 h-9 rounded-lg bg-zinc-900/[0.04] dark:bg-white/[0.06] border border-zinc-900/10 dark:border-white/10 flex items-center justify-center text-zinc-800 dark:text-zinc-200 mb-4">
+                      <Icon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <h3 className="font-semibold text-base mb-1.5 text-zinc-900 dark:text-white">
+                      {feature.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                      {feature.description}
+                    </p>
                   </div>
-
-                  <h3 className="font-bold text-lg mb-2 text-zinc-900 dark:text-white font-display group-hover:text-emerald-600 dark:group-hover:text-emerald-100 transition-colors">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
-                    {feature.description}
-                  </p>
-
-                  {/* Bottom accent */}
-                  <div
-                    className="absolute bottom-0 left-0 right-0 h-[2px] rounded-b-3xl opacity-0 group-hover:opacity-80 transition-opacity duration-500"
-                    style={{ background: feature.gradient }}
-                  />
                 </div>
               );
             })}
@@ -348,14 +254,13 @@ export const LandingPage: React.FC = () => {
           <div className="text-center pt-4">
             <button
               onClick={() => navigateTo(isAuthenticated ? "#/dashboard" : "#/register")}
-              className="px-10 py-4 btn-glow text-white font-bold text-sm rounded-2xl cursor-pointer inline-flex items-center gap-3 animate-magneticGlow group"
+              className="px-8 py-3.5 btn-glow text-sm rounded-xl cursor-pointer inline-flex items-center gap-2"
             >
-              <Zap className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-              <span>{isAuthenticated ? "Go to Dashboard" : "Get started — it's free"}</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <span>{isAuthenticated ? "Go to Dashboard" : "Get started for free"}</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
             {!isAuthenticated && (
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-3 font-medium">No credit card required. Always free.</p>
+              <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-2.5">No credit card required.</p>
             )}
           </div>
         </div>

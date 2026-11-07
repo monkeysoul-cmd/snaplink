@@ -21,7 +21,7 @@ export const DashboardPage: React.FC = () => {
       const res = await api.analytics.getDashboardData();
       setData(res);
     } catch (err: any) {
-      toast.error("Couldn't load your dashboard data.");
+      toast.error("Couldn't load dashboard data.");
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -34,10 +34,10 @@ export const DashboardPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 animate-fadeIn p-4 sm:p-6 lg:p-8">
+      <div className="space-y-6 p-4 sm:p-6 lg:p-8">
         <div className="flex justify-between items-center">
-          <div className="h-8 w-44 bg-white/5 rounded-xl animate-pulse" />
-          <div className="h-9 w-28 bg-white/5 rounded-xl animate-pulse" />
+          <div className="h-8 w-44 bg-zinc-200 dark:bg-zinc-800 rounded-xl animate-pulse" />
+          <div className="h-9 w-28 bg-zinc-200 dark:bg-zinc-800 rounded-xl animate-pulse" />
         </div>
         <MetricsSkeleton />
         <ChartSkeleton />
@@ -54,64 +54,41 @@ export const DashboardPage: React.FC = () => {
   const statCards = [
     {
       icon: Link2,
-      label: "Total Links",
+      label: "Total links",
       value: metrics.totalUrls,
-      tileClass: "stat-tile-emerald",
-      iconRingClass: "icon-ring-emerald",
-      iconColor: "text-emerald-500",
-      valueColor: "text-emerald-400",
     },
     {
       icon: MousePointerClick,
-      label: "Total Clicks",
+      label: "Total clicks",
       value: metrics.totalClicks,
-      tileClass: "stat-tile-teal",
-      iconRingClass: "icon-ring-teal",
-      iconColor: "text-teal-500",
-      valueColor: "text-teal-400",
     },
     {
       icon: Zap,
-      label: "Active Links",
+      label: "Active links",
       value: metrics.activeUrls,
-      tileClass: "stat-tile-cyan",
-      iconRingClass: "icon-ring-cyan",
-      iconColor: "text-cyan-500",
-      valueColor: "text-cyan-400",
     },
     {
       icon: Star,
       label: "Favorites",
       value: metrics.favoriteUrls,
-      tileClass: "stat-tile-green",
-      iconRingClass: "icon-ring-green",
-      iconColor: "text-green-500",
-      valueColor: "text-green-400",
     },
   ];
 
-  // Build chart Y-axis labels
   const yAxisSteps = 5;
   const yLabels = Array.from({ length: yAxisSteps + 1 }, (_, i) =>
     Math.round((maxClicks / yAxisSteps) * (yAxisSteps - i))
   );
 
   return (
-    <div className="space-y-6 animate-pageEnter p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)] relative">
-      {/* Ambient orbs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden -z-10">
-        <div className="absolute top-0 right-1/4 w-80 h-80 bg-emerald-600/5 rounded-full blur-[120px] animate-blob" />
-        <div className="absolute bottom-1/3 left-1/6 w-96 h-96 bg-teal-500/4 rounded-full blur-[140px] animate-blob" style={{ animationDelay: "6s" }} />
-      </div>
-
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)] relative">
       {/* ── Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 animate-fadeIn">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white font-display" id="dashboard-title">
-            Your Dashboard
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white" id="dashboard-title">
+            Dashboard
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 mt-1 font-medium">
-            Here's how your links are performing.
+          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            Overview of your links and visitor activity.
           </p>
         </div>
 
@@ -119,59 +96,46 @@ export const DashboardPage: React.FC = () => {
           <button
             onClick={() => fetchDashboardData(true)}
             disabled={isRefreshing}
-            className="p-2.5 glass-card rounded-xl text-zinc-700 dark:text-zinc-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer disabled:opacity-50 hover:scale-110 active:scale-95"
-            title="Refresh"
+            className="p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-md text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer disabled:opacity-50"
+            title="Refresh data"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-emerald-500" : ""}`} />
           </button>
 
           <button
             onClick={() => handleNavigate("#/create")}
-            className="px-4 py-2.5 btn-glow text-white text-xs sm:text-sm font-bold rounded-xl cursor-pointer flex items-center gap-2"
+            className="px-4 py-2.5 btn-glow text-xs sm:text-sm rounded-xl cursor-pointer flex items-center gap-2"
             id="dash-create-btn"
           >
             <PlusCircle className="w-4 h-4" />
-            <span>New Link</span>
+            <span>New link</span>
           </button>
         </div>
       </div>
 
       {/* ── Stat Tiles ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {statCards.map((card, i) => {
+        {statCards.map((card) => {
           const Icon = card.icon;
           return (
             <div
               key={card.label}
-              className={`stat-tile ${card.tileClass} p-5 flex flex-col gap-4 animate-springUp stagger-${i + 1} group cursor-default`}
-              style={{ opacity: 0 }}
+              className="glass-card p-5 flex flex-col justify-between cursor-default"
             >
-              <div className="flex items-center justify-between">
-                <div className={`icon-ring ${card.iconRingClass}`}>
-                  <Icon className={`w-5 h-5 ${card.iconColor} relative z-10`} />
-                </div>
-                {/* Mini sparkline placeholder */}
-                <div className="flex items-end gap-0.5 h-6 opacity-50 group-hover:opacity-80 transition-opacity">
-                  {[3, 5, 4, 7, 6, 8, card.value > 0 ? 10 : 2].map((h, j) => (
-                    <div
-                      key={j}
-                      className={`w-1 rounded-sm ${card.iconColor.replace('text-', 'bg-')}`}
-                      style={{ height: `${(h / 10) * 100}%` }}
-                    />
-                  ))}
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                  {card.label}
+                </span>
+                <div className="w-7 h-7 rounded-lg bg-zinc-900/[0.04] dark:bg-white/[0.06] border border-zinc-900/10 dark:border-white/10 flex items-center justify-center text-zinc-600 dark:text-zinc-400">
+                  <Icon className="w-3.5 h-3.5" />
                 </div>
               </div>
 
-              <div>
-                <div className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest mb-1">
-                  {card.label}
-                </div>
-                <div
-                  className={`text-2xl sm:text-3xl font-extrabold ${card.valueColor} font-display animate-rollUp`}
-                  style={{ fontVariantNumeric: 'tabular-nums' }}
-                >
-                  {card.value.toLocaleString()}
-                </div>
+              <div
+                className="text-2xl sm:text-3xl font-semibold text-zinc-900 dark:text-white font-mono tracking-tight"
+                style={{ fontVariantNumeric: 'tabular-nums' }}
+              >
+                {card.value.toLocaleString()}
               </div>
             </div>
           );
@@ -179,88 +143,74 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* ── Bar Chart ── */}
-      <div className="premium-card p-5 sm:p-7 animate-fadeInUp" style={{ animationDelay: "0.2s", opacity: 0 }}>
+      <div className="glass-card p-5 sm:p-7">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2 font-display">
+            <h2 className="text-base font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               Clicks this week
             </h2>
-            <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5 font-medium">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
               Daily click activity over the last 7 days
             </p>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse-soft" />
-            <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Live</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900/[0.04] dark:bg-white/[0.06] border border-zinc-900/10 dark:border-white/10 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
+            <span>Live</span>
           </div>
         </div>
 
         {dailyClicks.length === 0 ? (
-          <div className="h-56 flex flex-col items-center justify-center text-sm text-zinc-600 dark:text-zinc-400 border border-dashed border-emerald-500/20 dark:border-white/[0.05] rounded-xl gap-2 font-medium">
-            <TrendingUp className="w-6 h-6 text-zinc-400 dark:text-zinc-500" />
-            No clicks yet. Share some links to see data here!
+          <div className="h-56 flex flex-col items-center justify-center text-sm text-zinc-500 dark:text-zinc-400 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl gap-2 font-medium">
+            <TrendingUp className="w-5 h-5 text-zinc-400 dark:text-zinc-600" />
+            No clicks yet. Share some links to inspect traffic.
           </div>
         ) : (
           <div className="w-full">
             {/* Chart with Y-axis */}
             <div className="flex gap-3">
               {/* Y-axis labels */}
-              <div className="flex flex-col justify-between h-56 text-right shrink-0 pb-5">
+              <div className="flex flex-col justify-between h-52 text-right shrink-0 pb-5 text-xs text-zinc-400 font-mono">
                 {yLabels.map((v, i) => (
-                  <span key={i} className="chart-y-label">{v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}</span>
+                  <span key={i}>{v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}</span>
                 ))}
               </div>
 
-              {/* Bars */}
-              <div className="flex-1 chart-container p-4">
-                <div className="h-full flex flex-col justify-between">
-                  {/* Grid lines */}
+              {/* Bars container */}
+              <div className="flex-1 relative h-52 border-b border-zinc-200 dark:border-zinc-800">
+                {/* Horizontal grid lines */}
+                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
                   {yLabels.slice(0, -1).map((_, i) => (
-                    <div key={i} className="chart-grid-line w-full" style={{ flex: 1 }} />
+                    <div key={i} className="w-full border-b border-zinc-100 dark:border-zinc-800/60" style={{ flex: 1 }} />
                   ))}
                 </div>
-              </div>
-            </div>
 
-            {/* Bars overlay — absolute positioned over chart */}
-            <div className="relative -mt-60 ml-12 mr-0">
-              <div className="h-52 flex items-end justify-between gap-1.5 sm:gap-3 px-4">
-                {dailyClicks.map((d, barIdx) => {
-                  const heightPercentage = Math.max((d.clicks / maxClicks) * 100, 3);
-                  return (
-                    <div key={d.date} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
-                      <div className="relative w-full flex items-end justify-center h-full">
-                        {/* Tooltip */}
-                        <div className="absolute -top-14 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:-translate-y-1 bg-zinc-900 border border-emerald-500/20 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg shadow-xl pointer-events-none z-20 text-center min-w-[52px] flex flex-col gap-0.5">
-                          <span className="text-emerald-400 font-mono text-sm">{d.clicks}</span>
-                          <span className="text-zinc-300">clicks</span>
-                          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-900 border-r border-b border-emerald-500/20 rotate-45" />
+                {/* Bars flex */}
+                <div className="relative h-full flex items-end justify-between gap-2 sm:gap-4 px-2 sm:px-4">
+                  {dailyClicks.map((d) => {
+                    const heightPercentage = Math.max((d.clicks / maxClicks) * 100, 4);
+                    return (
+                      <div key={d.date} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
+                        <div className="relative w-full flex items-end justify-center h-full">
+                          {/* Tooltip */}
+                          <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[10px] font-mono px-2 py-1 rounded shadow-md pointer-events-none z-20 whitespace-nowrap">
+                            {d.clicks} clicks
+                          </div>
+
+                          {/* Bar */}
+                          <div
+                            style={{ height: `${heightPercentage}%` }}
+                            className="w-full max-w-[32px] rounded-t-sm bg-zinc-900 dark:bg-white hover:bg-emerald-600 dark:hover:bg-emerald-400 transition-colors"
+                          />
                         </div>
 
-                        {/* Bar */}
-                        <div
-                          style={{
-                            height: `${heightPercentage}%`,
-                            background: 'linear-gradient(180deg, #34d399 0%, #10b981 40%, #059669 100%)',
-                            animationDelay: `${barIdx * 80}ms`,
-                            boxShadow: '0 0 12px rgba(16,185,129,0.15)',
-                          }}
-                          className="w-full max-w-[36px] rounded-t-lg transition-all duration-300 relative overflow-hidden cursor-pointer animate-bar-grow group-hover:max-w-[40px]"
-                        >
-                          {/* Inner shimmer */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                          {/* Glow cap */}
-                          <div className="absolute top-0 left-0 right-0 h-[3px] bg-teal-300/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
+                        <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono truncate max-w-full">
+                          {d.label}
+                        </span>
                       </div>
-
-                      <span className="text-[9px] sm:text-[10px] text-zinc-600 dark:text-zinc-400 font-semibold truncate max-w-full group-hover:text-zinc-900 dark:group-hover:text-zinc-200 transition-colors font-mono">
-                        {d.label}
-                      </span>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
@@ -270,14 +220,15 @@ export const DashboardPage: React.FC = () => {
       {/* ── Tables ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Performers */}
-        <div className="premium-card p-5 sm:p-6 space-y-5 animate-fadeInUp" style={{ animationDelay: "0.3s", opacity: 0 }}>
+        <div className="glass-card p-5 sm:p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2 font-display">
-              <span className="text-base">🏆</span> Top performers
+            <h2 className="text-sm font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              Top performers
             </h2>
             <button
               onClick={() => handleNavigate("#/links")}
-              className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-0.5 transition cursor-pointer hover:gap-1.5"
+              className="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-0.5 cursor-pointer"
             >
               View all
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -285,33 +236,17 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {mostVisited.length === 0 ? (
-            <div className="text-center py-8 space-y-3">
-              <div className="empty-state-icon">
-                <TrendingUp className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
-              </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">No links to rank yet. Create your first one!</p>
+            <div className="text-center py-8">
+              <p className="text-xs text-zinc-400 dark:text-zinc-500">No links recorded yet.</p>
             </div>
           ) : (
             <div className="space-y-2">
               {mostVisited.map((u, rowIdx) => (
                 <div
                   key={u.id}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-black/5 dark:border-white/[0.04] bg-black/[0.01] dark:bg-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.03] hover:border-emerald-500/20 transition-all group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-black/[0.04] dark:border-white/[0.05] bg-black/[0.01] dark:bg-white/[0.02] hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors"
                 >
-                  {/* Rank badge */}
-                  <div
-                    className="rank-number shrink-0"
-                    style={{
-                      background: rowIdx === 0
-                        ? 'linear-gradient(135deg, #fbbf24, #f59e0b)'
-                        : rowIdx === 1
-                        ? 'linear-gradient(135deg, #94a3b8, #64748b)'
-                        : rowIdx === 2
-                        ? 'linear-gradient(135deg, #cd7c2f, #a16207)'
-                        : 'rgba(255,255,255,0.06)',
-                      color: rowIdx < 3 ? '#fff' : '#71717a',
-                    }}
-                  >
+                  <div className="w-5 h-5 rounded flex items-center justify-center text-xs font-mono font-medium text-zinc-400 shrink-0">
                     {rowIdx + 1}
                   </div>
 
@@ -320,18 +255,18 @@ export const DashboardPage: React.FC = () => {
                       href={getWorkingShortUrl(u.shortCode)}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline transition-colors short-link-mono block truncate"
+                      className="text-xs font-mono font-medium text-zinc-900 dark:text-white hover:underline block truncate"
                     >
                       {getDisplayShortUrl(u.shortCode)}
                     </a>
-                    <span className="block text-[10px] text-zinc-600 dark:text-zinc-400 font-medium truncate">{u.originalUrl}</span>
+                    <span className="block text-[11px] text-zinc-400 dark:text-zinc-500 truncate">{u.originalUrl}</span>
                   </div>
 
                   <div className="shrink-0 text-right">
-                    <div className="text-sm font-extrabold text-zinc-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors font-mono">
+                    <div className="text-xs font-mono font-medium text-zinc-900 dark:text-white">
                       {u.clicks.toLocaleString()}
                     </div>
-                    <div className="text-[9px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold">clicks</div>
+                    <div className="text-[10px] text-zinc-400">clicks</div>
                   </div>
                 </div>
               ))}
@@ -340,14 +275,15 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Recent Links */}
-        <div className="premium-card p-5 sm:p-6 space-y-5 animate-fadeInUp" style={{ animationDelay: "0.38s", opacity: 0 }}>
+        <div className="glass-card p-5 sm:p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2 font-display">
-              <span className="text-base">🕐</span> Recent links
+            <h2 className="text-sm font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
+              <Link2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              Recent links
             </h2>
             <button
               onClick={() => handleNavigate("#/links")}
-              className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-0.5 transition cursor-pointer hover:gap-1.5"
+              className="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-0.5 cursor-pointer"
             >
               View all
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -355,37 +291,32 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {recentUrls.length === 0 ? (
-            <div className="text-center py-8 space-y-3">
-              <div className="empty-state-icon">
-                <Link2 className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
-              </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">Nothing here yet. Go shorten a link!</p>
+            <div className="text-center py-8">
+              <p className="text-xs text-zinc-400 dark:text-zinc-500">No links created yet.</p>
             </div>
           ) : (
             <div className="space-y-2">
-              {recentUrls.map((u, rowIdx) => (
+              {recentUrls.map((u) => (
                 <div
                   key={u.id}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-black/5 dark:border-white/[0.04] bg-black/[0.01] dark:bg-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.03] hover:border-emerald-500/20 transition-all group"
-                  style={{ animationDelay: `${rowIdx * 40}ms` }}
+                  className="flex items-center gap-3 p-3 rounded-xl border border-black/[0.04] dark:border-white/[0.05] bg-black/[0.01] dark:bg-white/[0.02] hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors"
                 >
-                  {/* Timeline dot */}
-                  <div className="timeline-dot shrink-0" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 ml-1 mr-1" />
 
                   <div className="flex-1 min-w-0">
                     <a
                       href={getWorkingShortUrl(u.shortCode)}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline transition-colors short-link-mono block truncate"
+                      className="text-xs font-mono font-medium text-zinc-900 dark:text-white hover:underline block truncate"
                     >
                       {getDisplayShortUrl(u.shortCode)}
                     </a>
-                    <span className="block text-[10px] text-zinc-600 dark:text-zinc-400 font-medium truncate">{u.originalUrl}</span>
+                    <span className="block text-[11px] text-zinc-400 dark:text-zinc-500 truncate">{u.originalUrl}</span>
                   </div>
 
                   <div className="shrink-0 text-right">
-                    <div className="text-[10px] text-zinc-600 dark:text-zinc-400 whitespace-nowrap group-hover:text-zinc-900 dark:group-hover:text-zinc-200 transition-colors font-mono font-medium">
+                    <div className="text-[11px] text-zinc-400 font-mono">
                       {new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </div>
                   </div>

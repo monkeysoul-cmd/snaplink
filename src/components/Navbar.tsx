@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { LogIn, LogOut, UserPlus, Menu, X, LayoutDashboard, Scissors, Zap } from "lucide-react";
+import { LogIn, LogOut, UserPlus, Menu, X, LayoutDashboard, Link2, BarChart3 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.js";
 import { ThemeToggle } from "./ThemeToggle.js";
 
@@ -55,8 +55,8 @@ export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false }) => {
   const navLinks = isAuthenticated
     ? [
         { label: "Dashboard", path: "#/dashboard", icon: LayoutDashboard },
-        { label: "Links", path: "#/links", icon: Scissors },
-        { label: "Analytics", path: "#/analytics", icon: Zap },
+        { label: "Links", path: "#/links", icon: Link2 },
+        { label: "Analytics", path: "#/analytics", icon: BarChart3 },
       ]
     : [];
 
@@ -66,23 +66,23 @@ export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false }) => {
         className={`navbar-root w-full ${scrolled ? "navbar-scrolled" : ""} ${isPrivatePath ? "md:ml-64 md:w-[calc(100%-16rem)]" : ""}`}
         ref={menuRef}
       >
-        {/* Animated top accent line */}
+        {/* Subtle top hairline */}
         <div className="navbar-accent-line" />
 
         <div className="navbar-inner">
-          {/* ── Logo ──
-              Always visible on guest pages; on private pages visible only on mobile screens (desktop has it in Sidebar) */}
+          {/* ── Logo ── */}
           <button
             onClick={() => handleNavigate("#/")}
-            className={`navbar-logo group cursor-pointer ${isPrivatePath ? "flex md:hidden" : "flex"}`}
+            className={`items-center gap-2.5 cursor-pointer ${isPrivatePath ? "flex md:hidden" : "flex"} group`}
             id="nav-logo"
             aria-label="Go home"
           >
-            <span className="navbar-logo-icon group-hover:rotate-[20deg] group-hover:scale-110 transition-transform">
-              ✂️
+            <div className="w-7 h-7 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center font-bold shadow-xs">
+              <Link2 className="w-3.5 h-3.5" />
+            </div>
+            <span className="font-semibold text-base tracking-tight text-zinc-900 dark:text-white">
+              SnapLink
             </span>
-            <span className="navbar-logo-text">SnapLink</span>
-            <span className="navbar-logo-underline" />
           </button>
 
           {/* Spacer to balance flex layout on desktop since logo is in Sidebar */}
@@ -102,7 +102,6 @@ export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false }) => {
                   >
                     <Icon className="w-3.5 h-3.5 shrink-0" />
                     {label}
-                    <span className={`navbar-link-indicator ${active ? "navbar-link-indicator-active" : ""}`} />
                   </button>
                 );
               })}

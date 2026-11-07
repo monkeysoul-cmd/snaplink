@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import { BarChart3, LayoutDashboard, Link, PlusCircle, Settings, LogOut } from "lucide-react";
+import React from "react";
+import { BarChart3, LayoutDashboard, Link2, PlusCircle, Settings, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext.js";
 
 interface SidebarProps {
@@ -8,57 +8,36 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
   const { logout } = useAuth();
-  const sidebarRef = useRef<HTMLDivElement>(null);
 
   const handleNavigate = (path: string) => {
     window.location.hash = path;
   };
-
-  // Staggered entrance for nav items
-  useEffect(() => {
-    const items = sidebarRef.current?.querySelectorAll(".nav-item");
-    items?.forEach((el, i) => {
-      const item = el as HTMLElement;
-      item.style.opacity = "0";
-      item.style.transform = "translateX(-14px)";
-      setTimeout(() => {
-        item.style.transition = "opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)";
-        item.style.opacity = "1";
-        item.style.transform = "translateX(0)";
-      }, 80 + i * 60);
-    });
-  }, []);
 
   const navItems = [
     {
       label: "Overview",
       path: "#/dashboard",
       icon: LayoutDashboard,
-      emoji: "📋",
     },
     {
       label: "New Link",
       path: "#/create",
       icon: PlusCircle,
-      emoji: "✂️",
     },
     {
       label: "My Links",
       path: "#/links",
-      icon: Link,
-      emoji: "🔗",
+      icon: Link2,
     },
     {
       label: "Analytics",
       path: "#/analytics",
       icon: BarChart3,
-      emoji: "📊",
     },
     {
       label: "Settings",
       path: "#/profile",
       icon: Settings,
-      emoji: "⚙️",
     },
   ];
 
@@ -66,98 +45,89 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
     <>
       {/* Desktop Sidebar — Fixed to viewport left */}
       <aside
-        ref={sidebarRef}
-        className="hidden md:flex flex-col w-64 fixed top-0 left-0 bottom-0 z-30 border-r border-black/5 dark:border-white/[0.06] bg-white/95 dark:bg-[#060612]/95 backdrop-blur-xl p-4 justify-between select-none shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-none overflow-y-auto"
+        className="hidden md:flex flex-col w-64 fixed top-0 left-0 bottom-0 z-30 border-r border-black/[0.06] dark:border-white/[0.08] bg-white/75 dark:bg-[#0c0d12]/75 backdrop-blur-2xl p-4 justify-between select-none shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-none overflow-y-auto"
       >
         <div className="flex flex-col gap-1">
           {/* ── Logo ── */}
           <button
             onClick={() => handleNavigate("#/")}
-            className="navbar-logo group mb-6 mt-2"
+            className="flex items-center gap-2.5 px-3 py-2 mb-6 mt-1 rounded-xl text-left cursor-pointer group transition-opacity hover:opacity-80"
             id="sidebar-logo"
             aria-label="Go home"
           >
-            <span className="navbar-logo-icon group-hover:rotate-[20deg] group-hover:scale-110">
-              ✂️
+            <div className="w-8 h-8 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center font-bold shadow-sm">
+              <Link2 className="w-4 h-4" />
+            </div>
+            <span className="font-semibold text-base tracking-tight text-zinc-900 dark:text-white">
+              SnapLink
             </span>
-            <span className="navbar-logo-text">SnapLink</span>
-            <span className="navbar-logo-underline" />
           </button>
 
-          <div className="px-3 mb-4 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-            Menu
+          <div className="px-3 mb-2 text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+            Navigation
           </div>
 
-          {navItems.map((item, idx) => {
-            const isActive = currentPath === item.path;
+          <nav className="flex flex-col gap-1" aria-label="Sidebar navigation">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentPath === item.path;
 
-            return (
-              <button
-                key={item.path}
-                onClick={() => handleNavigate(item.path)}
-                style={{ transitionDelay: `${idx * 20}ms` }}
-                className={`nav-item flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all cursor-pointer group relative ${
-                  isActive
-                    ? "bg-gradient-to-r from-emerald-600/10 dark:from-emerald-600/15 to-teal-600/5 dark:to-teal-600/10 text-emerald-700 dark:text-emerald-300 shadow-sm border border-emerald-500/20 dark:border-emerald-500/20"
-                    : "text-zinc-600 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200 border border-transparent hover:border-white/[0.04] hover:scale-[1.02] hover:shadow-sm"
-                }`}
-                id={`sidebar-item-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
-              >
-                {/* Active shimmer sweep */}
-                {isActive && (
-                  <span
-                    className="absolute inset-0 rounded-xl pointer-events-none overflow-hidden"
-                    aria-hidden="true"
-                  >
-                    <span className="absolute inset-0 opacity-0 animate-[shimmer-slide_2.5s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-emerald-400/[0.06] to-transparent" />
-                  </span>
-                )}
-
-                <span className={`text-base transition-all duration-300 ${isActive ? "scale-125 drop-shadow-[0_0_6px_rgba(52,211,153,0.6)]" : "group-hover:scale-110 group-hover:rotate-6"}`}>
-                  {item.emoji}
-                </span>
-                <span className="flex-1 text-left">{item.label}</span>
-                {isActive && (
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0" />
-                )}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => handleNavigate(item.path)}
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all cursor-pointer text-left ${
+                    isActive
+                      ? "bg-zinc-900/5 dark:bg-white/[0.08] text-zinc-900 dark:text-white shadow-xs border border-zinc-900/10 dark:border-white/10 backdrop-blur-md"
+                      : "text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-100 border border-transparent"
+                  }`}
+                  id={`sidebar-item-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
+                >
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400 dark:text-zinc-500"}`} />
+                  <span className="flex-1">{item.label}</span>
+                  {isActive && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
         </div>
 
         {/* Bottom Logout */}
         <button
           onClick={logout}
-          className="nav-item flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-zinc-600 dark:text-zinc-500 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400 transition-all cursor-pointer border border-transparent hover:border-rose-500/15 hover:scale-[1.02] group"
+          className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-zinc-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer border border-transparent"
           id="sidebar-logout"
         >
-          <LogOut className="w-5 h-5 shrink-0 group-hover:rotate-12 transition-transform duration-300" />
+          <LogOut className="w-4 h-4 shrink-0" />
           <span>Log out</span>
         </button>
       </aside>
 
       {/* Mobile Bottom Navigation */}
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#060612]/90 dark:backdrop-blur-2xl border-t border-black/5 dark:border-white/[0.06] z-40 flex items-center justify-around px-2 shadow-[0_-4px_24px_rgba(0,0,0,0.02)] dark:shadow-none"
-        style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))', paddingTop: '0.5rem', minHeight: '4rem' }}
+        className="md:hidden fixed bottom-0 left-0 right-0 bg-white/85 dark:bg-[#0c0d12]/85 backdrop-blur-2xl border-t border-black/[0.06] dark:border-white/[0.08] z-40 flex items-center justify-around px-2 shadow-[0_-4px_24px_rgba(0,0,0,0.02)] dark:shadow-none"
+        style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))', paddingTop: '0.5rem', minHeight: '3.75rem' }}
       >
         {navItems.map((item) => {
+          const Icon = item.icon;
           const isActive = currentPath === item.path;
 
           return (
             <button
               key={item.path}
               onClick={() => handleNavigate(item.path)}
-              className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 px-2 rounded-lg cursor-pointer transition-all ${
+              className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 px-2 rounded-lg cursor-pointer transition-colors ${
                 isActive
-                  ? "text-emerald-600 dark:text-emerald-400 scale-110"
-                  : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:scale-105"
+                  ? "text-zinc-900 dark:text-white font-medium"
+                  : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
               }`}
               id={`mobile-nav-item-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
             >
-              <span className={`text-lg ${isActive ? "drop-shadow-[0_0_6px_rgba(52,211,153,0.8)] scale-125" : ""} transition-all duration-300`}>{item.emoji}</span>
-              <span className="text-[10px] font-medium leading-none">{item.label}</span>
-              {isActive && <div className="w-1 h-1 rounded-full bg-emerald-400 mt-0.5 shadow-[0_0_4px_rgba(52,211,153,0.8)]" />}
+              <Icon className={`w-4 h-4 ${isActive ? "text-emerald-600 dark:text-emerald-400" : ""}`} />
+              <span className="text-[11px] leading-none">{item.label}</span>
+              {isActive && <div className="w-1 h-1 rounded-full bg-emerald-500 dark:bg-emerald-400 mt-0.5" />}
             </button>
           );
         })}
