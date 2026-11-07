@@ -110,31 +110,31 @@ export const CreateUrlPage: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* ── Form ── */}
-        <div className="lg:col-span-2 premium-card p-5 sm:p-7 space-y-6">
+        <div className="lg:col-span-2 glass-card p-5 sm:p-7 space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6" id="create-url-form">
 
             {/* Step 1 — URL */}
-            <div className="space-y-4">
-              <div className="form-section-label font-bold text-xs uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
-                <Link2 className="w-3.5 h-3.5" />
+            <div className="space-y-3">
+              <div className="font-medium text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
+                <Link2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 Destination URL
               </div>
 
               <div className="space-y-1.5">
                 <input
-                  type="text"
+                  type="url"
                   value={originalUrl}
                   onChange={(e) => setOriginalUrl(e.target.value)}
                   required
-                  className="w-full px-4 py-4 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl font-medium placeholder-zinc-400 dark:placeholder-zinc-400 focus:outline-none"
-                  placeholder="https://example.com/your-really-long-url-that-needs-shortening"
+                  className="w-full px-4 py-3.5 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl font-medium placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none"
+                  placeholder="https://example.com/your-long-url-to-shorten"
                   id="create-url-original"
                 />
                 {/* Live preview */}
                 {originalUrl && (
                   <div className="flex items-center gap-2 px-1">
-                    <Globe className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
-                    <span className="text-[11px] text-zinc-600 dark:text-zinc-300 font-medium truncate">
+                    <Globe className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                    <span className="text-xs text-zinc-500 font-mono truncate">
                       {(() => { try { return new URL(originalUrl).hostname; } catch { return originalUrl.slice(0, 40); } })()}
                     </span>
                   </div>
@@ -144,71 +144,69 @@ export const CreateUrlPage: React.FC = () => {
 
             {/* Step 2 — Customize */}
             <div className="space-y-4">
-              <div className="form-section-label font-bold text-xs uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
-                <Settings2 className="w-3.5 h-3.5" />
-                Customize
-                <span className="font-normal normal-case text-zinc-500 dark:text-zinc-400 tracking-normal text-[11px]">(optional)</span>
+              <div className="font-medium text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
+                <Settings2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                Optional settings
               </div>
 
               {/* Custom alias */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest block">
-                  Custom back-half
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block">
+                  Custom alias
                 </label>
-                <div className="flex items-center glass-input rounded-xl overflow-hidden focus-within:border-emerald-500/60 focus-within:shadow-[0_0_0_3px_rgba(52,211,153,0.15)] transition-all">
-                  <span className="pl-4 pr-1 text-zinc-600 dark:text-zinc-300 text-sm font-semibold select-none whitespace-nowrap shrink-0 border-r border-black/10 dark:border-white/[0.08] pr-3 mr-0">
+                <div className="flex items-center glass-input rounded-xl overflow-hidden">
+                  <span className="pl-3.5 pr-2 text-zinc-500 text-xs font-mono select-none shrink-0 border-r border-black/[0.06] dark:border-white/[0.08]">
                     {getShortDomain()}/
                   </span>
                   <input
                     type="text"
                     value={customAlias}
                     onChange={(e) => setCustomAlias(e.target.value)}
-                    className="flex-1 min-w-0 px-3 py-3.5 bg-transparent border-none outline-none text-sm text-zinc-900 dark:text-zinc-100 font-bold placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none"
+                    className="flex-1 min-w-0 px-3 py-3 bg-transparent border-none outline-none text-sm text-zinc-900 dark:text-zinc-100 font-mono placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none"
                     placeholder="my-link"
                     id="create-url-alias"
                     maxLength={50}
                   />
-                  <span className="pr-3 text-[10px] text-zinc-500 dark:text-zinc-400 font-mono select-none shrink-0 font-semibold">{aliasLen}/50</span>
+                  <span className="pr-3 text-[10px] text-zinc-400 font-mono select-none shrink-0">{aliasLen}/50</span>
                 </div>
-                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 font-medium px-1">Pick something short and memorable.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Expiry */}
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest flex items-center gap-1">
-                    <Calendar className="w-3 h-3 text-blue-500 dark:text-blue-400" />
-                    Expires on
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-zinc-400" />
+                    Expiration date
                   </label>
                   <input
                     type="datetime-local"
                     value={expiresAt}
                     min={getNowLocalDatetime()}
                     onChange={(e) => setExpiresAt(e.target.value)}
-                    className="w-full px-4 py-3 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none font-medium"
+                    className="w-full px-3.5 py-2.5 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none"
                     id="create-url-expiry"
                   />
                 </div>
 
                 {/* Password */}
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest flex items-center gap-1">
-                    <Lock className="w-3 h-3 text-amber-500 dark:text-amber-400" />
-                    Password protect
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
+                    <Lock className="w-3.5 h-3.5 text-zinc-400" />
+                    Password protection
                   </label>
                   <div className="relative">
                     <input
                       type={showPwd ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-4 py-3 pr-10 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-500 font-medium"
+                      className="w-full px-3.5 py-2.5 pr-10 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-600"
                       placeholder="••••••••"
                       id="create-url-password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPwd(!showPwd)}
-                      className="absolute right-3 top-3.5 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 cursor-pointer transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
                     >
                       {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -218,55 +216,54 @@ export const CreateUrlPage: React.FC = () => {
 
               {/* Tags */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest flex items-center gap-1">
-                  <Tag className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
+                  <Tag className="w-3.5 h-3.5 text-zinc-400" />
                   Tags
                 </label>
                 <input
                   type="text"
                   value={tagsInput}
                   onChange={(e) => setTagsInput(e.target.value)}
-                  className="w-full px-4 py-3 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-500 font-medium"
-                  placeholder="marketing, social, q3"
+                  className="w-full px-3.5 py-2.5 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-600"
+                  placeholder="marketing, social, product"
                   id="create-url-tags"
                 />
-                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 font-medium px-1">Separate with commas to organize your links.</p>
               </div>
 
               {/* Toggles */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 pt-1">
                 <button
                   type="button"
                   onClick={() => setIsPublic(!isPublic)}
-                  className={`flex items-center justify-between p-3.5 rounded-xl border transition select-none cursor-pointer group ${
+                  className={`flex items-center justify-between p-3 rounded-xl border transition cursor-pointer ${
                     isPublic
-                      ? 'border-emerald-500/35 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 font-semibold'
-                      : 'border-black/10 dark:border-white/[0.06] bg-black/[0.02] dark:bg-white/[0.02] text-zinc-600 dark:text-zinc-400 hover:border-black/20 dark:hover:border-white/[0.1]'
+                      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 font-medium'
+                      : 'border-black/[0.06] dark:border-white/[0.08] bg-black/[0.02] dark:bg-white/[0.02] text-zinc-600 dark:text-zinc-400'
                   }`}
                 >
                   <div className="text-left">
-                    <div className="text-xs font-bold">Public stats</div>
-                    <div className="text-[10px] opacity-80 mt-0.5">Visible analytics</div>
+                    <div className="text-xs font-medium">Public statistics</div>
+                    <div className="text-[10px] text-zinc-400">Visitor visible stats</div>
                   </div>
-                  <div className={`w-9 h-5 rounded-full relative transition-colors ${isPublic ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-700'}`}>
-                    <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${isPublic ? 'left-4' : 'left-0.5'}`} />
+                  <div className={`w-8 h-4.5 rounded-full relative transition-colors ${isPublic ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'}`}>
+                    <div className={`absolute top-0.5 w-3.5 h-3.5 bg-white rounded-full transition-transform ${isPublic ? 'left-4' : 'left-0.5'}`} />
                   </div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setIsFavorite(!isFavorite)}
-                  className={`flex items-center justify-between p-3.5 rounded-xl border transition select-none cursor-pointer ${
+                  className={`flex items-center justify-between p-3 rounded-xl border transition cursor-pointer ${
                     isFavorite
-                      ? 'border-amber-500/35 bg-amber-500/10 text-amber-800 dark:text-amber-300 font-semibold'
-                      : 'border-black/10 dark:border-white/[0.06] bg-black/[0.02] dark:bg-white/[0.02] text-zinc-600 dark:text-zinc-400 hover:border-black/20 dark:hover:border-white/[0.1]'
+                      ? 'border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-300 font-medium'
+                      : 'border-black/[0.06] dark:border-white/[0.08] bg-black/[0.02] dark:bg-white/[0.02] text-zinc-600 dark:text-zinc-400'
                   }`}
                 >
                   <div className="text-left">
-                    <div className="text-xs font-bold">Favorite</div>
-                    <div className="text-[10px] opacity-80 mt-0.5">Pin to top</div>
+                    <div className="text-xs font-medium">Favorite</div>
+                    <div className="text-[10px] text-zinc-400">Pin to top</div>
                   </div>
-                  <Star className={`w-5 h-5 transition-all ${isFavorite ? 'text-amber-500 dark:text-amber-400 fill-current scale-110' : 'text-zinc-400'}`} />
+                  <Star className={`w-4 h-4 transition-all ${isFavorite ? 'text-amber-500 dark:text-amber-400 fill-current' : 'text-zinc-400'}`} />
                 </button>
               </div>
             </div>
@@ -274,10 +271,10 @@ export const CreateUrlPage: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 btn-glow disabled:opacity-50 text-white font-bold text-sm rounded-xl cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-3.5 btn-glow disabled:opacity-50 text-sm rounded-xl cursor-pointer flex items-center justify-center gap-2 font-medium"
               id="create-url-submit"
             >
-              <span>{isSubmitting ? "Creating..." : "Shorten URL"}</span>
+              <span>{isShortening ? "Creating..." : "Shorten URL"}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
@@ -286,14 +283,12 @@ export const CreateUrlPage: React.FC = () => {
         {/* ── Side panel ── */}
         <div className="space-y-5">
           {displayUrl && workingUrl && createdCode ? (
-            <div className="animate-scaleIn space-y-4">
-              <div className="premium-card p-5 space-y-4">
-                <div className="border-beam" />
-
+            <div className="space-y-4">
+              <div className="glass-card p-5 space-y-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse-soft" />
-                  <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
-                    Link created!
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                    Link ready
                   </span>
                 </div>
 
@@ -302,27 +297,23 @@ export const CreateUrlPage: React.FC = () => {
                     href={workingUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-base font-bold text-emerald-600 dark:text-emerald-400 hover:underline break-all block transition-colors short-link-mono"
+                    className="text-base font-mono font-medium text-zinc-900 dark:text-white hover:underline break-all block"
                   >
                     {displayUrl}
                   </a>
-                  <div className="link-preview-domain mt-1.5">
-                    <Globe className="w-2.5 h-2.5" />
-                    {workingUrl}
-                  </div>
                 </div>
 
                 <button
                   onClick={handleCopy}
-                  className={`flex items-center justify-center gap-2 w-full py-2.5 text-xs font-bold rounded-xl cursor-pointer transition-all ${
+                  className={`flex items-center justify-center gap-2 w-full py-2.5 text-xs font-medium rounded-xl cursor-pointer transition-all border ${
                     copied
-                      ? 'bg-emerald-500/15 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400'
-                      : 'btn-glass'
+                      ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-600 dark:text-emerald-400'
+                      : 'border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200'
                   }`}
                 >
                   {copied
-                    ? <><Check className="w-4 h-4" /> Copied!</>
-                    : <><Copy className="w-4 h-4" /> Copy link</>
+                    ? <><Check className="w-3.5 h-3.5" /> Copied</>
+                    : <><Copy className="w-3.5 h-3.5" /> Copy link</>
                   }
                 </button>
               </div>
@@ -330,23 +321,15 @@ export const CreateUrlPage: React.FC = () => {
               <UrlQrCode shortUrl={workingUrl} shortCode={createdCode} />
             </div>
           ) : (
-            <div className="premium-card p-7 text-center space-y-5">
-              <div className="empty-state-icon">
-                <PlusCircle className="w-7 h-7 text-emerald-500 dark:text-emerald-400 animate-pulse-soft" />
+            <div className="glass-card p-6 text-center space-y-4">
+              <div className="w-10 h-10 rounded-xl bg-zinc-900/[0.04] dark:bg-white/[0.06] border border-zinc-900/10 dark:border-white/10 flex items-center justify-center text-zinc-600 dark:text-zinc-400 mx-auto">
+                <PlusCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <div className="space-y-1.5">
-                <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 font-display">Ready to shorten</h3>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-[200px] mx-auto leading-relaxed font-medium">
-                  Paste a URL and hit shorten — your QR code and short link will appear here.
+              <div className="space-y-1">
+                <h3 className="font-semibold text-sm text-zinc-900 dark:text-white">Link preview</h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-[220px] mx-auto leading-relaxed">
+                  Your short link and QR code will appear here after creation.
                 </p>
-              </div>
-              <div className="flex flex-col gap-2 text-[11px] text-zinc-600 dark:text-zinc-400 font-medium">
-                {["Custom aliases", "Password protection", "Click analytics"].map((f) => (
-                  <div key={f} className="flex items-center gap-2 justify-center">
-                    <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                    <span>{f}</span>
-                  </div>
-                ))}
               </div>
             </div>
           )}

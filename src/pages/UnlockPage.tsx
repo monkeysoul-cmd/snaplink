@@ -29,13 +29,11 @@ export const UnlockPage: React.FC = () => {
 
     try {
       const data = await api.url.verifyPassword(shortCode, password);
-      toast.success("Unlocked! Redirecting...");
-      
-      // Redirect to the target
+      toast.success("Unlocked");
       window.location.href = data.originalUrl;
     } catch (error: any) {
       console.error(error);
-      const msg = error.message || "Wrong password. Try again.";
+      const msg = error.message || "Incorrect password.";
       setErrorMsg(msg);
       toast.error(msg);
     } finally {
@@ -44,37 +42,30 @@ export const UnlockPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-[#f0fdf4] dark:bg-[#060612] transition-colors" />
-      <div className="absolute top-1/4 left-1/3 w-80 h-80 bg-amber-600/10 rounded-full blur-[120px] animate-blob" />
-      <div className="absolute bottom-1/4 right-1/3 w-72 h-72 bg-violet-600/10 rounded-full blur-[120px] animate-blob" style={{ animationDelay: '4s' }} />
-
-      <div className="w-full max-w-md premium-card rounded-3xl p-6 sm:p-8 animate-slideUp relative z-10">
-        {/* Gradient top accent */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[2px] bg-gradient-to-r from-amber-500 to-orange-500 rounded-full" />
-
+    <div className="w-full min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 relative overflow-hidden bg-[#fafafa] dark:bg-[#090a0f] transition-colors">
+      <div className="w-full max-w-sm glass-card p-8 sm:p-10 rounded-2xl shadow-xl relative z-10">
         <div className="text-center space-y-3 mb-6">
-          <div className="inline-flex p-3.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25 rounded-2xl mb-1 select-none">
-            <Lock className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-2xl bg-zinc-900/[0.04] dark:bg-white/[0.06] border border-zinc-900/10 dark:border-white/10 flex items-center justify-center text-zinc-700 dark:text-zinc-300 mx-auto">
+            <Lock className="w-5 h-5 text-amber-500" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white font-display">This link is locked</h2>
-          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed font-medium">
-            Enter the password for <span className="font-bold text-emerald-600 dark:text-teal-400">/{shortCode}</span> to continue.
+          <h1 className="text-xl font-semibold text-zinc-900 dark:text-white tracking-tight">
+            Protected link
+          </h1>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
+            Enter the password for <span className="font-mono font-medium text-zinc-800 dark:text-zinc-200">/{shortCode}</span> to continue
           </p>
         </div>
 
         {errorMsg && (
-          <div className="p-3 mb-5 bg-rose-500/10 border border-rose-500/25 rounded-xl flex items-center gap-2 text-xs text-rose-700 dark:text-rose-300 font-semibold animate-scaleIn">
-            <span>⚠️</span>
-            <span>{errorMsg}</span>
+          <div className="p-3 mb-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs font-medium text-rose-600 dark:text-rose-400">
+            {errorMsg}
           </div>
         )}
 
         <form onSubmit={handleUnlock} className="space-y-4" id="unlock-form">
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider block flex items-center gap-1.5">
-              <KeyRound className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
+              <KeyRound className="w-3.5 h-3.5 text-zinc-400" />
               Password
             </label>
             <input
@@ -82,7 +73,7 @@ export const UnlockPage: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3.5 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl font-semibold placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none"
+              className="w-full px-3.5 py-2.5 glass-input text-sm rounded-xl focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-600"
               placeholder="••••••••"
               id="unlock-password-input"
             />
@@ -91,15 +82,15 @@ export const UnlockPage: React.FC = () => {
           <button
             type="submit"
             disabled={isVerifying}
-            className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 disabled:opacity-50 text-white font-bold rounded-xl transition-all shadow-lg shadow-amber-600/20 cursor-pointer flex items-center justify-center gap-2"
+            className="w-full py-3 btn-glow text-sm rounded-xl cursor-pointer flex items-center justify-center gap-2 font-medium disabled:opacity-50"
           >
             {isVerifying ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Unlocking...
+                <span>Unlocking...</span>
               </>
             ) : (
-              "Unlock"
+              <span>Unlock link</span>
             )}
           </button>
         </form>
@@ -109,10 +100,10 @@ export const UnlockPage: React.FC = () => {
             onClick={() => {
               window.location.hash = "#/";
             }}
-            className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-teal-400 flex items-center justify-center gap-1.5 mx-auto cursor-pointer transition-colors"
+            className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white flex items-center justify-center gap-1.5 mx-auto cursor-pointer transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            Back to home
+            Home
           </button>
         </div>
       </div>

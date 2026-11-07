@@ -206,13 +206,13 @@ export const AnalyticsPage: React.FC = () => {
       </div>
 
       {totalClicks === 0 ? (
-        <div className="premium-card p-12 text-center space-y-5 max-w-lg mx-auto mt-12">
-          <div className="empty-state-icon">
-            <Activity className="w-7 h-7 text-emerald-500 dark:text-emerald-400" />
+        <div className="glass-card p-12 text-center space-y-4 max-w-md mx-auto mt-12">
+          <div className="w-10 h-10 rounded-xl bg-zinc-900/[0.04] dark:bg-white/[0.06] border border-zinc-900/10 dark:border-white/10 flex items-center justify-center text-zinc-600 dark:text-zinc-400 mx-auto">
+            <Activity className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div className="space-y-1">
-            <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 font-display">No data yet</h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-[280px] mx-auto leading-relaxed font-medium">
+            <h3 className="font-semibold text-sm text-zinc-900 dark:text-white">No data yet</h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
               Share your shortened links to start seeing device, browser, and country breakdowns here.
             </p>
           </div>
@@ -220,40 +220,36 @@ export const AnalyticsPage: React.FC = () => {
       ) : (
         <div className="space-y-6">
           {/* ── Total clicks hero number ── */}
-          <div className="premium-card p-6 flex items-center gap-6 animate-springUp" style={{ opacity: 0 }}>
-            <div className="icon-ring icon-ring-emerald">
-              <MousePointerClick className="w-5 h-5 text-emerald-600 dark:text-emerald-400 relative z-10" />
+          <div className="glass-card p-6 flex items-center gap-6">
+            <div className="w-10 h-10 rounded-xl bg-zinc-900/[0.04] dark:bg-white/[0.06] border border-zinc-900/10 dark:border-white/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <MousePointerClick className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[11px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest mb-1">Total clicks tracked</div>
-              <div className="text-4xl font-extrabold text-zinc-900 dark:text-white font-mono">{totalClicks.toLocaleString()}</div>
-            </div>
-            <div className="ml-auto opacity-30">
-              <Activity className="w-16 h-16 text-emerald-500 dark:text-emerald-400" />
+              <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-0.5">Total clicks tracked</div>
+              <div className="text-3xl font-semibold text-zinc-900 dark:text-white font-mono">{totalClicks.toLocaleString()}</div>
             </div>
           </div>
 
           {/* ── Three analytics cards ── */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {analyticsCards.map((card, cardIdx) => {
+            {analyticsCards.map((card) => {
               const CardIcon = card.icon;
               return (
                 <div
                   key={card.id}
-                  className={`premium-card p-5 sm:p-6 space-y-5 animate-tiltIn stagger-${cardIdx + 1} ${card.wide ? 'md:col-span-2 xl:col-span-1' : ''}`}
-                  style={{ opacity: 0 }}
+                  className={`glass-card p-5 sm:p-6 space-y-5 ${card.wide ? 'md:col-span-2 xl:col-span-1' : ''}`}
                 >
                   {/* Card header */}
                   <div>
-                    <div className="flex items-center gap-2.5 mb-1">
-                      <div className="icon-ring icon-ring-emerald w-8 h-8 text-sm">
-                        <CardIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400 relative z-10" />
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-7 h-7 rounded-lg bg-zinc-900/[0.04] dark:bg-white/[0.06] border border-zinc-900/10 dark:border-white/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xs">
+                        <CardIcon className="w-3.5 h-3.5" />
                       </div>
-                      <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white font-display">
+                      <h2 className="text-sm font-semibold text-zinc-900 dark:text-white">
                         {card.title}
                       </h2>
                     </div>
-                    <p className="text-[11px] text-zinc-600 dark:text-zinc-400 font-medium">{card.subtitle}</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">{card.subtitle}</p>
                   </div>
 
                   {/* Stats list */}
