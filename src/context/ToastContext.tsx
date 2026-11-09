@@ -39,9 +39,14 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   const addToast = useCallback((type: ToastType, message: string) => {
-    if (!notificationsEnabled) return;
+    // Only mute non-error notifications when disabled
+    if (!notificationsEnabled && type !== "error") return;
     const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, type, message }]);
+    setToasts((prev) => {
+      const updated = [...prev, { id, type, message }];
+      // Keep maximum 4 most recent toasts visible to prevent screen clogging
+      return updated.slice(-4);
+    });
     
     // Auto remove after 4 seconds
     setTimeout(() => {

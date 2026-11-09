@@ -243,7 +243,7 @@ export const DashboardPage: React.FC = () => {
             <div className="space-y-2">
               {mostVisited.map((u, rowIdx) => (
                 <div
-                  key={u.id}
+                  key={u.id || u._id || rowIdx}
                   className="flex items-center gap-3 p-3 rounded-xl border border-black/[0.04] dark:border-white/[0.05] bg-black/[0.01] dark:bg-white/[0.02] hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors"
                 >
                   <div className="w-5 h-5 rounded flex items-center justify-center text-xs font-mono font-medium text-zinc-400 shrink-0">
@@ -296,9 +296,9 @@ export const DashboardPage: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-2">
-              {recentUrls.map((u) => (
+              {recentUrls.map((u, rowIdx) => (
                 <div
-                  key={u.id}
+                  key={u.id || u._id || rowIdx}
                   className="flex items-center gap-3 p-3 rounded-xl border border-black/[0.04] dark:border-white/[0.05] bg-black/[0.01] dark:bg-white/[0.02] hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 ml-1 mr-1" />

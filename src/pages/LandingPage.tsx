@@ -16,25 +16,34 @@ export const LandingPage: React.FC = () => {
   const [redirectError, setRedirectError] = useState<string | null>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const err = params.get("error");
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashQuery = window.location.hash.includes("?") 
+      ? window.location.hash.split("?")[1] 
+      : "";
+    const hashParams = new URLSearchParams(hashQuery);
+    const err = searchParams.get("error") || hashParams.get("error");
+
     if (err === "inactive") {
       setRedirectError("This shortened link has been deactivated by its owner.");
       toast.error("This shortened link is inactive.");
-      window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.hash.split("?")[0]);
     } else if (err === "expired") {
       setRedirectError("This shortened link has expired and is no longer accessible.");
       toast.error("This shortened link has expired.");
-      window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.hash.split("?")[0]);
     }
   }, []);
 
   const handleShorten = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!longUrl.trim()) { toast.error("Please enter a URL to shorten."); return; }
+    let cleanUrl = longUrl.trim();
+    if (!cleanUrl) { toast.error("Please enter a URL to shorten."); return; }
+    if (!/^https?:\/\//i.test(cleanUrl)) {
+      cleanUrl = "https://" + cleanUrl;
+    }
     setIsShortening(true);
     try {
-      const data = await api.url.create({ originalUrl: longUrl });
+      const data = await api.url.create({ originalUrl: cleanUrl });
       const fullShort = getDisplayShortUrl(data.shortCode);
       const fullWorking = getWorkingShortUrl(data.shortCode);
       setShortenedUrl(fullShort);
@@ -137,7 +146,8 @@ export const LandingPage: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
                   <input
-                    type="url"
+                    type="text"
+                    inputMode="url"
                     value={longUrl}
                     onChange={(e) => setLongUrl(e.target.value)}
                     required

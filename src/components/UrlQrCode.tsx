@@ -17,6 +17,7 @@ export const UrlQrCode: React.FC<UrlQrCodeProps> = ({ shortUrl, shortCode }) => 
     try {
       toast.info("Preparing QR Code for download...");
       const response = await fetch(qrUrl);
+      if (!response.ok) throw new Error("Network response was not ok");
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -28,8 +29,16 @@ export const UrlQrCode: React.FC<UrlQrCodeProps> = ({ shortUrl, shortCode }) => 
       window.URL.revokeObjectURL(url);
       toast.success("QR Code downloaded successfully!");
     } catch (error) {
-      console.error("QR Download error:", error);
-      toast.error("Failed to download QR code. Please try again.");
+      console.warn("Direct blob QR download failed, falling back to direct open:", error);
+      // Fallback: open image directly in new tab or trigger direct download link
+      const link = document.createElement("a");
+      link.href = qrUrl;
+      link.target = "_blank";
+      link.download = `qr-${shortCode}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.info("Opened QR Code for saving.");
     }
   };
 

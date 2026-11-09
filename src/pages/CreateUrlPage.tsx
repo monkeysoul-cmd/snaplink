@@ -52,7 +52,24 @@ export const CreateUrlPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!originalUrl.trim()) { toast.error("Please paste a URL first."); return; }
+    let cleanUrl = originalUrl.trim();
+    if (!cleanUrl) { toast.error("Please paste a URL first."); return; }
+    if (!/^https?:\/\//i.test(cleanUrl)) {
+      cleanUrl = "https://" + cleanUrl;
+    }
+
+    if (customAlias.trim()) {
+      const trimmedAlias = customAlias.trim().replace(/\s+/g, "-");
+      if (trimmedAlias.length < 3) {
+        toast.error("Custom alias must be at least 3 characters.");
+        return;
+      }
+      if (!/^[a-zA-Z0-9_-]+$/.test(trimmedAlias)) {
+        toast.error("Custom alias can only contain letters, numbers, hyphens, and underscores.");
+        return;
+      }
+    }
+
     if (expiresAt && new Date(expiresAt).getTime() <= Date.now()) {
       toast.error("Expiration date must be in the future.");
       return;
@@ -61,10 +78,14 @@ export const CreateUrlPage: React.FC = () => {
     setDisplayUrl(null); setWorkingUrl(null); setCreatedCode(null);
     try {
       const tags = tagsInput.split(",").map((t) => t.trim()).filter((t) => t.length > 0);
+      const parsedExpiry = expiresAt && !isNaN(new Date(expiresAt).getTime()) 
+        ? new Date(expiresAt).toISOString() 
+        : null;
+
       const res = await api.url.create({
-        originalUrl: originalUrl.trim(),
+        originalUrl: cleanUrl,
         customAlias: customAlias.trim() || undefined,
-        expiresAt: expiresAt && !isNaN(new Date(expiresAt).getTime()) ? new Date(expiresAt).toISOString() : null,
+        expiresAt: parsedExpiry,
         password: password.trim() || undefined,
         tags, isPublic, isFavorite,
       });
@@ -122,7 +143,8 @@ export const CreateUrlPage: React.FC = () => {
 
               <div className="space-y-1.5">
                 <input
-                  type="url"
+                  type="text"
+                  inputMode="url"
                   value={originalUrl}
                   onChange={(e) => setOriginalUrl(e.target.value)}
                   required

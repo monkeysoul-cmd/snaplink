@@ -8,6 +8,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
   const { logout } = useAuth();
+  const cleanPath = (currentPath.split("?")[0] || "#/").replace(/\/+$/, "");
 
   const handleNavigate = (path: string) => {
     window.location.hash = path;
@@ -70,7 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
           <nav className="flex flex-col gap-1" aria-label="Sidebar navigation">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = currentPath === item.path;
+              const isActive = cleanPath === item.path;
 
               return (
                 <button
@@ -112,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
       >
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = currentPath === item.path;
+          const isActive = cleanPath === item.path;
 
           return (
             <button

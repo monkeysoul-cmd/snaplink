@@ -18,13 +18,28 @@ import { NotFoundPage } from "./pages/NotFoundPage.js";
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
-  const [currentPath, setCurrentPath] = useState<string>(() => window.location.hash || "#/");
+  const [currentPath, setCurrentPath] = useState<string>(() => {
+    const hash = window.location.hash;
+    if (hash && hash !== "#" && hash !== "#/") return hash;
+    const pathname = window.location.pathname;
+    if (pathname && pathname !== "/") {
+      return `#${pathname}`;
+    }
+    return "#/";
+  });
 
-  // Sync hash changes to local path state
+  // Sync hash changes to local path state and handle direct pathname entries
   useEffect(() => {
     const handleHashChange = () => {
       setCurrentPath(window.location.hash || "#/");
     };
+
+    if ((!window.location.hash || window.location.hash === "#" || window.location.hash === "#/") && window.location.pathname !== "/") {
+      const knownPrefixes = ["/dashboard", "/create", "/links", "/analytics", "/profile", "/login", "/register", "/unlock", "/404"];
+      if (knownPrefixes.some((p) => window.location.pathname.startsWith(p))) {
+        window.location.hash = `#${window.location.pathname}`;
+      }
+    }
 
     window.addEventListener("hashchange", handleHashChange);
     return () => {
@@ -47,9 +62,11 @@ const AppContent: React.FC = () => {
     );
   }
 
-  // Parse path and route variables (e.g. #/unlock/code)
-  let viewPath = currentPath;
-  if (currentPath.startsWith("#/unlock/")) {
+  // Parse path and route variables, stripping query strings and trailing slashes
+  const cleanPath = (currentPath.split("?")[0] || "#/").replace(/\/+$/, "");
+  let viewPath = cleanPath === "" || cleanPath === "#" ? "#/" : cleanPath;
+
+  if (viewPath.startsWith("#/unlock")) {
     viewPath = "#/unlock";
   }
 
@@ -100,7 +117,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#060612] text-zinc-900 dark:text-zinc-100 transition-colors flex flex-col font-sans relative">
-      <Navbar isPrivatePath={isPrivatePath} />
+      <Navbar isPrivatePath={isPrivatePath} currentPath={currentPath} />
 
       {/* Main Container Layout */}
       {isPrivatePath ? (

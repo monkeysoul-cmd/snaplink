@@ -16,7 +16,9 @@ export const LinksPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [search, setSearch] = useState<string>("");
+  const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [tag, setTag] = useState<string>("");
+  const [debouncedTag, setDebouncedTag] = useState<string>("");
   const [favorite, setFavorite] = useState<boolean>(false);
   const [sort, setSort] = useState<string>("createdAt_desc");
   const [page, setPage] = useState<number>(1);
@@ -24,20 +26,43 @@ export const LinksPage: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalUrls, setTotalUrls] = useState<number>(0);
 
+  // Debounce search input to avoid network thrashing & race conditions
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 280);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Debounce tag input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedTag(tag);
+    }, 280);
+    return () => clearTimeout(timer);
+  }, [tag]);
+
   const hasActiveFilters = search || tag || favorite || sort !== "createdAt_desc";
 
   const fetchUrls = async () => {
     setIsLoading(true);
     try {
       const data = await api.url.list({
-        search: search.trim() || undefined,
-        tag: tag.trim() || undefined,
+        search: debouncedSearch.trim() || undefined,
+        tag: debouncedTag.trim() || undefined,
         favorite: favorite || undefined,
         sort, page, limit,
       });
+
+      // Handle page boundary if links on the current page were deleted
+      if (data.pagination.pages > 0 && page > data.pagination.pages) {
+        setPage(data.pagination.pages);
+        return;
+      }
+
       setUrls(data.urls);
-      setTotalPages(data.pagination.pages);
-      setTotalUrls(data.pagination.total);
+      setTotalPages(data.pagination.pages || 1);
+      setTotalUrls(data.pagination.total || 0);
     } catch (err: any) {
       toast.error("Couldn't load your links.");
     } finally {
@@ -45,11 +70,15 @@ export const LinksPage: React.FC = () => {
     }
   };
 
-  useEffect(() => { fetchUrls(); }, [search, tag, favorite, sort, page]);
+  useEffect(() => { 
+    fetchUrls(); 
+  }, [debouncedSearch, debouncedTag, favorite, sort, page]);
 
   const handleFilterChange = () => setPage(1);
   const handleClearFilters = () => {
-    setSearch(""); setTag(""); setFavorite(false); setSort("createdAt_desc"); setPage(1);
+    setSearch(""); setDebouncedSearch(""); 
+    setTag(""); setDebouncedTag(""); 
+    setFavorite(false); setSort("createdAt_desc"); setPage(1);
     toast.success("Filters cleared!");
   };
 
@@ -197,7 +226,7 @@ export const LinksPage: React.FC = () => {
           <div className="grid grid-cols-1 gap-4">
             {urls.map((item, i) => (
               <div
-                key={item.id}
+                key={item.id || item._id || i}
                 className="animate-fadeInUp"
                 style={{ animationDelay: `${i * 0.05}s`, opacity: 0 }}
               >

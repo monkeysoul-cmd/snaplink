@@ -30,13 +30,15 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isDeletingConfirm, setIsDeletingConfirm] = useState<boolean>(false);
 
+  const urlId = url.id || url._id || "";
+
   // Edit state
   const [editUrl, setEditUrl] = useState<string>(url.originalUrl);
   const [editAlias, setEditAlias] = useState<string>(url.customAlias || "");
   const [editExpiry, setEditExpiry] = useState<string>(toLocalDatetime(url.expiresAt));
   const [editPassword, setEditPassword] = useState<string>("");
   const [removePassword, setRemovePassword] = useState<boolean>(false);
-  const [editTags, setEditTags] = useState<string>(url.tags.join(", "));
+  const [editTags, setEditTags] = useState<string>(url.tags ? url.tags.join(", ") : "");
   const [editIsActive, setEditIsActive] = useState<boolean>(url.isActive);
   const [editIsPublic, setEditIsPublic] = useState<boolean>(url.isPublic);
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -44,6 +46,18 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
   const displayShortLink = getDisplayShortUrl(url.shortCode);
   const workingShortLink = getWorkingShortUrl(url.shortCode);
+
+  const startEditing = () => {
+    setEditUrl(url.originalUrl);
+    setEditAlias(url.customAlias || "");
+    setEditExpiry(toLocalDatetime(url.expiresAt));
+    setEditPassword("");
+    setRemovePassword(false);
+    setEditTags(url.tags ? url.tags.join(", ") : "");
+    setEditIsActive(url.isActive);
+    setEditIsPublic(url.isPublic);
+    setIsEditing(true);
+  };
 
   const handleCopy = async () => {
     try {
@@ -59,7 +73,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
   const handleFavoriteToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await api.url.update(url.id, { isFavorite: !url.isFavorite });
+      await api.url.update(urlId, { isFavorite: !url.isFavorite });
       onUpdate();
       toast.success(url.isFavorite ? "Removed from favorites." : "Added to favorites!");
     } catch (error: any) {
@@ -69,7 +83,29 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
   const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editUrl.trim()) { toast.error("URL is required."); return; }
+    let cleanUrl = editUrl.trim();
+    if (!cleanUrl) { toast.error("URL is required."); return; }
+    if (!/^https?:\/\//i.test(cleanUrl)) {
+      cleanUrl = "https://" + cleanUrl;
+    }
+
+    if (editExpiry && new Date(editExpiry).getTime() <= Date.now()) {
+      toast.error("Expiration date must be in the future.");
+      return;
+    }
+
+    if (editAlias.trim()) {
+      const trimmedAlias = editAlias.trim().replace(/\s+/g, "-");
+      if (trimmedAlias.length < 3) {
+        toast.error("Custom alias must be at least 3 characters.");
+        return;
+      }
+      if (!/^[a-zA-Z0-9_-]+$/.test(trimmedAlias)) {
+        toast.error("Custom alias can only contain letters, numbers, hyphens, and underscores.");
+        return;
+      }
+    }
+
     setIsSaving(true);
     try {
       const tagList = editTags.split(",").map((t) => t.trim()).filter((t) => t.length > 0);
@@ -80,8 +116,8 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
         finalPassword = editPassword.trim();
       }
 
-      await api.url.update(url.id, {
-        originalUrl: editUrl,
+      await api.url.update(urlId, {
+        originalUrl: cleanUrl,
         customAlias: editAlias.trim() || null,
         expiresAt: editExpiry && !isNaN(new Date(editExpiry).getTime()) ? new Date(editExpiry).toISOString() : null,
         password: finalPassword,
@@ -102,7 +138,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
   const handleDelete = async () => {
     try {
-      await api.url.delete(url.id);
+      await api.url.delete(urlId);
       toast.success("Link deleted.");
       onDelete();
     } catch (error: any) {
@@ -243,7 +279,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
               {/* Edit */}
               <button
-                onClick={() => setIsEditing(true)}
+                onClick={startEditing}
                 title="Edit"
                 className="p-1.5 sm:p-2 rounded-lg glass-input text-zinc-600 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/20 transition-all cursor-pointer shrink-0"
                 id={`edit-btn-${url.id}`}
