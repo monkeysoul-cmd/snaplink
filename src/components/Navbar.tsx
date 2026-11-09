@@ -5,14 +5,13 @@ import { ThemeToggle } from "./ThemeToggle.js";
 
 interface NavbarProps {
   isPrivatePath?: boolean;
+  currentPath?: string;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false }) => {
+export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false, currentPath }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [scrolled, setScrolled] = useState<boolean>(false);
-  const [visible, setVisible] = useState<boolean>(true);
-  const lastScrollY = useRef<number>(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Scroll-aware: add shadow & denser glass on scroll
@@ -50,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false }) => {
   const getInitials = (name: string) =>
     name.split(" ").map((n) => n[0]).join("").toUpperCase().substring(0, 2);
 
-  const currentHash = window.location.hash || "#/";
+  const activePath = (currentPath || window.location.hash || "#/").split("?")[0].replace(/\/+$/, "");
 
   const navLinks = isAuthenticated
     ? [
@@ -92,7 +91,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false }) => {
           {navLinks.length > 0 && (
             <nav className="navbar-links-desktop hidden md:flex flex-row items-center gap-1 shrink-0" aria-label="Main navigation">
               {navLinks.map(({ label, path, icon: Icon }) => {
-                const active = currentHash.startsWith(path);
+                const active = activePath.startsWith(path);
                 return (
                   <button
                     key={path}
@@ -168,7 +167,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false }) => {
             {navLinks.length > 0 ? (
               <nav className="navbar-mobile-links" aria-label="Mobile navigation">
                 {navLinks.map(({ label, path, icon: Icon }, i) => {
-                  const active = currentHash.startsWith(path);
+                  const active = activePath.startsWith(path);
                   return (
                     <button
                       key={path}

@@ -59,7 +59,7 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (!res.ok) {
-        throw new Error("Session expired. Please log in again.");
+        await this.handleError(res, "Session expired. Please log in again.");
       }
       return res.json();
     },
@@ -114,12 +114,12 @@ class ApiService {
     },
 
     get: async (id: string): Promise<UrlItem> => {
-      const res = await fetch(`${API_BASE}/url/${id}`, {
+      const res = await fetch(`${API_BASE}/url/${encodeURIComponent(id)}`, {
         method: "GET",
         headers: this.getHeaders(),
       });
       if (!res.ok) {
-        throw new Error("Failed to fetch URL details.");
+        await this.handleError(res, "Failed to fetch URL details.");
       }
       return res.json();
     },
@@ -137,7 +137,7 @@ class ApiService {
         isFavorite?: boolean;
       }
     ): Promise<UrlItem> => {
-      const res = await fetch(`${API_BASE}/url/${id}`, {
+      const res = await fetch(`${API_BASE}/url/${encodeURIComponent(id)}`, {
         method: "PUT",
         headers: this.getHeaders(),
         body: JSON.stringify(updates),
@@ -149,18 +149,18 @@ class ApiService {
     },
 
     delete: async (id: string): Promise<{ message: string; id: string }> => {
-      const res = await fetch(`${API_BASE}/url/${id}`, {
+      const res = await fetch(`${API_BASE}/url/${encodeURIComponent(id)}`, {
         method: "DELETE",
         headers: this.getHeaders(),
       });
       if (!res.ok) {
-        throw new Error("Failed to delete shortened URL.");
+        await this.handleError(res, "Failed to delete shortened URL.");
       }
       return res.json();
     },
 
     verifyPassword: async (shortCode: string, password: string): Promise<{ originalUrl: string }> => {
-      const res = await fetch(`/api/url/${shortCode}/verify`, {
+      const res = await fetch(`${API_BASE}/url/${encodeURIComponent(shortCode)}/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
@@ -180,7 +180,7 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (!res.ok) {
-        throw new Error("Failed to load analytics reports.");
+        await this.handleError(res, "Failed to load analytics reports.");
       }
       return res.json();
     },

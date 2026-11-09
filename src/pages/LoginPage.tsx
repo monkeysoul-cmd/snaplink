@@ -17,7 +17,7 @@ export const LoginPage: React.FC = () => {
     if (!email || !password) { setErrorMsg("Please fill in all fields."); return; }
     setIsSubmitting(true); setErrorMsg(null);
     try {
-      await login(email, password);
+      await login(email.trim(), password);
       toast.success("Welcome back");
       window.location.hash = "#/dashboard";
     } catch (err: any) {

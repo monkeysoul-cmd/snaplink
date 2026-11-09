@@ -15,6 +15,7 @@ export interface ClickAnalytic {
 
 export interface UrlItem {
   id: string;
+  _id?: string;
   userId: string | null;
   originalUrl: string;
   shortCode: string;
@@ -39,6 +40,7 @@ export interface DashboardMetrics {
 
 export interface MostVisitedItem {
   id: string;
+  _id?: string;
   shortCode: string;
   originalUrl: string;
   clicks: number;
@@ -47,6 +49,7 @@ export interface MostVisitedItem {
 
 export interface RecentUrlItem {
   id: string;
+  _id?: string;
   shortCode: string;
   originalUrl: string;
   clicks: number;

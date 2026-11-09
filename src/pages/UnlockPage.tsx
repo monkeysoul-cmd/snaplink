@@ -10,9 +10,13 @@ export const UnlockPage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const getShortCode = () => {
-    const hash = window.location.hash;
-    const parts = hash.split("/");
-    return parts[parts.length - 1] || "";
+    const cleanHash = (window.location.hash || "").split("?")[0].replace(/\/+$/, "");
+    const parts = cleanHash.split("/").filter(Boolean);
+    const unlockIdx = parts.findIndex((p) => p.replace("#", "") === "unlock");
+    if (unlockIdx !== -1 && parts[unlockIdx + 1]) {
+      return decodeURIComponent(parts[unlockIdx + 1]);
+    }
+    return parts[parts.length - 1]?.replace(/^#/, "") || "";
   };
 
   const shortCode = getShortCode();
@@ -24,13 +28,21 @@ export const UnlockPage: React.FC = () => {
       return;
     }
 
+    if (!shortCode) {
+      setErrorMsg("Invalid link code.");
+      return;
+    }
+
     setIsVerifying(true);
     setErrorMsg(null);
 
     try {
       const data = await api.url.verifyPassword(shortCode, password);
       toast.success("Unlocked");
-      window.location.href = data.originalUrl;
+      const targetUrl = /^https?:\/\//i.test(data.originalUrl) 
+        ? data.originalUrl 
+        : `https://${data.originalUrl}`;
+      window.location.href = targetUrl;
     } catch (error: any) {
       console.error(error);
       const msg = error.message || "Incorrect password.";

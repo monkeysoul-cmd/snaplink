@@ -44,7 +44,8 @@ const DonutChart: React.FC<{
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => setMounted(true), 200);
+    const timer = setTimeout(() => setMounted(true), 200);
+    return () => clearTimeout(timer);
   }, []);
 
   let cumulative = 0;
@@ -146,7 +147,7 @@ export const AnalyticsPage: React.FC = () => {
   const deviceStats = data?.deviceStats || [];
   const browserStats = data?.browserStats || [];
   const countryStats = data?.countryStats || [];
-  const totalClicks = data?.metrics.totalClicks || 0;
+  const totalClicks = data?.metrics?.totalClicks || 0;
 
   const getDeviceIcon = (name: string) => {
     if (name.toLowerCase() === "mobile") return Smartphone;

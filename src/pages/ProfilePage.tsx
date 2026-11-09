@@ -31,15 +31,25 @@ export const ProfilePage: React.FC = () => {
   const [expiryOpen, setExpiryOpen] = useState(false);
   const [savingExpiry, setSavingExpiry] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const expiryTimerRef = useRef<any>(null);
 
   useEffect(() => {
     const fetchProfileMetrics = async () => {
       try {
         const res = await api.analytics.getDashboardData();
-        setMetrics({ totalUrls: res.metrics.totalUrls, totalClicks: res.metrics.totalClicks });
+        if (res && res.metrics) {
+          setMetrics({ 
+            totalUrls: res.metrics.totalUrls ?? 0, 
+            totalClicks: res.metrics.totalClicks ?? 0 
+          });
+        }
       } catch {}
     };
     fetchProfileMetrics();
+
+    return () => {
+      if (expiryTimerRef.current) clearTimeout(expiryTimerRef.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -54,7 +64,8 @@ export const ProfilePage: React.FC = () => {
   const handleExpiryChange = (value: string) => {
     setSavingExpiry(true);
     setExpiryOpen(false);
-    setTimeout(() => {
+    if (expiryTimerRef.current) clearTimeout(expiryTimerRef.current);
+    expiryTimerRef.current = setTimeout(() => {
       setDefaultExpiry(value);
       localStorage.setItem(LS_EXPIRY_KEY, value);
       setSavingExpiry(false);

@@ -81,6 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setToken(null);
     setUser(null);
     setIsAuthenticated(false);
+    window.location.hash = "#/login";
   };
 
   const refreshUser = async () => {
