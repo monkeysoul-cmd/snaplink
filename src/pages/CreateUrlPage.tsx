@@ -274,7 +274,7 @@ export const CreateUrlPage: React.FC = () => {
               className="w-full py-3.5 btn-glow disabled:opacity-50 text-sm rounded-xl cursor-pointer flex items-center justify-center gap-2 font-medium"
               id="create-url-submit"
             >
-              <span>{isShortening ? "Creating..." : "Shorten URL"}</span>
+              <span>{isSubmitting ? "Creating..." : "Shorten URL"}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
