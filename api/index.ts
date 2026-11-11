@@ -1,4 +1,5 @@
 import express from "express";
+import helmet from "helmet";
 import { connectDB } from "../backend/config/db.js";
 import authRouter from "../backend/routes/auth.js";
 import urlRouter from "../backend/routes/url.js";
@@ -7,11 +8,30 @@ import redirectRouter from "../backend/routes/redirect.js";
 
 const app = express();
 
-// Remove un-awaited global connectDB call that causes serverless drops
+app.set("trust proxy", 1);
 
-// Middleware for body parsing
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Security headers using Helmet
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+        imgSrc: ["'self'", "data:", "blob:", "https://api.qrserver.com"],
+        connectSrc: ["'self'", "https://api.qrserver.com"],
+        frameAncestors: ["'none'"],
+        objectSrc: ["'none'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+  })
+);
+
+// Middleware for body parsing with size limits
+app.use(express.json({ limit: "50kb" }));
+app.use(express.urlencoded({ extended: true, limit: "50kb" }));
 
 // Wait for DB connection BEFORE handling requests
 app.use(async (req, res, next) => {
@@ -22,14 +42,6 @@ app.use(async (req, res, next) => {
     console.error("DB connection error in middleware:", error);
     res.status(500).json({ message: "Database connection failed. Please check MongoDB IP whitelist and credentials." });
   }
-});
-
-// Basic security headers and CORS (Development safe)
-app.use((req, res, next) => {
-  res.setHeader("X-Content-Type-Options", "nosniff");
-  res.setHeader("X-Frame-Options", "DENY");
-  res.setHeader("X-XSS-Protection", "1; mode=block");
-  next();
 });
 
 // Mount API Routers

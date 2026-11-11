@@ -2,12 +2,15 @@ import { Router, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { Url } from "../config/db.js";
 import { parseUserAgent } from "../utils/helpers.js";
+import { verifyLimiter } from "../middleware/rateLimiter.js";
+
+const MAX_ANALYTICS_RECORDS = 500;
 
 const router = Router();
 
 // POST /api/url/:shortCode/verify-password
 // Verifies the password of a protected link and records click analytics if successful.
-router.post("/api/url/:shortCode/verify", async (req: Request, res: Response): Promise<void> => {
+router.post("/api/url/:shortCode/verify", verifyLimiter, async (req: Request, res: Response): Promise<void> => {
   try {
     const { shortCode } = req.params;
     const { password } = req.body;
@@ -42,7 +45,7 @@ router.post("/api/url/:shortCode/verify", async (req: Request, res: Response): P
     const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim() || req.socket.remoteAddress || "127.0.0.1";
     const { browser, device, country } = parseUserAgent(userAgent);
 
-    // Record click
+    // Record click and bound clickAnalytics to prevent BSON document overflow
     url.clicks += 1;
     url.clickAnalytics.push({
       timestamp: new Date().toISOString(),
@@ -51,6 +54,9 @@ router.post("/api/url/:shortCode/verify", async (req: Request, res: Response): P
       device,
       country,
     });
+    if (url.clickAnalytics.length > MAX_ANALYTICS_RECORDS) {
+      url.clickAnalytics = url.clickAnalytics.slice(-MAX_ANALYTICS_RECORDS);
+    }
     await url.save();
 
     res.json({ originalUrl: url.originalUrl });
@@ -134,7 +140,7 @@ router.get("/:shortCode", async (req: Request, res: Response, next: import("expr
     const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim() || req.socket.remoteAddress || "127.0.0.1";
     const { browser, device, country } = parseUserAgent(userAgent);
 
-    // Record click
+    // Record click and bound clickAnalytics to prevent BSON document overflow
     url.clicks += 1;
     url.clickAnalytics.push({
       timestamp: new Date().toISOString(),
@@ -143,6 +149,9 @@ router.get("/:shortCode", async (req: Request, res: Response, next: import("expr
       device,
       country,
     });
+    if (url.clickAnalytics.length > MAX_ANALYTICS_RECORDS) {
+      url.clickAnalytics = url.clickAnalytics.slice(-MAX_ANALYTICS_RECORDS);
+    }
     await url.save();
 
     // 5. Redirect to original URL

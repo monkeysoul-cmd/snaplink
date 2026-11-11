@@ -12,11 +12,47 @@ export function generateShortCode(length = 6): string {
   return result;
 }
 
-// Simple URL validation regex
+const FORBIDDEN_HOSTS = new Set([
+  "localhost",
+  "127.0.0.1",
+  "0.0.0.0",
+  "::1",
+  "::",
+  "169.254.169.254", // Cloud instance metadata (AWS, GCP, Azure, DigitalOcean)
+  "metadata.google.internal",
+  "instance-data",
+]);
+
+// URL validation that blocks private networks, localhost, and cloud metadata
 export function isValidUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
-    return parsed.protocol === "http:" || parsed.protocol === "https:";
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return false;
+    }
+    const hostname = parsed.hostname.toLowerCase();
+    
+    // Check forbidden hostnames
+    if (FORBIDDEN_HOSTS.has(hostname)) {
+      return false;
+    }
+    
+    // Disallow internal domain extensions
+    if (hostname.endsWith(".local") || hostname.endsWith(".internal") || hostname.endsWith(".lan")) {
+      return false;
+    }
+
+    // Disallow RFC1918 private IPv4 ranges (10.x, 127.x, 169.254.x, 192.168.x, 172.16-31.x)
+    if (/^(10\.|127\.|169\.254\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(hostname)) {
+      return false;
+    }
+
+    // Ensure hostname is a valid dot-separated domain
+    if (!hostname.includes(".")) {
+      return false;
+    }
+
+    return true;
   } catch (_) {
     return false;
   }

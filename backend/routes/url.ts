@@ -3,12 +3,15 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Url } from "../config/db.js";
-import { authenticateToken, AuthenticatedRequest } from "../middleware/auth.js";
+import { authenticateToken, AuthenticatedRequest, JWT_SECRET } from "../middleware/auth.js";
 import { generateShortCode, isValidUrl, normalizeUrl } from "../utils/helpers.js";
+import { createUrlLimiter } from "../middleware/rateLimiter.js";
 
 const RESERVED_ALIASES = new Set([
   "api", "dashboard", "create", "links", "analytics", "profile",
-  "unlock", "login", "register", "404", "index", "assets", "dist", "favicon.ico"
+  "unlock", "login", "register", "404", "index", "assets", "dist",
+  "favicon.ico", "robots.txt", "sitemap.xml", "admin", "settings",
+  "health", "metrics", "logout", "auth", "static", "public"
 ]);
 
 function validateCustomAlias(alias: string): string | null {
@@ -43,7 +46,6 @@ function parseExpiryDate(val: any): { iso: string | null; error?: string } {
 }
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || "linkcut_secret_jwt_key_2026_prod";
 
 // Optional Auth middleware helper inline
 function getOptionalUserId(req: Request): string | null {
@@ -59,7 +61,7 @@ function getOptionalUserId(req: Request): string | null {
 }
 
 // POST /api/url (Create Short URL - Optional Auth)
-router.post("/", async (req: Request, res: Response): Promise<void> => {
+router.post("/", createUrlLimiter, async (req: Request, res: Response): Promise<void> => {
   try {
     const {
       originalUrl,

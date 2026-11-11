@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import helmet from "helmet";
 import { createServer as createViteServer } from "vite";
 import { connectDB } from "./config/db.js";
 import authRouter from "./routes/auth.js";
@@ -12,17 +13,31 @@ async function startServer() {
   const app = express();
   const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-  // Middleware for body parsing
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  // Trust first proxy for correct IP handling behind reverse proxies (Vercel, Cloudflare)
+  app.set("trust proxy", 1);
 
-  // Basic security headers and CORS (Development safe)
-  app.use((req, res, next) => {
-    res.setHeader("X-Content-Type-Options", "nosniff");
-    res.setHeader("X-Frame-Options", "DENY");
-    res.setHeader("X-XSS-Protection", "1; mode=block");
-    next();
-  });
+  // Security headers using Helmet with CSP configured for Vite dev and production assets
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+          styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+          fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+          imgSrc: ["'self'", "data:", "blob:", "https://api.qrserver.com"],
+          connectSrc: ["'self'", "https://api.qrserver.com", "ws:", "wss:"],
+          frameAncestors: ["'none'"],
+          objectSrc: ["'none'"],
+        },
+      },
+      crossOriginEmbedderPolicy: false,
+    })
+  );
+
+  // Middleware for body parsing
+  app.use(express.json({ limit: "50kb" }));
+  app.use(express.urlencoded({ extended: true, limit: "50kb" }));
 
   // Mount API Routers first so they take precedence over asset routing
   app.use("/api/auth", authRouter);

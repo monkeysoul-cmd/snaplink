@@ -3,11 +3,12 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import { User } from "../config/db.js";
 import { generateToken, authenticateToken, AuthenticatedRequest } from "../middleware/auth.js";
+import { authLimiter } from "../middleware/rateLimiter.js";
 
 const router = Router();
 
 // POST /api/auth/register
-router.post("/register", async (req: Request, res: Response): Promise<void> => {
+router.post("/register", authLimiter, async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, password } = req.body;
 
@@ -66,7 +67,7 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
 });
 
 // POST /api/auth/login
-router.post("/login", async (req: Request, res: Response): Promise<void> => {
+router.post("/login", authLimiter, async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
