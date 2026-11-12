@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Calendar, Check, Copy, Lock, PlusCircle,
   QrCode, Tag, Link2, Eye, EyeOff, Star, ArrowRight, Settings2, Globe
@@ -49,6 +49,13 @@ export const CreateUrlPage: React.FC = () => {
   const [workingUrl, setWorkingUrl] = useState<string | null>(null);
   const [createdCode, setCreatedCode] = useState<string | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
+  const copyTimerRef = useRef<any>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +65,7 @@ export const CreateUrlPage: React.FC = () => {
       cleanUrl = "https://" + cleanUrl;
     }
 
+    let finalAlias: string | undefined = undefined;
     if (customAlias.trim()) {
       const trimmedAlias = customAlias.trim().replace(/\s+/g, "-");
       if (trimmedAlias.length < 3) {
@@ -68,6 +76,7 @@ export const CreateUrlPage: React.FC = () => {
         toast.error("Custom alias can only contain letters, numbers, hyphens, and underscores.");
         return;
       }
+      finalAlias = trimmedAlias;
     }
 
     if (expiresAt && new Date(expiresAt).getTime() <= Date.now()) {
@@ -77,14 +86,14 @@ export const CreateUrlPage: React.FC = () => {
     setIsSubmitting(true);
     setDisplayUrl(null); setWorkingUrl(null); setCreatedCode(null);
     try {
-      const tags = tagsInput.split(",").map((t) => t.trim()).filter((t) => t.length > 0);
+      const tags: string[] = Array.from(new Set(tagsInput.split(",").map((t) => t.trim().toLowerCase()).filter(Boolean)));
       const parsedExpiry = expiresAt && !isNaN(new Date(expiresAt).getTime()) 
         ? new Date(expiresAt).toISOString() 
         : null;
 
       const res = await api.url.create({
         originalUrl: cleanUrl,
-        customAlias: customAlias.trim() || undefined,
+        customAlias: finalAlias,
         expiresAt: parsedExpiry,
         password: password.trim() || undefined,
         tags, isPublic, isFavorite,
@@ -109,7 +118,8 @@ export const CreateUrlPage: React.FC = () => {
       await navigator.clipboard.writeText(workingUrl);
       setCopied(true);
       toast.success("Copied!");
-      setTimeout(() => setCopied(false), 2000);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Couldn't copy.");
     }

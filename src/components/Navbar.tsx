@@ -34,6 +34,15 @@ export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false, currentPa
     return () => document.removeEventListener("mousedown", onClick);
   }, [mobileOpen]);
 
+  // Close mobile menu on Escape key press
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    if (mobileOpen) window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [mobileOpen]);
+
   // Close mobile menu on hash change (navigation)
   useEffect(() => {
     const handler = () => setMobileOpen(false);
@@ -46,8 +55,12 @@ export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false, currentPa
     setMobileOpen(false);
   };
 
-  const getInitials = (name: string) =>
-    name.split(" ").map((n) => n[0]).join("").toUpperCase().substring(0, 2);
+  const getInitials = (name?: string) => {
+    if (!name || typeof name !== "string") return "U";
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return "U";
+    return parts.map((n) => n[0]).join("").toUpperCase().substring(0, 2);
+  };
 
   const activePath = (currentPath || window.location.hash || "#/").split("?")[0].replace(/\/+$/, "");
 

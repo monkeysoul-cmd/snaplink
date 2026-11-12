@@ -43,12 +43,24 @@ export const RegisterPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
       setErrorMsg("Please fill in all fields.");
+      return;
+    }
+    if (name.trim().length < 2) {
+      setErrorMsg("Name must be at least 2 characters.");
+      return;
+    }
+    if (name.trim().length > 100) {
+      setErrorMsg("Name cannot exceed 100 characters.");
       return;
     }
     if (password.length < 6) {
       setErrorMsg("Password must be at least 6 characters.");
+      return;
+    }
+    if (password.length > 128) {
+      setErrorMsg("Password cannot exceed 128 characters.");
       return;
     }
     if (password !== confirmPassword) {

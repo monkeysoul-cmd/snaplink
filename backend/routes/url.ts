@@ -109,9 +109,15 @@ router.post("/", createUrlLimiter, async (req: Request, res: Response): Promise<
       }
       const trimmedAlias = customAlias.trim().replace(/\s+/g, "-");
       
-      // Check if alias already in use
+      // Check if alias already in use (case-insensitively)
+      const escapedAlias = trimmedAlias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const existing = await Url.findOne({
-        $or: [{ shortCode: trimmedAlias }, { customAlias: trimmedAlias }]
+        $or: [
+          { shortCode: trimmedAlias },
+          { customAlias: trimmedAlias },
+          { shortCode: { $regex: new RegExp(`^${escapedAlias}$`, "i") } },
+          { customAlias: { $regex: new RegExp(`^${escapedAlias}$`, "i") } }
+        ]
       });
       if (existing) {
         res.status(400).json({ message: "Custom alias or short code already in use" });
@@ -153,7 +159,9 @@ router.post("/", createUrlLimiter, async (req: Request, res: Response): Promise<
       expiresAt: parsedExpiry,
       isActive: true,
       passwordHash,
-      tags: Array.isArray(tags) ? tags.map((t: string) => t.trim().toLowerCase()) : [],
+      tags: Array.isArray(tags) 
+        ? Array.from(new Set(tags.map((t: any) => String(t).trim().toLowerCase()).filter((t: string) => t.length > 0 && t.length <= 30))).slice(0, 20) 
+        : [],
       isPublic: isPublic ?? true,
       isFavorite: isFavorite ?? false,
     };
@@ -191,6 +199,7 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
       query.$or = [
         { originalUrl: searchRegex },
         { shortCode: searchRegex },
+        { customAlias: searchRegex },
         { tags: searchRegex }
       ];
     }
@@ -224,7 +233,7 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
         total,
         page,
         limit,
-        pages: Math.ceil(total / limit),
+        pages: Math.max(1, Math.ceil(total / limit)),
       },
     });
   } catch (error) {
@@ -339,8 +348,14 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
         const trimmedAlias = customAlias.trim().replace(/\s+/g, "-");
         // Check uniqueness if changed
         if (trimmedAlias !== url.customAlias && trimmedAlias !== url.shortCode) {
+          const escapedAlias = trimmedAlias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
           const existing = await Url.findOne({
-            $or: [{ shortCode: trimmedAlias }, { customAlias: trimmedAlias }],
+            $or: [
+              { shortCode: trimmedAlias },
+              { customAlias: trimmedAlias },
+              { shortCode: { $regex: new RegExp(`^${escapedAlias}$`, "i") } },
+              { customAlias: { $regex: new RegExp(`^${escapedAlias}$`, "i") } }
+            ],
             _id: { $ne: id }
           });
           if (existing) {
@@ -379,7 +394,9 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
     }
 
     if (tags !== undefined) {
-      updates.tags = Array.isArray(tags) ? tags.map((t: string) => t.trim().toLowerCase()) : [];
+      updates.tags = Array.isArray(tags) 
+        ? Array.from(new Set(tags.map((t: any) => String(t).trim().toLowerCase()).filter((t: string) => t.length > 0 && t.length <= 30))).slice(0, 20)
+        : [];
     }
 
     if (password !== undefined) {

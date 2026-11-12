@@ -118,6 +118,7 @@ export const AnalyticsPage: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const fetchAnalytics = async (silent = false) => {
+    if (isLoading || isRefreshing) return;
     if (!silent) setIsLoading(true);
     else setIsRefreshing(true);
     try {
@@ -131,7 +132,22 @@ export const AnalyticsPage: React.FC = () => {
     }
   };
 
-  useEffect(() => { fetchAnalytics(); }, []);
+  useEffect(() => {
+    let isMounted = true;
+    const load = async () => {
+      setIsLoading(true);
+      try {
+        const res = await api.analytics.getDashboardData();
+        if (isMounted) setData(res);
+      } catch (error) {
+        if (isMounted) toast.error("Couldn't load analytics.");
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+    load();
+    return () => { isMounted = false; };
+  }, []);
 
   if (isLoading) {
     return (

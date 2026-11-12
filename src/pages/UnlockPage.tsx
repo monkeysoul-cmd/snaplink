@@ -11,25 +11,26 @@ export const UnlockPage: React.FC = () => {
 
   const getShortCode = () => {
     const cleanHash = (window.location.hash || "").split("?")[0].replace(/\/+$/, "");
-    const parts = cleanHash.split("/").filter(Boolean);
-    const unlockIdx = parts.findIndex((p) => p.replace("#", "") === "unlock");
+    const parts = cleanHash.split("/").filter(Boolean).map((p) => p.replace(/^#/, ""));
+    const unlockIdx = parts.indexOf("unlock");
     if (unlockIdx !== -1 && parts[unlockIdx + 1]) {
       return decodeURIComponent(parts[unlockIdx + 1]);
     }
-    return parts[parts.length - 1]?.replace(/^#/, "") || "";
+    const last = parts[parts.length - 1];
+    return last && last !== "unlock" ? decodeURIComponent(last) : "";
   };
 
   const shortCode = getShortCode();
 
   const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!password.trim()) {
-      setErrorMsg("Please enter the password.");
+    if (!shortCode) {
+      setErrorMsg("Missing or invalid link code.");
       return;
     }
 
-    if (!shortCode) {
-      setErrorMsg("Invalid link code.");
+    if (!password.trim()) {
+      setErrorMsg("Please enter the password.");
       return;
     }
 
@@ -64,7 +65,11 @@ export const UnlockPage: React.FC = () => {
             Protected link
           </h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-            Enter the password for <span className="font-mono font-medium text-zinc-800 dark:text-zinc-200">/{shortCode}</span> to continue
+            {shortCode ? (
+              <>Enter the password for <span className="font-mono font-medium text-zinc-800 dark:text-zinc-200">/{shortCode}</span> to continue</>
+            ) : (
+              "No link code provided"
+            )}
           </p>
         </div>
 

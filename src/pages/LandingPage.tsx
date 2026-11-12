@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Check, Copy, ArrowRight, BarChart3, Lock, Tag, Link2 } from "lucide-react";
 import { api } from "../services/api.js";
 import { useAuth } from "../context/AuthContext.js";
@@ -13,7 +13,14 @@ export const LandingPage: React.FC = () => {
   const [workingUrl, setWorkingUrl] = useState<string | null>(null);
   const [isShortening, setIsShortening] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
+  const copyTimerRef = useRef<any>(null);
   const [redirectError, setRedirectError] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -63,7 +70,8 @@ export const LandingPage: React.FC = () => {
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
       toast.success("Copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Couldn't copy — try selecting it manually.");
     }

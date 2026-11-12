@@ -20,8 +20,15 @@ router.post("/api/url/:shortCode/verify", verifyLimiter, async (req: Request, re
       return;
     }
 
+    const cleanCode = shortCode.trim();
+    const escapedCode = cleanCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const url = await Url.findOne({
-      $or: [{ shortCode }, { customAlias: shortCode }]
+      $or: [
+        { shortCode: cleanCode },
+        { customAlias: cleanCode },
+        { shortCode: new RegExp(`^${escapedCode}$`, "i") },
+        { customAlias: new RegExp(`^${escapedCode}$`, "i") }
+      ]
     });
     if (!url) {
       res.status(404).json({ message: "Short URL not found" });
@@ -102,8 +109,15 @@ router.get("/:shortCode", async (req: Request, res: Response, next: import("expr
     }
 
     // Look up by shortCode OR customAlias
+    const cleanCode = shortCode.trim();
+    const escapedCode = cleanCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const url = await Url.findOne({
-      $or: [{ shortCode }, { customAlias: shortCode }]
+      $or: [
+        { shortCode: cleanCode },
+        { customAlias: cleanCode },
+        { shortCode: new RegExp(`^${escapedCode}$`, "i") },
+        { customAlias: new RegExp(`^${escapedCode}$`, "i") }
+      ]
     });
 
     if (!url) {
