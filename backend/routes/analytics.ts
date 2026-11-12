@@ -22,10 +22,10 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
 
     // 3. Most Visited Links (Top 5 sorted by clicks desc)
     const mostVisited = [...urls]
-      .sort((a, b) => b.clicks - a.clicks)
+      .sort((a, b) => b.clicks - a.clicks || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 5)
       .map((u) => ({
-        id: u.id,
+        id: u.id || u._id.toString(),
         shortCode: u.shortCode,
         originalUrl: u.originalUrl,
         clicks: u.clicks,
@@ -37,11 +37,11 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 5)
       .map((u) => ({
-        id: u.id,
+        id: u.id || u._id.toString(),
         shortCode: u.shortCode,
         originalUrl: u.originalUrl,
         clicks: u.clicks,
-        createdAt: u.createdAt,
+        createdAt: u.createdAt instanceof Date ? u.createdAt.toISOString() : String(u.createdAt),
       }));
 
     // Collect all click logs for user's URLs to do fine-grained analytics
@@ -64,13 +64,13 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
       });
     });
 
-    // 5. Daily Click Graph (Last 7 days click counts)
+    // 5. Daily Click Graph (Last 7 days click counts in UTC to match logged timestamps)
     const dailyClicksMap: { [date: string]: number } = {};
+    const now = new Date();
     
-    // Initialize last 7 days with 0
+    // Generate exactly 7 consecutive UTC dates
     for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
+      const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - i));
       const dateStr = d.toISOString().split("T")[0]; // YYYY-MM-DD
       dailyClicksMap[dateStr] = 0;
     }
@@ -83,14 +83,15 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
       }
     });
 
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const dailyClicks = Object.keys(dailyClicksMap)
       .sort((a, b) => a.localeCompare(b))
       .map((date) => {
-        // Convert 'YYYY-MM-DD' to a friendlier label like 'Jul 16'
-        const [year, month, day] = date.split("-");
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-        const formattedLabel = `${months[dateObj.getMonth()]} ${dateObj.getDate()}`;
+        // Convert 'YYYY-MM-DD' to friendly label like 'Nov 12' without timezone shifts
+        const parts = date.split("-");
+        const monthIndex = parseInt(parts[1], 10) - 1;
+        const dayNum = parseInt(parts[2], 10);
+        const formattedLabel = `${months[monthIndex]} ${dayNum}`;
         
         return {
           date,
