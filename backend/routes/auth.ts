@@ -18,12 +18,28 @@ router.post("/register", authLimiter, async (req: Request, res: Response): Promi
       return;
     }
 
-    if (password.length < 6) {
-      res.status(400).json({ message: "Password must be at least 6 characters long" });
+    if (typeof name !== "string" || typeof email !== "string" || typeof password !== "string") {
+      res.status(400).json({ message: "Invalid input format" });
+      return;
+    }
+
+    const trimmedName = name.trim();
+    if (trimmedName.length < 2 || trimmedName.length > 100) {
+      res.status(400).json({ message: "Name must be between 2 and 100 characters long" });
+      return;
+    }
+
+    if (password.length < 6 || password.length > 128) {
+      res.status(400).json({ message: "Password must be between 6 and 128 characters long" });
       return;
     }
 
     const trimmedEmail = email.trim().toLowerCase();
+    if (trimmedEmail.length > 255) {
+      res.status(400).json({ message: "Email is too long" });
+      return;
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmedEmail)) {
       res.status(400).json({ message: "Please provide a valid email address" });
@@ -43,7 +59,7 @@ router.post("/register", authLimiter, async (req: Request, res: Response): Promi
 
     // Create user in our DB
     const user = await User.create({
-      name,
+      name: trimmedName,
       email: trimmedEmail,
       passwordHash,
     });
@@ -76,7 +92,21 @@ router.post("/login", authLimiter, async (req: Request, res: Response): Promise<
       return;
     }
 
+    if (typeof email !== "string" || typeof password !== "string") {
+      res.status(400).json({ message: "Invalid input format" });
+      return;
+    }
+
+    if (password.length > 128) {
+      res.status(400).json({ message: "Invalid email or password" });
+      return;
+    }
+
     const trimmedEmail = email.trim().toLowerCase();
+    if (trimmedEmail.length > 255) {
+      res.status(400).json({ message: "Invalid email or password" });
+      return;
+    }
 
     // Find user
     const user = await User.findOne({ email: trimmedEmail });

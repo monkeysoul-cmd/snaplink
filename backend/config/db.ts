@@ -47,7 +47,13 @@ const UserSchema = new mongoose.Schema({
   passwordHash: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 }, {
-  toJSON: { virtuals: true },
+  toJSON: {
+    virtuals: true,
+    transform: (_doc, ret: any) => {
+      delete ret.passwordHash;
+      return ret;
+    }
+  },
   toObject: { virtuals: true }
 });
 
@@ -76,7 +82,15 @@ const UrlSchema = new mongoose.Schema({
   isPublic: { type: Boolean, default: true },
   isFavorite: { type: Boolean, default: false }
 }, {
-  toJSON: { virtuals: true },
+  toJSON: {
+    virtuals: true,
+    transform: (_doc, ret: any) => {
+      if (ret.passwordHash) {
+        ret.passwordHash = "protected";
+      }
+      return ret;
+    }
+  },
   toObject: { virtuals: true }
 });
 
