@@ -71,8 +71,36 @@ export const LinksPage: React.FC = () => {
   };
 
   useEffect(() => { 
-    fetchUrls(); 
-  }, [debouncedSearch, debouncedTag, favorite, sort, page]);
+    let isCurrent = true;
+    const load = async () => {
+      setIsLoading(true);
+      try {
+        const data = await api.url.list({
+          search: debouncedSearch.trim() || undefined,
+          tag: debouncedTag.trim() || undefined,
+          favorite: favorite || undefined,
+          sort, page, limit,
+        });
+
+        if (!isCurrent) return;
+
+        if (data.pagination.pages > 0 && page > data.pagination.pages) {
+          setPage(data.pagination.pages);
+          return;
+        }
+
+        setUrls(data.urls);
+        setTotalPages(data.pagination.pages || 1);
+        setTotalUrls(data.pagination.total || 0);
+      } catch (err: any) {
+        if (isCurrent) toast.error("Couldn't load your links.");
+      } finally {
+        if (isCurrent) setIsLoading(false);
+      }
+    };
+    load();
+    return () => { isCurrent = false; };
+  }, [debouncedSearch, debouncedTag, favorite, sort, page, limit]);
 
   const handleFilterChange = () => setPage(1);
   const handleClearFilters = () => {

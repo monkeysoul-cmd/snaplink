@@ -16,9 +16,22 @@ const getEnvVar = (key: string): string => {
   return "";
 };
 
+const isLocalHost = (hostname?: string): boolean => {
+  if (!hostname) return false;
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "0.0.0.0" ||
+    hostname.endsWith(".local") ||
+    /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+    /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+    /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(hostname)
+  );
+};
+
 export const getShortDomain = (): string => {
-  // If running locally on localhost, prioritize local host
-  if (typeof window !== "undefined" && (window.location?.hostname === "localhost" || window.location?.hostname === "127.0.0.1")) {
+  // If running locally, prioritize local host
+  if (typeof window !== "undefined" && isLocalHost(window.location?.hostname)) {
     return window.location.host;
   }
 
@@ -46,7 +59,7 @@ export const getDisplayShortUrl = (shortCode?: string): string => {
 /**
  * Returns actual working live URL (e.g. "https://snaplink.vercel.app/jP5kdJ")
  * Priority:
- *   1. localhost / 127.0.0.1 (ensures local dev links route to local server)
+ *   1. local network / localhost (ensures local dev links route to local server)
  *   2. VITE_APP_URL or VITE_SHORT_DOMAIN env var (set in Vercel dashboard)
  *   3. window.location.origin (correct on any real deployment)
  *   4. Hardcoded fallback to snaplink.vercel.app
@@ -54,8 +67,8 @@ export const getDisplayShortUrl = (shortCode?: string): string => {
 export const getWorkingShortUrl = (shortCode?: string): string => {
   const code = shortCode || "";
 
-  // 1. If running locally on localhost/127.0.0.1, prioritize local server origin
-  if (typeof window !== "undefined" && (window.location?.hostname === "localhost" || window.location?.hostname === "127.0.0.1")) {
+  // 1. If running locally, prioritize local server origin
+  if (typeof window !== "undefined" && isLocalHost(window.location?.hostname)) {
     return `${window.location.origin}/${code}`;
   }
 

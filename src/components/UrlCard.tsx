@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Calendar, Check, Copy, Edit, ExternalLink, Lock, QrCode, Star, Trash2,
   Eye, EyeOff, Tag, ToggleLeft, ToggleRight, X, AlertTriangle, MousePointerClick, Shield
@@ -23,12 +23,25 @@ const toLocalDatetime = (dateStr?: string | null): string => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
+const getNowLocalDatetime = (): string => {
+  const now = new Date();
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+};
+
 export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState<boolean>(false);
+  const copyTimerRef = useRef<any>(null);
   const [showQr, setShowQr] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isDeletingConfirm, setIsDeletingConfirm] = useState<boolean>(false);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    };
+  }, []);
 
   const urlId = url.id || url._id || "";
 
@@ -64,7 +77,8 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
       await navigator.clipboard.writeText(workingShortLink);
       setCopied(true);
       toast.success("Copied!");
-      setTimeout(() => setCopied(false), 2000);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Couldn't copy — try selecting it manually.");
     }
@@ -94,8 +108,9 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
       return;
     }
 
+    let trimmedAlias: string | null = null;
     if (editAlias.trim()) {
-      const trimmedAlias = editAlias.trim().replace(/\s+/g, "-");
+      trimmedAlias = editAlias.trim().replace(/\s+/g, "-");
       if (trimmedAlias.length < 3) {
         toast.error("Custom alias must be at least 3 characters.");
         return;
@@ -108,7 +123,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
     setIsSaving(true);
     try {
-      const tagList = editTags.split(",").map((t) => t.trim()).filter((t) => t.length > 0);
+      const tagList: string[] = Array.from(new Set(editTags.split(",").map((t) => t.trim().toLowerCase()).filter(Boolean)));
       let finalPassword: string | null | undefined = undefined;
       if (removePassword) {
         finalPassword = null;
@@ -118,7 +133,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
       await api.url.update(urlId, {
         originalUrl: cleanUrl,
-        customAlias: editAlias.trim() || null,
+        customAlias: trimmedAlias,
         expiresAt: editExpiry && !isNaN(new Date(editExpiry).getTime()) ? new Date(editExpiry).toISOString() : null,
         password: finalPassword,
         tags: tagList,
@@ -381,10 +396,22 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
             </div>
 
             <div className="space-y-1.5">
-              <div className="form-section-label">Expires on</div>
+              <div className="form-section-label flex items-center justify-between">
+                <span>Expires on</span>
+                {editExpiry && (
+                  <button
+                    type="button"
+                    onClick={() => setEditExpiry("")}
+                    className="text-[10px] font-semibold text-rose-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer"
+                  >
+                    Clear expiry
+                  </button>
+                )}
+              </div>
               <input
                 type="datetime-local"
                 value={editExpiry}
+                min={getNowLocalDatetime()}
                 onChange={(e) => setEditExpiry(e.target.value)}
                 className="w-full px-4 py-3 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none font-medium"
               />

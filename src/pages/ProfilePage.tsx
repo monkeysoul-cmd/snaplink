@@ -34,10 +34,11 @@ export const ProfilePage: React.FC = () => {
   const expiryTimerRef = useRef<any>(null);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchProfileMetrics = async () => {
       try {
         const res = await api.analytics.getDashboardData();
-        if (res && res.metrics) {
+        if (isMounted && res && res.metrics) {
           setMetrics({ 
             totalUrls: res.metrics.totalUrls ?? 0, 
             totalClicks: res.metrics.totalClicks ?? 0 
@@ -48,6 +49,7 @@ export const ProfilePage: React.FC = () => {
     fetchProfileMetrics();
 
     return () => {
+      isMounted = false;
       if (expiryTimerRef.current) clearTimeout(expiryTimerRef.current);
     };
   }, []);
@@ -78,7 +80,12 @@ export const ProfilePage: React.FC = () => {
     new Date(dateStr).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
   const selectedExpiry = EXPIRY_OPTIONS.find((o) => o.value === defaultExpiry) ?? EXPIRY_OPTIONS[0];
-  const initials = user ? user.name.substring(0, 2).toUpperCase() : "U";
+  const initials = (() => {
+    if (!user || !user.name) return "U";
+    const parts = user.name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return "U";
+    return parts.map((p) => p[0]).join("").toUpperCase().substring(0, 2);
+  })();
 
   return (
     <div className="space-y-6 p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)] animate-pageEnter">
