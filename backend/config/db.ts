@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGO_URI || "mongodb+srv://<db_username>:<db_password>@cluster0.ntqhehl.mongodb.net/?appName=Cluster0";
+const MONGODB_URI = process.env.MONGO_URI || process.env.MONGODB_URI || "mongodb+srv://<db_username>:<db_password>@cluster0.ntqhehl.mongodb.net/?appName=Cluster0";
 
 let cached = (global as any).mongoose;
 
@@ -98,5 +98,7 @@ UrlSchema.index(
   { customAlias: 1 },
   { unique: true, partialFilterExpression: { customAlias: { $type: "string" } } }
 );
+
+UrlSchema.index({ userId: 1, createdAt: -1 });
 
 export const Url: mongoose.Model<any> = mongoose.models.Url || mongoose.model('Url', UrlSchema);

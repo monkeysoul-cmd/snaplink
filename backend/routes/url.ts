@@ -14,7 +14,10 @@ const RESERVED_ALIASES = new Set([
   "health", "metrics", "logout", "auth", "static", "public"
 ]);
 
-function validateCustomAlias(alias: string): string | null {
+function validateCustomAlias(alias: any): string | null {
+  if (typeof alias !== "string") {
+    return "Custom alias must be a string";
+  }
   const trimmed = alias.trim().replace(/\s+/g, "-");
   if (trimmed.length < 3) {
     return "Custom alias must be at least 3 characters long";
@@ -75,6 +78,11 @@ router.post("/", createUrlLimiter, async (req: Request, res: Response): Promise<
 
     if (!originalUrl) {
       res.status(400).json({ message: "Original URL is required" });
+      return;
+    }
+
+    if (typeof originalUrl !== "string" || originalUrl.length > 2048) {
+      res.status(400).json({ message: "URL is invalid or exceeds 2048 characters" });
       return;
     }
 
@@ -146,9 +154,20 @@ router.post("/", createUrlLimiter, async (req: Request, res: Response): Promise<
 
     // Password hashing for link protection
     let passwordHash: string | null = null;
-    if (password && password.trim() !== "") {
-      const salt = await bcrypt.genSalt(10);
-      passwordHash = await bcrypt.hash(password, salt);
+    if (password !== undefined && password !== null) {
+      if (typeof password !== "string") {
+        res.status(400).json({ message: "Password must be a string" });
+        return;
+      }
+      const trimmedPwd = password.trim();
+      if (trimmedPwd.length > 0) {
+        if (trimmedPwd.length > 128) {
+          res.status(400).json({ message: "Password cannot exceed 128 characters" });
+          return;
+        }
+        const salt = await bcrypt.genSalt(10);
+        passwordHash = await bcrypt.hash(trimmedPwd, salt);
+      }
     }
 
     // Create the record
@@ -186,8 +205,10 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
     const search = req.query.search as string;
     const tag = req.query.tag as string;
     const favorite = req.query.favorite as string;
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const rawPage = parseInt(req.query.page as string, 10);
+    const rawLimit = parseInt(req.query.limit as string, 10);
+    const page = !isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
+    const limit = !isNaN(rawLimit) && rawLimit > 0 ? Math.min(rawLimit, 100) : 10;
     const sort = (req.query.sort as string) || "createdAt_desc";
 
     // Build Mongoose query
@@ -308,6 +329,10 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
     const updates: any = {};
 
     if (originalUrl) {
+      if (typeof originalUrl !== "string" || originalUrl.length > 2048) {
+        res.status(400).json({ message: "URL is invalid or exceeds 2048 characters" });
+        return;
+      }
       const normalizedOriginal = normalizeUrl(originalUrl);
       if (!isValidUrl(normalizedOriginal)) {
         res.status(400).json({ message: "Invalid URL format" });
@@ -317,7 +342,7 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
     }
 
     if (customAlias !== undefined) {
-      if (customAlias === null || customAlias.trim() === "") {
+      if (customAlias === null || (typeof customAlias === "string" && customAlias.trim() === "")) {
         updates.customAlias = null;
         // If the shortCode was identical to the customAlias being removed, regenerate a unique 6-char short code
         if (url.customAlias && url.shortCode === url.customAlias) {
@@ -400,11 +425,19 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
     }
 
     if (password !== undefined) {
-      if (password === null || password.trim() === "") {
+      if (password === null || password === "" || (typeof password === "string" && password.trim() === "")) {
         updates.passwordHash = null;
-      } else {
+      } else if (typeof password === "string") {
+        const trimmedPwd = password.trim();
+        if (trimmedPwd.length > 128) {
+          res.status(400).json({ message: "Password cannot exceed 128 characters" });
+          return;
+        }
         const salt = await bcrypt.genSalt(10);
-        updates.passwordHash = await bcrypt.hash(password, salt);
+        updates.passwordHash = await bcrypt.hash(trimmedPwd, salt);
+      } else {
+        res.status(400).json({ message: "Password must be a string" });
+        return;
       }
     }
 

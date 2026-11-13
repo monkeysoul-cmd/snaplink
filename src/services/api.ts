@@ -15,6 +15,13 @@ class ApiService {
   }
 
   private async handleError(res: Response, defaultMessage: string): Promise<never> {
+    if (res.status === 401 && typeof window !== "undefined") {
+      const hadToken = Boolean(localStorage.getItem("linkcut_token"));
+      if (hadToken) {
+        localStorage.removeItem("linkcut_token");
+        window.dispatchEvent(new Event("auth:unauthorized"));
+      }
+    }
     const errorData = await res.json().catch(() => ({}));
     let errorMessage = defaultMessage;
     if (errorData && errorData.message) {

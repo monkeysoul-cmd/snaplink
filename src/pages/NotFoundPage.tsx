@@ -37,7 +37,11 @@ export const NotFoundPage: React.FC = () => {
           
           <button
             onClick={() => {
-              window.history.back();
+              if (window.history.length > 1) {
+                window.history.back();
+              } else {
+                navigateTo("#/");
+              }
             }}
             className="px-5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-zinc-700 dark:text-zinc-300 font-medium text-sm cursor-pointer transition-colors hover:text-zinc-900 dark:hover:text-white flex items-center justify-center gap-1.5"
           >

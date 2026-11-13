@@ -112,11 +112,13 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
         devicesMap[d] = 1;
       }
     });
-    const deviceStats = Object.keys(devicesMap).map((name) => ({
-      name,
-      count: devicesMap[name],
-      percentage: breakdownTotal > 0 ? Math.round((devicesMap[name] / breakdownTotal) * 100) : 0,
-    }));
+    const deviceStats = Object.keys(devicesMap)
+      .map((name) => ({
+        name,
+        count: devicesMap[name],
+        percentage: breakdownTotal > 0 ? Math.round((devicesMap[name] / breakdownTotal) * 100) : 0,
+      }))
+      .filter((s) => breakdownTotal === 0 || s.count > 0);
 
     // 7. Browser Breakdown
     const browsersMap: { [browser: string]: number } = {};

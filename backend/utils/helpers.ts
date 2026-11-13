@@ -67,29 +67,59 @@ export function normalizeUrl(url: string): string {
   return cleaned;
 }
 
-// Simple parser for User-Agent to extract browser, device, and OS
-export function parseUserAgent(userAgentString: string = "") {
+const COUNTRY_CODE_MAP: Record<string, string> = {
+  US: "United States",
+  IN: "India",
+  GB: "United Kingdom",
+  DE: "Germany",
+  CA: "Canada",
+  AU: "Australia",
+  FR: "France",
+  JP: "Japan",
+  SG: "Singapore",
+  BR: "Brazil",
+  NL: "Netherlands",
+  ES: "Spain",
+  IT: "Italy",
+  SE: "Sweden",
+  CH: "Switzerland",
+  MX: "Mexico",
+  ZA: "South Africa",
+  AE: "United Arab Emirates",
+  KR: "South Korea",
+  NZ: "New Zealand",
+};
+
+// Parser for User-Agent to extract browser, device, and country
+export function parseUserAgent(userAgentString: string = "", clientCountryHeader?: string) {
   const ua = userAgentString.toLowerCase();
   
-  // Browser detection
+  // Browser detection (check specialized Chromium engines before generic Chrome)
   let browser = "Other";
-  if (ua.includes("firefox")) browser = "Firefox";
-  else if (ua.includes("chrome") && !ua.includes("chromium")) browser = "Chrome";
-  else if (ua.includes("safari") && !ua.includes("chrome")) browser = "Safari";
-  else if (ua.includes("edge") || ua.includes("edg")) browser = "Edge";
+  if (ua.includes("edge") || ua.includes("edg")) browser = "Edge";
   else if (ua.includes("opera") || ua.includes("opr")) browser = "Opera";
+  else if (ua.includes("firefox") || ua.includes("fxios")) browser = "Firefox";
+  else if (ua.includes("chrome") || ua.includes("crios")) browser = "Chrome";
+  else if (ua.includes("safari")) browser = "Safari";
   
-  // Device detection
+  // Device detection (properly distinguish tablet from mobile)
   let device = "Desktop";
-  if (ua.includes("mobi") || ua.includes("iphone") || ua.includes("android")) {
-    device = "Mobile";
-  } else if (ua.includes("ipad") || ua.includes("tablet")) {
+  if (ua.includes("ipad") || ua.includes("tablet") || (ua.includes("android") && !ua.includes("mobi"))) {
     device = "Tablet";
+  } else if (ua.includes("mobi") || ua.includes("iphone") || ua.includes("android")) {
+    device = "Mobile";
   }
 
-  // Country simulation (mocked from request or randomized for demo diversity)
-  const countries = ["United States", "India", "United Kingdom", "Germany", "Canada", "Australia", "France", "Japan", "Singapore", "Brazil"];
-  const country = countries[Math.floor(Math.random() * countries.length)];
+  // Country detection: prioritize real reverse-proxy country headers (Vercel, Cloudflare)
+  let country: string;
+  if (clientCountryHeader && typeof clientCountryHeader === "string") {
+    const code = clientCountryHeader.trim().toUpperCase();
+    country = COUNTRY_CODE_MAP[code] || code;
+  } else {
+    // Fallback simulation for local dev/testing
+    const fallbackCountries = ["United States", "India", "United Kingdom", "Germany", "Canada", "Australia", "France", "Japan", "Singapore", "Brazil"];
+    country = fallbackCountries[Math.floor(Math.random() * fallbackCountries.length)];
+  }
 
   return { browser, device, country };
 }

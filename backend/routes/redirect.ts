@@ -6,6 +6,19 @@ import { verifyLimiter } from "../middleware/rateLimiter.js";
 
 const MAX_ANALYTICS_RECORDS = 500;
 
+const FRONTEND_ROUTES = new Set([
+  "dashboard",
+  "create",
+  "links",
+  "analytics",
+  "profile",
+  "login",
+  "register",
+  "unlock",
+  "404",
+  "settings"
+]);
+
 const router = Router();
 
 // POST /api/url/:shortCode/verify-password
@@ -50,7 +63,8 @@ router.post("/api/url/:shortCode/verify", verifyLimiter, async (req: Request, re
     const userAgent = req.headers["user-agent"] || "";
     const forwarded = req.headers["x-forwarded-for"];
     const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim() || req.socket.remoteAddress || "127.0.0.1";
-    const { browser, device, country } = parseUserAgent(userAgent);
+    const clientCountry = (req.headers["x-vercel-ip-country"] || req.headers["cf-ipcountry"] || "") as string;
+    const { browser, device, country } = parseUserAgent(userAgent, clientCountry);
 
     // Record click and bound clickAnalytics to prevent BSON document overflow
     url.clicks += 1;
@@ -108,8 +122,15 @@ router.get("/:shortCode", async (req: Request, res: Response, next: import("expr
       return next();
     }
 
-    // Look up by shortCode OR customAlias
     const cleanCode = shortCode.trim();
+
+    // Fast-path for client-side frontend routes: forward to hash path instead of searching DB or 404ing
+    if (FRONTEND_ROUTES.has(cleanCode.toLowerCase())) {
+      res.redirect(`/#/${cleanCode}`);
+      return;
+    }
+
+    // Look up by shortCode OR customAlias
     const escapedCode = cleanCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const url = await Url.findOne({
       $or: [
@@ -152,7 +173,8 @@ router.get("/:shortCode", async (req: Request, res: Response, next: import("expr
     const userAgent = req.headers["user-agent"] || "";
     const forwarded = req.headers["x-forwarded-for"];
     const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim() || req.socket.remoteAddress || "127.0.0.1";
-    const { browser, device, country } = parseUserAgent(userAgent);
+    const clientCountry = (req.headers["x-vercel-ip-country"] || req.headers["cf-ipcountry"] || "") as string;
+    const { browser, device, country } = parseUserAgent(userAgent, clientCountry);
 
     // Record click and bound clickAnalytics to prevent BSON document overflow
     url.clicks += 1;

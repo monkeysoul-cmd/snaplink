@@ -60,6 +60,10 @@ export const UrlQrCode: React.FC<UrlQrCodeProps> = ({ shortUrl, shortCode }) => 
           alt={`QR Code for ${shortUrl}`}
           className="w-full h-full object-contain"
           onLoad={() => setIsLoading(false)}
+          onError={() => {
+            setIsLoading(false);
+            toast.error("Could not load QR code image.");
+          }}
           referrerPolicy="no-referrer"
         />
       </div>

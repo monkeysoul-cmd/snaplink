@@ -206,10 +206,21 @@ export const CreateUrlPage: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Expiry */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-zinc-400" />
-                    Expiration date
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5 text-zinc-400" />
+                      Expiration date
+                    </label>
+                    {expiresAt && (
+                      <button
+                        type="button"
+                        onClick={() => setExpiresAt("")}
+                        className="text-[10px] font-semibold text-rose-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
                   <input
                     type="datetime-local"
                     value={expiresAt}

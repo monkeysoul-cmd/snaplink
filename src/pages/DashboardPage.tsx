@@ -65,7 +65,8 @@ export const DashboardPage: React.FC = () => {
   const mostVisited = data?.mostVisited || [];
   const recentUrls = data?.recentUrls || [];
   const dailyClicks = data?.dailyClicks || [];
-  const maxClicks = Math.max(...dailyClicks.map((d) => d.clicks), 1);
+  const rawMax = Math.max(...dailyClicks.map((d) => d.clicks), 0);
+  const chartMax = rawMax < 5 ? 5 : Math.ceil(rawMax / 5) * 5;
 
   const statCards = [
     {
@@ -92,7 +93,7 @@ export const DashboardPage: React.FC = () => {
 
   const yAxisSteps = 5;
   const yLabels = Array.from({ length: yAxisSteps + 1 }, (_, i) =>
-    Math.round((maxClicks / yAxisSteps) * (yAxisSteps - i))
+    Math.round((chartMax / yAxisSteps) * (yAxisSteps - i))
   );
 
   return (
@@ -204,7 +205,7 @@ export const DashboardPage: React.FC = () => {
                 {/* Bars flex */}
                 <div className="relative h-full flex items-end justify-between gap-2 sm:gap-4 px-2 sm:px-4">
                   {dailyClicks.map((d) => {
-                    const heightPercentage = Math.max((d.clicks / maxClicks) * 100, 4);
+                    const heightPercentage = Math.max((d.clicks / chartMax) * 100, d.clicks > 0 ? 6 : 2);
                     return (
                       <div key={d.date} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
                         <div className="relative w-full flex items-end justify-center h-full">
