@@ -83,10 +83,7 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 sm:p-6 bg-[#fafafa] dark:bg-[#090a0f] transition-colors relative overflow-hidden">
-      {/* Soft ambient lighting for glassmorphic refraction */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-emerald-500/[0.04] dark:bg-emerald-500/[0.04] rounded-full blur-[140px] pointer-events-none" />
-
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 sm:p-6 bg-[#fafafa] dark:bg-[#090a0f] transition-colors relative">
       <div className="w-full max-w-md glass-card p-8 sm:p-10 rounded-2xl shadow-xl relative z-10">
         {/* Header */}
         <div className="mb-6 space-y-1 text-center">

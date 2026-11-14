@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Check, Copy, ArrowRight, BarChart3, Lock, Tag, Link2 } from "lucide-react";
+import { Check, Copy, ArrowRight, BarChart3, Lock, Tag, Link2, ShieldCheck, QrCode, TrendingUp } from "lucide-react";
 import { api } from "../services/api.js";
 import { useAuth } from "../context/AuthContext.js";
 import { useToast } from "../context/ToastContext.js";
@@ -98,139 +98,223 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="w-full min-h-[calc(100vh-4rem)] relative overflow-hidden">
-      {/* ── Ambient background light (soft optical wash for glassmorphism) ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-emerald-500/[0.04] dark:bg-emerald-500/[0.05] rounded-full blur-[140px]" />
-        <div className="absolute top-1/2 -left-40 w-[500px] h-[500px] bg-teal-500/[0.03] dark:bg-teal-500/[0.03] rounded-full blur-[160px]" />
-      </div>
-
+    <div className="w-full min-h-[calc(100vh-4rem)] relative">
       {/* ═══════════════ HERO SECTION ═══════════════ */}
-      <div className="relative z-10 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center space-y-6 pt-10 sm:pt-16 pb-12">
-
-          {/* Redirection Error Notice */}
-          {redirectError && (
-            <div className="max-w-xl mx-auto p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-between gap-3 text-amber-800 dark:text-amber-300 text-xs sm:text-sm font-medium">
-              <span>{redirectError}</span>
-              <button
-                onClick={() => setRedirectError(null)}
-                className="p-1 rounded-lg hover:bg-amber-500/15 transition-colors cursor-pointer text-amber-700 dark:text-amber-400"
-                aria-label="Dismiss message"
-              >
-                ✕
-              </button>
-            </div>
-          )}
-
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-zinc-900/[0.03] dark:bg-white/[0.06] border border-zinc-900/10 dark:border-white/10 rounded-full text-xs font-medium text-zinc-700 dark:text-zinc-300 backdrop-blur-md shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
-            Fast link shortener with real-time analytics
+      <div className="relative z-10 py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        {/* Redirection Error Notice */}
+        {redirectError && (
+          <div className="max-w-2xl mx-auto mb-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-between gap-3 text-amber-800 dark:text-amber-300 text-xs sm:text-sm font-medium">
+            <span>{redirectError}</span>
+            <button
+              onClick={() => setRedirectError(null)}
+              className="p-1 rounded-lg hover:bg-amber-500/15 transition-colors cursor-pointer text-amber-700 dark:text-amber-400"
+              aria-label="Dismiss message"
+            >
+              ✕
+            </button>
           </div>
+        )}
 
-          {/* Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.1] text-zinc-900 dark:text-white">
-            Shorten links.
-            <br />
-            <span className="text-zinc-500 dark:text-zinc-400">Track every click.</span>
-          </h1>
+        {/* Asymmetric Split Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center mb-20 pt-4 sm:pt-8">
+          {/* Left Column (7 cols): Headline, Subtitle, Shortener Form */}
+          <div className="lg:col-span-7 space-y-6 text-left">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.1] text-zinc-900 dark:text-white">
+              Shorten links.
+              <br />
+              <span className="text-zinc-400 dark:text-zinc-500">Track every click.</span>
+            </h1>
 
-          {/* Subtitle */}
-          <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 max-w-xl mx-auto font-normal leading-relaxed">
-            Turn long URLs into clean, memorable links. Protect them with passwords, set expiry dates, and inspect visitor metrics.
-          </p>
-        </div>
+            <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-xl font-normal leading-relaxed">
+              Turn long URLs into clean, memorable links. Protect them with passwords, set expiry dates, and inspect visitor metrics with tabular precision.
+            </p>
 
-        {/* ═══════════════ SHORTENER GLASS BOX ═══════════════ */}
-        <div className="hero-box max-w-2xl mx-auto p-6 sm:p-8 mb-20">
-          <form onSubmit={handleShorten} className="space-y-4">
-            <div className="space-y-2">
-              <label className="flex items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                <Link2 className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
-                Paste long URL
-              </label>
+            {/* Shortener Box */}
+            <div className="hero-box p-5 sm:p-6 space-y-4">
+              <form onSubmit={handleShorten} className="space-y-4">
+                <div className="space-y-2">
+                  <label className="flex items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                    <Link2 className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
+                    Paste long URL
+                  </label>
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    inputMode="url"
-                    value={longUrl}
-                    onChange={(e) => setLongUrl(e.target.value)}
-                    required
-                    className="w-full px-4 py-3.5 glass-input text-sm rounded-xl placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none font-medium pr-10"
-                    placeholder="https://example.com/very-long-url-to-shorten"
-                  />
-                  {longUrl && (
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        inputMode="url"
+                        value={longUrl}
+                        onChange={(e) => setLongUrl(e.target.value)}
+                        required
+                        className="w-full px-4 py-3.5 glass-input text-sm rounded-xl placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none font-medium pr-10"
+                        placeholder="https://example.com/very-long-url-to-shorten"
+                      />
+                      {longUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setLongUrl("")}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer text-base"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+
                     <button
-                      type="button"
-                      onClick={() => setLongUrl("")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer text-base"
+                      type="submit"
+                      disabled={isShortening}
+                      className="px-6 py-3.5 btn-glow text-sm rounded-xl cursor-pointer flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
                     >
-                      ×
+                      <span>{isShortening ? "Shortening..." : "Shorten"}</span>
+                      <ArrowRight className="w-4 h-4" />
                     </button>
-                  )}
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isShortening}
-                  className="px-6 py-3.5 btn-glow text-sm rounded-xl cursor-pointer flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
-                >
-                  <span>{isShortening ? "Shortening..." : "Shorten"}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </form>
-
-          {/* Result Box */}
-          {shortenedUrl && (
-            <div className="mt-5 p-4 rounded-xl bg-zinc-900/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-md space-y-3">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 space-y-1">
-                  <div className="flex items-center gap-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 shrink-0" />
-                    <span>Short link ready</span>
                   </div>
-                  <a
-                    href={workingUrl || shortenedUrl || "#"}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-base font-mono font-medium text-zinc-900 dark:text-white hover:underline break-all block"
-                  >
-                    {shortenedUrl}
-                  </a>
                 </div>
+              </form>
 
-                <button
-                  onClick={handleCopy}
-                  className="p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 cursor-pointer transition shrink-0 active:scale-95"
-                  title="Copy short link"
-                >
-                  {copied
-                    ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                    : <Copy className="w-4 h-4" />
-                  }
-                </button>
-              </div>
+              {/* Result Box */}
+              {shortenedUrl && (
+                <div className="p-4 rounded-xl bg-zinc-900/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-md space-y-3">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 space-y-1">
+                      <div className="flex items-center gap-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 shrink-0" />
+                        <span>Short link ready</span>
+                      </div>
+                      <a
+                        href={workingUrl || shortenedUrl || "#"}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-base font-mono font-medium text-zinc-900 dark:text-white hover:underline break-all block"
+                      >
+                        {shortenedUrl}
+                      </a>
+                    </div>
 
-              {/* Sign-up nudge */}
-              {!isAuthenticated && (
-                <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                  <span className="text-zinc-500 dark:text-zinc-400">Need custom aliases, QR codes & analytics?</span>
-                  <button
-                    onClick={() => navigateTo("#/register")}
-                    className="font-medium text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer shrink-0"
-                  >
-                    Create free account
-                    <ArrowRight className="w-3 h-3" />
-                  </button>
+                    <button
+                      onClick={handleCopy}
+                      className="p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 cursor-pointer transition shrink-0 active:scale-95"
+                      title="Copy short link"
+                    >
+                      {copied
+                        ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        : <Copy className="w-4 h-4" />
+                      }
+                    </button>
+                  </div>
+
+                  {/* Sign-up nudge */}
+                  {!isAuthenticated && (
+                    <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                      <span className="text-zinc-500 dark:text-zinc-400">Need custom aliases, QR codes & analytics?</span>
+                      <button
+                        onClick={() => navigateTo("#/register")}
+                        className="font-medium text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer shrink-0"
+                      >
+                        Create free account
+                        <ArrowRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          )}
+
+            {/* Micro-features strip */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-zinc-500 dark:text-zinc-400 font-mono">
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Instant 302 redirects
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Live click metrics
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Password & QR protection
+              </span>
+            </div>
+          </div>
+
+          {/* Right Column (5 cols): Live Link Inspector Preview Card */}
+          <div className="lg:col-span-5 hidden lg:block">
+            <div className="glass-card p-6 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-xl space-y-5">
+              {/* Header bar */}
+              <div className="flex items-center justify-between text-xs font-mono">
+                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Live Link Inspector</span>
+                </div>
+                <span className="text-zinc-400 dark:text-zinc-500 text-[11px]">snaplink.io</span>
+              </div>
+
+              {/* URL preview */}
+              <div className="space-y-1.5 p-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04]">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-zinc-400 font-mono">Slug</span>
+                  <span className="text-[10px] uppercase font-mono tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
+                    302 Direct
+                  </span>
+                </div>
+                <div className="text-sm font-mono font-bold text-zinc-900 dark:text-white truncate">
+                  snaplink.vercel.app/launch
+                </div>
+                <div className="text-xs text-zinc-500 dark:text-zinc-400 truncate font-mono">
+                  https://github.com/monkeysoul-cmd/snaplink
+                </div>
+              </div>
+
+              {/* Metric Grid */}
+              <div className="grid grid-cols-3 gap-2 py-3 border-y border-black/[0.06] dark:border-white/[0.06] text-center">
+                <div className="space-y-0.5">
+                  <div className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Clicks</div>
+                  <div className="text-base font-bold text-zinc-900 dark:text-white font-mono">1,428</div>
+                </div>
+                <div className="space-y-0.5">
+                  <div className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Top Device</div>
+                  <div className="text-xs font-bold text-zinc-900 dark:text-white font-mono pt-1">Mobile (64%)</div>
+                </div>
+                <div className="space-y-0.5">
+                  <div className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Region</div>
+                  <div className="text-xs font-bold text-zinc-900 dark:text-white font-mono pt-1">United States</div>
+                </div>
+              </div>
+
+              {/* Sparkline Histogram */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
+                  <span className="flex items-center gap-1.5">
+                    <TrendingUp className="w-3 h-3 text-emerald-500" />
+                    7-day velocity
+                  </span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold">+18% this week</span>
+                </div>
+                <div className="h-12 flex items-end justify-between gap-1.5 px-2 bg-black/[0.02] dark:bg-white/[0.02] rounded-lg p-2 border border-black/[0.03] dark:border-white/[0.03]">
+                  {[35, 60, 28, 85, 95, 70, 100].map((h, idx) => (
+                    <div
+                      key={idx}
+                      className="flex-1 bg-zinc-300 dark:bg-zinc-700 hover:bg-emerald-500 transition-colors rounded-xs"
+                      style={{ height: `${h}%` }}
+                      title={`Day ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Security & Feature Badges */}
+              <div className="flex items-center gap-2 pt-1 text-[11px]">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-medium">
+                  <QrCode className="w-3 h-3" />
+                  QR Ready
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 border border-black/5 dark:border-white/10 font-medium">
+                  <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                  Password Protected
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ═══════════════ FEATURES GRID ═══════════════ */}

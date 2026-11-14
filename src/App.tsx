@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link2 } from "lucide-react";
 import { AuthProvider, useAuth } from "./context/AuthContext.js";
 import { ToastProvider } from "./context/ToastContext.js";
 import { Navbar } from "./components/Navbar.js";
@@ -50,14 +51,12 @@ const AppContent: React.FC = () => {
   // Global loading state on app mount/session validation
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#f0fdf4] dark:bg-[#020d0a] flex flex-col items-center justify-center gap-4 text-zinc-600 dark:text-zinc-400 transition-colors relative overflow-hidden">
-        {/* Animated background blobs */}
-        <div className="absolute top-1/4 left-1/3 w-64 h-64 bg-emerald-600/10 rounded-full blur-3xl animate-blob" />
-        <div className="absolute bottom-1/4 right-1/3 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl animate-blob" style={{ animationDelay: '4s' }} />
-
-        <span className="text-5xl animate-pulse-soft">✂️</span>
-        <div className="w-10 h-10 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-        <span className="text-sm font-semibold tracking-wide text-zinc-600 dark:text-zinc-400">Loading...</span>
+      <div className="min-h-screen bg-white dark:bg-[#060612] flex flex-col items-center justify-center gap-4 text-zinc-600 dark:text-zinc-400 transition-colors">
+        <div className="w-10 h-10 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center font-bold shadow-xs">
+          <Link2 className="w-5 h-5" />
+        </div>
+        <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+        <span className="text-xs font-mono text-zinc-400 dark:text-zinc-500">Loading SnapLink...</span>
       </div>
     );
   }
