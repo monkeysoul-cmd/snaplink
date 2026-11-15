@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGO_URI || process.env.MONGODB_URI || "mongodb+srv://<db_username>:<db_password>@cluster0.ntqhehl.mongodb.net/?appName=Cluster0";
+const RAW_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+const MONGODB_URI = RAW_URI || "mongodb://127.0.0.1:27017/snaplink";
 
 let cached = (global as any).mongoose;
 
@@ -21,11 +22,13 @@ export const connectDB = async () => {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((m) => {
       console.log("MongoDB connected successfully");
-      return mongoose;
+      return m;
     }).catch(error => {
-      console.error("MongoDB connection error:", error);
+      // Redact potential connection string / credential details from logged message
+      const safeMessage = error?.message ? String(error.message).replace(/mongodb(\+srv)?:\/\/[^\s@]+@/gi, "mongodb://***:***@") : "Connection failed";
+      console.error("MongoDB connection error:", safeMessage);
       cached.promise = null;
       throw error;
     });
@@ -54,7 +57,13 @@ const UserSchema = new mongoose.Schema({
       return ret;
     }
   },
-  toObject: { virtuals: true }
+  toObject: {
+    virtuals: true,
+    transform: (_doc, ret: any) => {
+      delete ret.passwordHash;
+      return ret;
+    }
+  }
 });
 
 export const User: mongoose.Model<any> = mongoose.models.User || mongoose.model('User', UserSchema);
@@ -65,6 +74,19 @@ const ClickAnalyticSchema = new mongoose.Schema({
   browser: { type: String },
   device: { type: String },
   country: { type: String }
+}, {
+  toJSON: {
+    transform: (_doc, ret: any) => {
+      delete ret.ip; // Never expose raw visitor IP addresses in API responses
+      return ret;
+    }
+  },
+  toObject: {
+    transform: (_doc, ret: any) => {
+      delete ret.ip;
+      return ret;
+    }
+  }
 });
 
 const UrlSchema = new mongoose.Schema({
@@ -91,7 +113,15 @@ const UrlSchema = new mongoose.Schema({
       return ret;
     }
   },
-  toObject: { virtuals: true }
+  toObject: {
+    virtuals: true,
+    transform: (_doc, ret: any) => {
+      if (ret.passwordHash) {
+        ret.passwordHash = "protected";
+      }
+      return ret;
+    }
+  }
 });
 
 UrlSchema.index(
