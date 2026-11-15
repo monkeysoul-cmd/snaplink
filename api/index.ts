@@ -52,4 +52,19 @@ app.use("/api/analytics", analyticsRouter);
 // Mount the Redirection router
 app.use("/", redirectRouter);
 
+// Global error handler
+app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error("Unhandled serverless error:", err);
+  if (res.headersSent) return;
+  const isApi = req.path.startsWith("/api/");
+  const status = err.status || err.statusCode || 500;
+  if (isApi) {
+    res.status(status).json({
+      message: process.env.NODE_ENV === "production" ? "Internal server error" : (err.message || "Internal server error")
+    });
+  } else {
+    res.status(status).send("Internal Server Error");
+  }
+});
+
 export default app;

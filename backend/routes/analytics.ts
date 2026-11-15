@@ -9,12 +9,12 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
   try {
     const userId = req.user!.id;
 
-    // Fetch user's URLs
-    const urls = await Url.find({ userId });
+    // Fetch user's URLs using lean() for reduced memory and execution overhead
+    const urls: any[] = await Url.find({ userId }).lean();
 
     // 1. Overall Metrics
     const totalUrls = urls.length;
-    const totalClicks = urls.reduce((sum, u) => sum + u.clicks, 0);
+    const totalClicks = urls.reduce((sum, u) => sum + (u.clicks || 0), 0);
 
     // 2. Favorite count and active count
     const activeUrls = urls.filter((u) => u.isActive).length;
@@ -22,7 +22,7 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
 
     // 3. Most Visited Links (Top 5 sorted by clicks desc)
     const mostVisited = [...urls]
-      .sort((a, b) => b.clicks - a.clicks || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort((a, b) => (b.clicks || 0) - (a.clicks || 0) || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 5)
       .map((u) => ({
         id: u.id || u._id.toString(),
@@ -54,12 +54,12 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
 
     const allClicks: ClickWithMetadata[] = [];
     urls.forEach((url) => {
-      (url.clickAnalytics || []).forEach((click) => {
+      (url.clickAnalytics || []).forEach((click: any) => {
         allClicks.push({
           timestamp: click.timestamp,
           browser: click.browser || "Other",
           device: click.device || "Desktop",
-          country: click.country || "United States",
+          country: click.country || "Unknown",
         });
       });
     });

@@ -72,6 +72,21 @@ async function startServer() {
     });
   }
 
+  // Global error handler to catch unhandled errors without leaking stack traces
+  app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    console.error("Unhandled server error:", err);
+    if (res.headersSent) return;
+    const isApi = req.path.startsWith("/api/");
+    const status = err.status || err.statusCode || 500;
+    if (isApi) {
+      res.status(status).json({
+        message: process.env.NODE_ENV === "production" ? "Internal server error" : (err.message || "Internal server error")
+      });
+    } else {
+      res.status(status).send("Internal Server Error");
+    }
+  });
+
   // Bind to configured port and host 0.0.0.0 (required for Cloud Run / Docker routing)
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`=======================================================`);

@@ -102,6 +102,17 @@ router.post("/", createUrlLimiter, async (req: Request, res: Response): Promise<
       return;
     }
 
+    // Prevent recursive redirect loops pointing back to the application itself
+    const host = req.get("host")?.toLowerCase();
+    try {
+      const targetUrl = new URL(normalizedOriginal);
+      const targetHost = targetUrl.host.toLowerCase();
+      if ((host && targetHost === host) || targetUrl.hostname.toLowerCase() === "snaplink.vercel.app") {
+        res.status(400).json({ message: "Cannot shorten links that point back to SnapLink itself" });
+        return;
+      }
+    } catch (_) {}
+
     const userId = getOptionalUserId(req);
 
     // Validate expiration date if provided
@@ -191,8 +202,8 @@ router.post("/", createUrlLimiter, async (req: Request, res: Response): Promise<
       tags: Array.isArray(tags) 
         ? Array.from(new Set(tags.map((t: any) => String(t).trim().toLowerCase()).filter((t: string) => t.length > 0 && t.length <= 30))).slice(0, 20) 
         : [],
-      isPublic: isPublic ?? true,
-      isFavorite: isFavorite ?? false,
+      isPublic: isPublic !== undefined ? parseBoolean(isPublic) : true,
+      isFavorite: isFavorite !== undefined ? parseBoolean(isFavorite) : false,
     };
 
     if (hasCustomAlias) {
@@ -203,8 +214,12 @@ router.post("/", createUrlLimiter, async (req: Request, res: Response): Promise<
 
     res.status(201).json(newUrl);
   } catch (error: any) {
+    if (error?.code === 11000) {
+      res.status(409).json({ message: "Custom alias or short code already in use. Please choose another." });
+      return;
+    }
     console.error("Create URL error:", error);
-    res.status(500).json({ message: error?.message || "Server error creating short URL" });
+    res.status(500).json({ message: "Server error creating short URL" });
   }
 });
 
@@ -212,20 +227,20 @@ router.post("/", createUrlLimiter, async (req: Request, res: Response): Promise<
 router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user!.id;
-    const search = req.query.search as string;
-    const tag = req.query.tag as string;
-    const favorite = req.query.favorite as string;
+    const rawSearch = typeof req.query.search === "string" ? req.query.search.trim().slice(0, 100) : "";
+    const rawTag = typeof req.query.tag === "string" ? req.query.tag.trim().slice(0, 50) : "";
+    const rawFavorite = typeof req.query.favorite === "string" ? req.query.favorite.trim().toLowerCase() : "";
     const rawPage = parseInt(req.query.page as string, 10);
     const rawLimit = parseInt(req.query.limit as string, 10);
-    const page = !isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
+    const page = !isNaN(rawPage) && rawPage > 0 ? Math.min(rawPage, 10000) : 1;
     const limit = !isNaN(rawLimit) && rawLimit > 0 ? Math.min(rawLimit, 100) : 10;
     const sort = (req.query.sort as string) || "createdAt_desc";
 
     // Build Mongoose query
     const query: any = { userId };
 
-    if (search) {
-      const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (rawSearch) {
+      const escaped = rawSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const searchRegex = new RegExp(escaped, 'i');
       query.$or = [
         { originalUrl: searchRegex },
@@ -235,11 +250,11 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
       ];
     }
 
-    if (tag) {
-      query.tags = tag.toLowerCase();
+    if (rawTag) {
+      query.tags = rawTag.toLowerCase();
     }
 
-    if (favorite === "true") {
+    if (rawFavorite === "true") {
       query.isFavorite = true;
     }
 
@@ -348,6 +363,16 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
         res.status(400).json({ message: "Invalid URL format" });
         return;
       }
+      // Prevent recursive redirect loops
+      const host = req.get("host")?.toLowerCase();
+      try {
+        const targetUrl = new URL(normalizedOriginal);
+        const targetHost = targetUrl.host.toLowerCase();
+        if ((host && targetHost === host) || targetUrl.hostname.toLowerCase() === "snaplink.vercel.app") {
+          res.status(400).json({ message: "Cannot shorten links that point back to SnapLink itself" });
+          return;
+        }
+      } catch (_) {}
       updates.originalUrl = normalizedOriginal;
     }
 
@@ -417,21 +442,23 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
     }
 
     if (isActive !== undefined) {
-      updates.isActive = Boolean(isActive);
+      updates.isActive = parseBoolean(isActive);
     }
 
     if (isPublic !== undefined) {
-      updates.isPublic = Boolean(isPublic);
+      updates.isPublic = parseBoolean(isPublic);
     }
 
     if (isFavorite !== undefined) {
-      updates.isFavorite = Boolean(isFavorite);
+      updates.isFavorite = parseBoolean(isFavorite);
     }
 
     if (tags !== undefined) {
-      updates.tags = Array.isArray(tags) 
-        ? Array.from(new Set(tags.map((t: any) => String(t).trim().toLowerCase()).filter((t: string) => t.length > 0 && t.length <= 30))).slice(0, 20)
-        : [];
+      if (!Array.isArray(tags)) {
+        res.status(400).json({ message: "Tags must be an array of strings" });
+        return;
+      }
+      updates.tags = Array.from(new Set(tags.map((t: any) => String(t).trim().toLowerCase()).filter((t: string) => t.length > 0 && t.length <= 30))).slice(0, 20);
     }
 
     if (password !== undefined) {
@@ -453,7 +480,11 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
 
     const updatedUrl = await Url.findByIdAndUpdate(id, updates, { new: true });
     res.json(updatedUrl);
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 11000) {
+      res.status(409).json({ message: "Custom alias or short code already in use. Please choose another." });
+      return;
+    }
     console.error("Update URL error:", error);
     res.status(500).json({ message: "Server error updating URL" });
   }

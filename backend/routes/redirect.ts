@@ -1,7 +1,7 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import { Url } from "../config/db.js";
-import { parseUserAgent } from "../utils/helpers.js";
+import { parseUserAgent, anonymizeIp, isValidUrl } from "../utils/helpers.js";
 import { verifyLimiter } from "../middleware/rateLimiter.js";
 
 const MAX_ANALYTICS_RECORDS = 500;
@@ -21,28 +21,43 @@ const FRONTEND_ROUTES = new Set([
 
 const router = Router();
 
-// POST /api/url/:shortCode/verify-password
-// Verifies the password of a protected link and records click analytics if successful.
+// Helper to look up URL by shortCode or customAlias with fast indexed lookup then regex fallback
+async function findUrlByCode(code: string) {
+  const cleanCode = code.trim();
+  if (!cleanCode || cleanCode.length > 100) return null;
+
+  // 1. Fast indexed exact match
+  let url = await Url.findOne({
+    $or: [{ shortCode: cleanCode }, { customAlias: cleanCode }]
+  });
+
+  // 2. Case-insensitive fallback
+  if (!url) {
+    const escapedCode = cleanCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    url = await Url.findOne({
+      $or: [
+        { shortCode: new RegExp(`^${escapedCode}$`, "i") },
+        { customAlias: new RegExp(`^${escapedCode}$`, "i") }
+      ]
+    });
+  }
+
+  return url;
+}
+
+// POST /api/url/:shortCode/verify
+// Verifies the password of a protected link and records atomic click analytics if successful.
 router.post("/api/url/:shortCode/verify", verifyLimiter, async (req: Request, res: Response): Promise<void> => {
   try {
     const { shortCode } = req.params;
     const { password } = req.body;
 
-    if (!password) {
+    if (!password || typeof password !== "string") {
       res.status(400).json({ message: "Password is required" });
       return;
     }
 
-    const cleanCode = shortCode.trim();
-    const escapedCode = cleanCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const url = await Url.findOne({
-      $or: [
-        { shortCode: cleanCode },
-        { customAlias: cleanCode },
-        { shortCode: new RegExp(`^${escapedCode}$`, "i") },
-        { customAlias: new RegExp(`^${escapedCode}$`, "i") }
-      ]
-    });
+    const url = await findUrlByCode(shortCode);
     if (!url) {
       res.status(404).json({ message: "Short URL not found" });
       return;
@@ -59,26 +74,38 @@ router.post("/api/url/:shortCode/verify", verifyLimiter, async (req: Request, re
       return;
     }
 
+    if (!isValidUrl(url.originalUrl)) {
+      res.status(400).json({ message: "The destination URL is invalid or unsafe." });
+      return;
+    }
+
     // Capture User-Agent analytics
     const userAgent = req.headers["user-agent"] || "";
     const forwarded = req.headers["x-forwarded-for"];
-    const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim() || req.socket.remoteAddress || "127.0.0.1";
+    const rawIp = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim() || req.socket.remoteAddress || "127.0.0.1";
     const clientCountry = (req.headers["x-vercel-ip-country"] || req.headers["cf-ipcountry"] || "") as string;
     const { browser, device, country } = parseUserAgent(userAgent, clientCountry);
+    const safeIp = anonymizeIp(rawIp);
 
-    // Record click and bound clickAnalytics to prevent BSON document overflow
-    url.clicks += 1;
-    url.clickAnalytics.push({
-      timestamp: new Date().toISOString(),
-      ip,
-      browser,
-      device,
-      country,
-    });
-    if (url.clickAnalytics.length > MAX_ANALYTICS_RECORDS) {
-      url.clickAnalytics = url.clickAnalytics.slice(-MAX_ANALYTICS_RECORDS);
-    }
-    await url.save();
+    // Atomic update to avoid race conditions and lost clicks
+    await Url.updateOne(
+      { _id: url._id },
+      {
+        $inc: { clicks: 1 },
+        $push: {
+          clickAnalytics: {
+            $each: [{
+              timestamp: new Date().toISOString(),
+              ip: safeIp,
+              browser,
+              device,
+              country,
+            }],
+            $slice: -MAX_ANALYTICS_RECORDS
+          }
+        }
+      }
+    );
 
     res.json({ originalUrl: url.originalUrl });
   } catch (error) {
@@ -89,7 +116,7 @@ router.post("/api/url/:shortCode/verify", verifyLimiter, async (req: Request, re
 
 // GET /:shortCode
 // Main redirect handler. Checks expiry, password protection, active status, logs analytics, and redirects.
-router.get("/:shortCode", async (req: Request, res: Response, next: import("express").NextFunction) => {
+router.get("/:shortCode", async (req: Request, res: Response, next: NextFunction) => {
   try {
     let shortCode = req.params.shortCode;
 
@@ -117,7 +144,8 @@ router.get("/:shortCode", async (req: Request, res: Response, next: import("expr
       shortCode.startsWith("src") ||
       shortCode.startsWith("node_modules") ||
       shortCode.includes(".") || 
-      shortCode === "favicon.ico"
+      shortCode === "favicon.ico" ||
+      shortCode.length > 100
     ) {
       return next();
     }
@@ -130,16 +158,7 @@ router.get("/:shortCode", async (req: Request, res: Response, next: import("expr
       return;
     }
 
-    // Look up by shortCode OR customAlias
-    const escapedCode = cleanCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const url = await Url.findOne({
-      $or: [
-        { shortCode: cleanCode },
-        { customAlias: cleanCode },
-        { shortCode: new RegExp(`^${escapedCode}$`, "i") },
-        { customAlias: new RegExp(`^${escapedCode}$`, "i") }
-      ]
-    });
+    const url = await findUrlByCode(cleanCode);
 
     if (!url) {
       // Redirect to frontend's 404 handler
@@ -169,28 +188,41 @@ router.get("/:shortCode", async (req: Request, res: Response, next: import("expr
       return;
     }
 
-    // 4. Capture User-Agent analytics
+    // 4. Validate original destination URL scheme against XSS
+    if (!isValidUrl(url.originalUrl)) {
+      res.redirect("/#/404");
+      return;
+    }
+
+    // 5. Capture User-Agent analytics
     const userAgent = req.headers["user-agent"] || "";
     const forwarded = req.headers["x-forwarded-for"];
-    const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim() || req.socket.remoteAddress || "127.0.0.1";
+    const rawIp = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim() || req.socket.remoteAddress || "127.0.0.1";
     const clientCountry = (req.headers["x-vercel-ip-country"] || req.headers["cf-ipcountry"] || "") as string;
     const { browser, device, country } = parseUserAgent(userAgent, clientCountry);
+    const safeIp = anonymizeIp(rawIp);
 
-    // Record click and bound clickAnalytics to prevent BSON document overflow
-    url.clicks += 1;
-    url.clickAnalytics.push({
-      timestamp: new Date().toISOString(),
-      ip,
-      browser,
-      device,
-      country,
-    });
-    if (url.clickAnalytics.length > MAX_ANALYTICS_RECORDS) {
-      url.clickAnalytics = url.clickAnalytics.slice(-MAX_ANALYTICS_RECORDS);
-    }
-    await url.save();
+    // Atomic update to avoid race conditions and lost clicks
+    await Url.updateOne(
+      { _id: url._id },
+      {
+        $inc: { clicks: 1 },
+        $push: {
+          clickAnalytics: {
+            $each: [{
+              timestamp: new Date().toISOString(),
+              ip: safeIp,
+              browser,
+              device,
+              country,
+            }],
+            $slice: -MAX_ANALYTICS_RECORDS
+          }
+        }
+      }
+    );
 
-    // 5. Redirect to original URL
+    // 6. Redirect to original URL
     res.redirect(url.originalUrl);
   } catch (error) {
     console.error("Redirection error:", error);
