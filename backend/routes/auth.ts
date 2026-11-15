@@ -77,6 +77,10 @@ router.post("/register", authLimiter, async (req: Request, res: Response): Promi
       },
     });
   } catch (error: any) {
+    if (error?.code === 11000) {
+      res.status(409).json({ message: "User with this email already exists" });
+      return;
+    }
     console.error("Registration error:", error);
     res.status(500).json({ message: "Server error during registration" });
   }

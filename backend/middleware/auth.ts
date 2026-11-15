@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 const DEFAULT_DEV_SECRET = "linkcut_dev_secret_jwt_key_DO_NOT_USE_IN_PRODUCTION";
 const ENV_SECRET = process.env.JWT_SECRET;
@@ -16,12 +17,12 @@ export interface AuthenticatedRequest extends Request {
   };
 }
 
-// Generate JWT token
+// Generate JWT token using HS256 algorithm
 export function generateToken(userId: string): string {
-  return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ id: userId }, JWT_SECRET, { algorithm: "HS256", expiresIn: "7d" });
 }
 
-// Authentication middleware
+// Authentication middleware enforcing HS256 and valid ObjectId payload
 export function authenticateToken(
   req: AuthenticatedRequest,
   res: Response,
@@ -36,7 +37,11 @@ export function authenticateToken(
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ["HS256"] }) as any;
+    if (!decoded || typeof decoded !== "object" || typeof decoded.id !== "string" || !mongoose.isValidObjectId(decoded.id)) {
+      res.status(401).json({ message: "Invalid session token payload." });
+      return;
+    }
     req.user = { id: decoded.id };
     next();
   } catch (error) {

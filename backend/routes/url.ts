@@ -56,11 +56,21 @@ function getOptionalUserId(req: Request): string | null {
   const token = authHeader && authHeader.split(" ")[1];
   if (!token) return null;
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
-    return decoded.id;
+    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ["HS256"] }) as any;
+    if (decoded && typeof decoded.id === "string" && mongoose.isValidObjectId(decoded.id)) {
+      return decoded.id;
+    }
+    return null;
   } catch (error) {
     return null;
   }
+}
+
+function parseBoolean(val: any): boolean {
+  if (typeof val === "boolean") return val;
+  if (typeof val === "string") return val.toLowerCase() === "true" || val === "1";
+  if (typeof val === "number") return val === 1;
+  return false;
 }
 
 // POST /api/url (Create Short URL - Optional Auth)
