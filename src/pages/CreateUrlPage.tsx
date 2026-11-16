@@ -6,6 +6,7 @@ import {
 import { api } from "../services/api.js";
 import { useToast } from "../context/ToastContext.js";
 import { UrlQrCode } from "../components/UrlQrCode.js";
+import { ExpiryPicker } from "../components/ExpiryPicker.js";
 import { getDisplayShortUrl, getWorkingShortUrl, getShortDomain } from "../utils/urlHelper.js";
 
 const computeDefaultExpiry = (pref: string | null): string => {
@@ -79,9 +80,16 @@ export const CreateUrlPage: React.FC = () => {
       finalAlias = trimmedAlias;
     }
 
-    if (expiresAt && new Date(expiresAt).getTime() <= Date.now()) {
-      toast.error("Expiration date must be in the future.");
-      return;
+    if (expiresAt) {
+      const expiryTime = new Date(expiresAt).getTime();
+      if (isNaN(expiryTime)) {
+        toast.error("Please enter a valid expiration date.");
+        return;
+      }
+      if (expiryTime <= Date.now() - 60000) {
+        toast.error("Expiration date must be in the future.");
+        return;
+      }
     }
     setIsSubmitting(true);
     setDisplayUrl(null); setWorkingUrl(null); setCreatedCode(null);
@@ -203,57 +211,41 @@ export const CreateUrlPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Expiry */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5 text-zinc-400" />
-                      Expiration date
-                    </label>
-                    {expiresAt && (
-                      <button
-                        type="button"
-                        onClick={() => setExpiresAt("")}
-                        className="text-[10px] font-semibold text-rose-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer"
-                      >
-                        Clear
-                      </button>
-                    )}
-                  </div>
-                  <input
-                    type="datetime-local"
-                    value={expiresAt}
-                    min={getNowLocalDatetime()}
-                    onChange={(e) => setExpiresAt(e.target.value)}
-                    className="w-full px-3.5 py-2.5 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none"
-                    id="create-url-expiry"
-                  />
-                </div>
+              {/* Expiry */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  Expiration date
+                </label>
+                <ExpiryPicker
+                  value={expiresAt}
+                  onChange={setExpiresAt}
+                  id="create-url-expiry"
+                />
+              </div>
 
-                {/* Password */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
-                    <Lock className="w-3.5 h-3.5 text-zinc-400" />
-                    Password protection
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPwd ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-3.5 py-2.5 pr-10 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-600"
-                      placeholder="••••••••"
-                      id="create-url-password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPwd(!showPwd)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
-                    >
-                      {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
+              {/* Password */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-zinc-400" />
+                  Password protection (optional)
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPwd ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-3.5 py-2.5 pr-10 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-600"
+                    placeholder="••••••••"
+                    id="create-url-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPwd(!showPwd)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+                  >
+                    {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 

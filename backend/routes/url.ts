@@ -42,7 +42,8 @@ function parseExpiryDate(val: any): { iso: string | null; error?: string } {
   if (isNaN(d.getTime())) {
     return { iso: null, error: "Invalid expiration date format" };
   }
-  if (d.getTime() <= Date.now()) {
+  // Allow a 60-second grace window to account for network latency and client/server clock skew
+  if (d.getTime() < Date.now() - 60000) {
     return { iso: null, error: "Expiration date must be in the future" };
   }
   return { iso: d.toISOString() };
@@ -432,12 +433,16 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
       if (expiresAt === null || expiresAt === "") {
         updates.expiresAt = null;
       } else {
-        const expiryResult = parseExpiryDate(expiresAt);
-        if (expiryResult.error) {
-          res.status(400).json({ message: expiryResult.error });
-          return;
+        // If unchanged from what is already stored on this URL, preserve it without error (e.g. updating tags or alias on an expired link)
+        const isUnchanged = url.expiresAt && new Date(expiresAt).getTime() === new Date(url.expiresAt).getTime();
+        if (!isUnchanged) {
+          const expiryResult = parseExpiryDate(expiresAt);
+          if (expiryResult.error) {
+            res.status(400).json({ message: expiryResult.error });
+            return;
+          }
+          updates.expiresAt = expiryResult.iso;
         }
-        updates.expiresAt = expiryResult.iso;
       }
     }
 

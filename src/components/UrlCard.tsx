@@ -7,6 +7,7 @@ import { UrlItem } from "../types.js";
 import { api } from "../services/api.js";
 import { useToast } from "../context/ToastContext.js";
 import { UrlQrCode } from "./UrlQrCode.js";
+import { ExpiryPicker } from "./ExpiryPicker.js";
 import { getDisplayShortUrl, getWorkingShortUrl, getRedirectUrl } from "../utils/urlHelper.js";
 
 interface UrlCardProps {
@@ -164,6 +165,22 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
   const formatDate = (dateString: string) =>
     new Date(dateString).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
+  const formatExpiryShort = (dateString: string) => {
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return "";
+    const now = Date.now();
+    const diffHours = (d.getTime() - now) / (1000 * 60 * 60);
+    const diffDays = Math.round(diffHours / 24);
+    const dateFormatted = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    if (diffHours <= 0) return "Expired";
+    if (diffHours < 24) {
+      const hrs = Math.max(1, Math.round(diffHours));
+      return `in ${hrs}h (${dateFormatted})`;
+    }
+    if (diffDays === 1) return `tomorrow (${dateFormatted})`;
+    return `${dateFormatted} (in ${diffDays}d)`;
+  };
+
   const isExpired = url.expiresAt ? new Date(url.expiresAt).getTime() < Date.now() : false;
 
   return (
@@ -192,11 +209,14 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
                     </span>
                   )}
                   {isExpired ? (
-                    <span className="gradient-badge badge-rose">Expired</span>
+                    <span className="gradient-badge badge-rose flex items-center gap-1" title={url.expiresAt ? `Expired on ${new Date(url.expiresAt).toLocaleString()}` : "Expired"}>
+                      <AlertTriangle className="w-2.5 h-2.5" />
+                      Expired {url.expiresAt ? `(${formatDate(url.expiresAt)})` : ""}
+                    </span>
                   ) : url.expiresAt ? (
-                    <span className="gradient-badge badge-blue flex items-center gap-1">
+                    <span className="gradient-badge badge-blue flex items-center gap-1" title={`Expires on ${new Date(url.expiresAt).toLocaleString()}`}>
                       <Calendar className="w-2.5 h-2.5" />
-                      Expires {formatDate(url.expiresAt)}
+                      Expires {formatExpiryShort(url.expiresAt)}
                     </span>
                   ) : null}
                   {!url.isActive && (
@@ -395,25 +415,16 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <div className="form-section-label flex items-center justify-between">
-                <span>Expires on</span>
-                {editExpiry && (
-                  <button
-                    type="button"
-                    onClick={() => setEditExpiry("")}
-                    className="text-[10px] font-semibold text-rose-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer"
-                  >
-                    Clear expiry
-                  </button>
-                )}
+            <div className="space-y-1.5 sm:col-span-2">
+              <div className="form-section-label flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                Expiration date
               </div>
-              <input
-                type="datetime-local"
+              <ExpiryPicker
                 value={editExpiry}
-                min={getNowLocalDatetime()}
-                onChange={(e) => setEditExpiry(e.target.value)}
-                className="w-full px-4 py-3 glass-input text-sm text-zinc-900 dark:text-zinc-100 rounded-xl focus:outline-none font-medium"
+                onChange={setEditExpiry}
+                isExpired={isExpired}
+                id={`edit-expiry-${urlId}`}
               />
             </div>
 

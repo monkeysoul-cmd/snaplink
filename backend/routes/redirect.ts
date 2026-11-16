@@ -63,6 +63,16 @@ router.post("/api/url/:shortCode/verify", verifyLimiter, async (req: Request, re
       return;
     }
 
+    if (!url.isActive) {
+      res.status(400).json({ message: "This link has been deactivated and cannot be accessed." });
+      return;
+    }
+
+    if (url.expiresAt && new Date(url.expiresAt).getTime() < Date.now()) {
+      res.status(400).json({ message: "This link has expired and is no longer accessible." });
+      return;
+    }
+
     if (!url.passwordHash) {
       res.status(400).json({ message: "This URL is not password-protected" });
       return;
