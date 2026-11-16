@@ -52,11 +52,11 @@ const AppContent: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white dark:bg-[#060612] flex flex-col items-center justify-center gap-4 text-zinc-600 dark:text-zinc-400 transition-colors">
-        <div className="w-10 h-10 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center font-bold shadow-xs">
-          <Link2 className="w-5 h-5" />
+        <div className="w-10 h-10 rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white flex items-center justify-center font-bold shadow-sm">
+          <Link2 className="w-5 h-5 text-white stroke-[2.5]" />
         </div>
         <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
-        <span className="text-xs font-mono text-zinc-400 dark:text-zinc-500">Loading SnapLink...</span>
+        <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">Loading SnapLink...</span>
       </div>
     );
   }

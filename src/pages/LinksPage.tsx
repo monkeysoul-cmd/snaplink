@@ -131,7 +131,7 @@ export const LinksPage: React.FC = () => {
         </div>
         <button
           onClick={() => { window.location.hash = "#/create"; }}
-          className="px-4 py-2.5 btn-glow text-white text-xs sm:text-sm font-bold rounded-xl cursor-pointer flex items-center gap-2 self-start"
+          className="px-4 py-2.5 btn-glow text-xs sm:text-sm font-bold rounded-xl cursor-pointer flex items-center gap-2 self-start"
         >
           <PlusCircle className="w-4 h-4" />
           New Link

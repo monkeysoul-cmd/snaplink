@@ -45,7 +45,7 @@ export const UrlQrCode: React.FC<UrlQrCodeProps> = ({ shortUrl, shortCode }) => 
   return (
     <div className="flex flex-col items-center gap-4 p-5 glass-card rounded-2xl text-center">
       <div className="flex items-center gap-2 font-semibold text-zinc-900 dark:text-zinc-100 text-sm">
-        <QrCode className="w-5 h-5 text-violet-500 dark:text-violet-400" />
+        <QrCode className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
         QR Code Scanner Link
       </div>
       
@@ -75,7 +75,7 @@ export const UrlQrCode: React.FC<UrlQrCodeProps> = ({ shortUrl, shortCode }) => 
       <button
         onClick={handleDownload}
         disabled={isLoading}
-        className="flex items-center justify-center gap-2 w-full px-4 py-2 btn-gradient disabled:opacity-50 text-white font-medium text-xs rounded-xl transition shadow-md shadow-violet-600/15 cursor-pointer disabled:cursor-not-allowed"
+        className="flex items-center justify-center gap-2 w-full px-4 py-2 btn-gradient disabled:opacity-50 text-white font-medium text-xs rounded-xl transition shadow-md shadow-emerald-600/15 cursor-pointer disabled:cursor-not-allowed"
       >
         <Download className="w-4 h-4" />
         Download PNG

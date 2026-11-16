@@ -200,7 +200,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
                     </span>
                   ) : null}
                   {!url.isActive && (
-                    <span className="gradient-badge" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: '#71717a' }}>
+                    <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-zinc-100 dark:bg-white/[0.06] border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400">
                       Inactive
                     </span>
                   )}
@@ -519,7 +519,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
             <button
               type="submit"
               disabled={isSaving}
-              className="px-5 py-2 text-sm font-bold text-white btn-glow disabled:opacity-50 rounded-xl cursor-pointer flex items-center gap-1.5"
+              className="px-5 py-2 text-sm font-bold btn-glow disabled:opacity-50 rounded-xl cursor-pointer flex items-center gap-1.5"
             >
               {isSaving ? "Saving..." : "Save changes"}
             </button>

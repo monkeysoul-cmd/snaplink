@@ -31,13 +31,13 @@ export const LoginPage: React.FC = () => {
       {/* ── Left decorative visual panel — desktop only ── */}
       <div className="hidden lg:flex flex-col justify-center items-center flex-1 p-12 relative overflow-hidden border-r border-black/[0.06] dark:border-white/[0.06] bg-zinc-100/40 dark:bg-zinc-950/40">
         <div className="relative z-10 max-w-sm text-center space-y-6">
-          <div className="w-12 h-12 rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center font-bold shadow-md mx-auto">
-            <Link2 className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-2xl bg-emerald-600 dark:bg-emerald-500 text-white flex items-center justify-center font-bold shadow-md mx-auto">
+            <Link2 className="w-6 h-6 text-white stroke-[2.5]" />
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-              SnapLink
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white font-display">
+              Snap<span className="text-emerald-600 dark:text-emerald-400">Link</span>
             </h1>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
               Fast, focused URL shortener with real-time visitor analytics, custom slugs, and QR codes.

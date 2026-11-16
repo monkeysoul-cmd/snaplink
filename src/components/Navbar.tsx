@@ -89,11 +89,11 @@ export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false, currentPa
             id="nav-logo"
             aria-label="Go home"
           >
-            <div className="w-7 h-7 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center font-bold shadow-xs">
-              <Link2 className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform shrink-0">
+              <Link2 className="w-4 h-4 text-white stroke-[2.5]" />
             </div>
-            <span className="font-semibold text-base tracking-tight text-zinc-900 dark:text-white">
-              SnapLink
+            <span className="font-bold text-base tracking-tight text-zinc-900 dark:text-white font-display">
+              Snap<span className="text-emerald-600 dark:text-emerald-400">Link</span>
             </span>
           </button>
 
