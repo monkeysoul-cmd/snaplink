@@ -75,9 +75,9 @@ export const UrlQrCode: React.FC<UrlQrCodeProps> = ({ shortUrl, shortCode }) => 
       <button
         onClick={handleDownload}
         disabled={isLoading}
-        className="flex items-center justify-center gap-2 w-full px-4 py-2 btn-gradient disabled:opacity-50 text-white font-medium text-xs rounded-xl transition shadow-md shadow-emerald-600/15 cursor-pointer disabled:cursor-not-allowed"
+        className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-semibold text-xs transition-all shadow-sm shadow-emerald-600/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <Download className="w-4 h-4" />
+        <Download className="w-4 h-4 text-white" />
         Download PNG
       </button>
     </div>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Calendar, Check, Copy, Lock, PlusCircle,
-  QrCode, Tag, Link2, Eye, EyeOff, Star, ArrowRight, Settings2, Globe
+  QrCode, Tag, Link2, Eye, EyeOff, Star, ArrowRight, Settings2, Globe,
+  ExternalLink, CheckCircle2, Sparkles, Share2
 } from "lucide-react";
 import { api } from "../services/api.js";
 import { useToast } from "../context/ToastContext.js";
@@ -49,6 +50,10 @@ export const CreateUrlPage: React.FC = () => {
   const [displayUrl, setDisplayUrl] = useState<string | null>(null);
   const [workingUrl, setWorkingUrl] = useState<string | null>(null);
   const [createdCode, setCreatedCode] = useState<string | null>(null);
+  const [lastOriginalUrl, setLastOriginalUrl] = useState<string | null>(null);
+  const [lastExpiresAt, setLastExpiresAt] = useState<string | null>(null);
+  const [lastHasPassword, setLastHasPassword] = useState<boolean>(false);
+  const [lastTags, setLastTags] = useState<string[]>([]);
   const [copied, setCopied] = useState<boolean>(false);
   const copyTimerRef = useRef<any>(null);
 
@@ -106,9 +111,15 @@ export const CreateUrlPage: React.FC = () => {
         password: password.trim() || undefined,
         tags, isPublic, isFavorite,
       });
-      setDisplayUrl(getDisplayShortUrl(res.shortCode));
-      setWorkingUrl(getWorkingShortUrl(res.shortCode));
+      const disp = getDisplayShortUrl(res.shortCode);
+      const work = getWorkingShortUrl(res.shortCode);
+      setDisplayUrl(disp);
+      setWorkingUrl(work);
       setCreatedCode(res.shortCode);
+      setLastOriginalUrl(cleanUrl);
+      setLastExpiresAt(parsedExpiry);
+      setLastHasPassword(Boolean(password.trim()));
+      setLastTags(tags);
       toast.success("Link created!");
       setOriginalUrl(""); setCustomAlias("");
       setExpiresAt(computeDefaultExpiry(localStorage.getItem("linkcut_default_expiry")));
@@ -147,9 +158,146 @@ export const CreateUrlPage: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* ── Form ── */}
-        <div className="lg:col-span-2 glass-card p-5 sm:p-7 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* ── Left main section (Form + Generated Link Showcase) ── */}
+        <div className="lg:col-span-7 xl:col-span-8 space-y-6">
+          {/* ── Generated Link Success Showcase (Left Side View) ── */}
+          {displayUrl && workingUrl && createdCode && (
+            <div className="glass-card p-6 sm:p-7 rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/[0.03] dark:bg-emerald-500/[0.05] space-y-5 animate-fadeIn shadow-lg shadow-emerald-500/5 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
+
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-black/5 dark:border-white/10 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white flex items-center justify-center font-bold shadow-xs shrink-0">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white font-display">
+                      Your link is live & ready!
+                    </h2>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      Share your branded short link anywhere.
+                    </p>
+                  </div>
+                </div>
+
+                <span className="self-start sm:self-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Active 302 Redirect
+                </span>
+              </div>
+
+              {/* Short Link Hero Display Box */}
+              <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-white/10 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="min-w-0 space-y-1">
+                  <div className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                    Shortened Link
+                  </div>
+                  <a
+                    href={workingUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-lg sm:text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 hover:underline break-all block transition-colors group/link flex items-center gap-2"
+                  >
+                    <span>{displayUrl}</span>
+                    <ExternalLink className="w-4 h-4 opacity-60 group-hover/link:opacity-100 shrink-0" />
+                  </a>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={handleCopy}
+                    className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold cursor-pointer transition-all flex items-center gap-2 shadow-xs ${
+                      copied
+                        ? "bg-emerald-600 text-white"
+                        : "btn-glow"
+                    }`}
+                    id="copy-hero-btn"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-4 h-4 stroke-[2.5]" />
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        <span>Copy Link</span>
+                      </>
+                    )}
+                  </button>
+
+                  <a
+                    href={workingUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/30 transition cursor-pointer"
+                    title="Test link in new tab"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Destination & Metadata */}
+              <div className="space-y-2 text-xs">
+                {lastOriginalUrl && (
+                  <div className="flex items-start gap-2.5 text-zinc-600 dark:text-zinc-300 bg-zinc-100/60 dark:bg-white/[0.03] p-3 rounded-xl border border-black/5 dark:border-white/5">
+                    <Globe className="w-4 h-4 text-zinc-400 shrink-0 mt-0.5" />
+                    <div className="min-w-0 flex-1">
+                      <span className="font-semibold text-zinc-700 dark:text-zinc-200">Destination: </span>
+                      <span className="font-mono text-zinc-500 dark:text-zinc-400 break-all">{lastOriginalUrl}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {lastHasPassword && (
+                    <span className="gradient-badge badge-amber flex items-center gap-1">
+                      <Lock className="w-2.5 h-2.5" /> Password Protected
+                    </span>
+                  )}
+                  {lastExpiresAt && (
+                    <span className="gradient-badge badge-blue flex items-center gap-1">
+                      <Calendar className="w-2.5 h-2.5" /> Expires {new Date(lastExpiresAt).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" })}
+                    </span>
+                  )}
+                  {lastTags.map((t) => (
+                    <span key={t} className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-zinc-100 dark:bg-white/[0.06] border border-zinc-200/80 dark:border-white/10 text-zinc-600 dark:text-zinc-400">
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer action buttons */}
+              <div className="border-t border-black/5 dark:border-white/10 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <button
+                  onClick={() => {
+                    setDisplayUrl(null);
+                    setWorkingUrl(null);
+                    setCreatedCode(null);
+                  }}
+                  className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5 cursor-pointer self-start"
+                >
+                  <PlusCircle className="w-3.5 h-3.5" />
+                  Shorten another link
+                </button>
+
+                <button
+                  onClick={() => { window.location.hash = "#/links"; }}
+                  className="text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
+                >
+                  <span>View in your links</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Form Card ── */}
+          <div className="glass-card p-5 sm:p-7 space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6" id="create-url-form">
 
             {/* Step 1 — URL */}
@@ -313,58 +461,103 @@ export const CreateUrlPage: React.FC = () => {
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
+          </div>
         </div>
 
-        {/* ── Side panel ── */}
-        <div className="space-y-5">
+        {/* ── Right side panel (Quick Share, QR Code & Live Preview) ── */}
+        <div className="lg:col-span-5 xl:col-span-4 space-y-5">
           {displayUrl && workingUrl && createdCode ? (
             <div className="space-y-4">
-              <div className="glass-card p-5 space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                    Link ready
+              {/* Quick Share Card */}
+              <div className="glass-card p-5 sm:p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs font-bold text-zinc-900 dark:text-white">
+                      Quick Share
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 font-semibold">
+                    Live
                   </span>
                 </div>
 
-                <div className="space-y-1 min-w-0">
+                <div className="p-3.5 rounded-xl bg-zinc-100/70 dark:bg-white/[0.04] border border-black/5 dark:border-white/5 space-y-1">
+                  <div className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                    Short URL
+                  </div>
+                  <div className="text-sm font-mono font-bold text-emerald-600 dark:text-emerald-400 truncate">
+                    {displayUrl}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={handleCopy}
+                    className={`py-2 px-3 text-xs font-semibold rounded-xl cursor-pointer transition-all flex items-center justify-center gap-1.5 border ${
+                      copied
+                        ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-600 dark:text-emerald-400'
+                        : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200'
+                    }`}
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copied ? "Copied" : "Copy"}</span>
+                  </button>
+
                   <a
                     href={workingUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-base font-mono font-medium text-zinc-900 dark:text-white hover:underline break-all block"
+                    className="py-2 px-3 text-xs font-semibold rounded-xl cursor-pointer transition-all flex items-center justify-center gap-1.5 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-center"
                   >
-                    {displayUrl}
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Open</span>
                   </a>
                 </div>
-
-                <button
-                  onClick={handleCopy}
-                  className={`flex items-center justify-center gap-2 w-full py-2.5 text-xs font-medium rounded-xl cursor-pointer transition-all border ${
-                    copied
-                      ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-600 dark:text-emerald-400'
-                      : 'border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200'
-                  }`}
-                >
-                  {copied
-                    ? <><Check className="w-3.5 h-3.5" /> Copied</>
-                    : <><Copy className="w-3.5 h-3.5" /> Copy link</>
-                  }
-                </button>
               </div>
 
+              {/* QR Code Scanner & Download */}
               <UrlQrCode shortUrl={workingUrl} shortCode={createdCode} />
             </div>
           ) : (
-            <div className="glass-card p-6 text-center space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-zinc-900/[0.04] dark:bg-white/[0.06] border border-zinc-900/10 dark:border-white/10 flex items-center justify-center text-zinc-600 dark:text-zinc-400 mx-auto">
-                <PlusCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="glass-card p-5 sm:p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <h3 className="font-semibold text-xs text-zinc-900 dark:text-white">Live Link Preview</h3>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.06] text-zinc-500 dark:text-zinc-400 font-semibold">
+                  302 Direct
+                </span>
               </div>
-              <div className="space-y-1">
-                <h3 className="font-semibold text-sm text-zinc-900 dark:text-white">Link preview</h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-[220px] mx-auto leading-relaxed">
-                  Your short link and QR code will appear here after creation.
-                </p>
+
+              <div className="p-3.5 rounded-xl bg-zinc-100/70 dark:bg-white/[0.04] border border-black/5 dark:border-white/5 space-y-1">
+                <div className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                  Short URL Preview
+                </div>
+                <div className="font-mono text-sm font-bold text-emerald-600 dark:text-emerald-400 truncate">
+                  {getDisplayShortUrl(customAlias.trim() || "my-link")}
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-zinc-100/70 dark:bg-white/[0.04] border border-black/5 dark:border-white/5 space-y-1">
+                <div className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                  Destination Target
+                </div>
+                <div className="text-xs text-zinc-600 dark:text-zinc-400 truncate font-mono">
+                  {originalUrl.trim() || "https://example.com/your-destination"}
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-black/5 dark:border-white/[0.06] space-y-2 text-xs text-zinc-500 dark:text-zinc-400">
+                <div className="flex items-center gap-2">
+                  <QrCode className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span>Instant QR code ready upon creation</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span>Real-time click tracking & analytics</span>
+                </div>
               </div>
             </div>
           )}
