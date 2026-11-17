@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { LogIn, LogOut, UserPlus, Menu, X, LayoutDashboard, Link2, BarChart3 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.js";
 import { ThemeToggle } from "./ThemeToggle.js";
+import { preloadRoute } from "../App.js";
 
 interface NavbarProps {
   isPrivatePath?: boolean;
@@ -109,6 +110,8 @@ export const Navbar: React.FC<NavbarProps> = ({ isPrivatePath = false, currentPa
                   <button
                     key={path}
                     onClick={() => handleNavigate(path)}
+                    onMouseEnter={() => preloadRoute(path)}
+                    onFocus={() => preloadRoute(path)}
                     className={`navbar-link ${active ? "navbar-link-active" : ""}`}
                     aria-current={active ? "page" : undefined}
                   >
