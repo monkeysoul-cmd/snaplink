@@ -91,6 +91,7 @@ class ApiService {
       if (!res.ok) {
         await this.handleError(res, "Failed to shorten URL.");
       }
+      this.invalidateCache();
       return res.json();
     },
 
@@ -152,6 +153,7 @@ class ApiService {
       if (!res.ok) {
         await this.handleError(res, "Failed to update URL.");
       }
+      this.invalidateCache();
       return res.json();
     },
 
@@ -163,6 +165,7 @@ class ApiService {
       if (!res.ok) {
         await this.handleError(res, "Failed to delete shortened URL.");
       }
+      this.invalidateCache();
       return res.json();
     },
 
@@ -179,9 +182,40 @@ class ApiService {
     },
   };
 
-  // Dashboard analytics call
+  // Fast In-Memory Cache (SWR)
+  private cache = new Map<string, { data: any; timestamp: number }>();
+
+  public invalidateCache(prefix?: string): void {
+    if (!prefix) {
+      this.cache.clear();
+      return;
+    }
+    for (const k of this.cache.keys()) {
+      if (k.startsWith(prefix)) {
+        this.cache.delete(k);
+      }
+    }
+  }
+
+  // Dashboard analytics call with instant cache + background revalidation
   public analytics = {
-    getDashboardData: async (): Promise<AnalyticsDashboardData> => {
+    getCachedDashboardData: (): AnalyticsDashboardData | null => {
+      const entry = this.cache.get("analytics:dashboard");
+      if (!entry) return null;
+      // Valid for up to 30 seconds
+      if (Date.now() - entry.timestamp > 30000) return null;
+      return entry.data;
+    },
+
+    getDashboardData: async (bypassCache = false): Promise<AnalyticsDashboardData> => {
+      const cacheKey = "analytics:dashboard";
+      if (!bypassCache) {
+        const cached = this.cache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < 15000) {
+          return cached.data;
+        }
+      }
+
       const res = await fetch(`${API_BASE}/analytics`, {
         method: "GET",
         headers: this.getHeaders(),
@@ -189,7 +223,9 @@ class ApiService {
       if (!res.ok) {
         await this.handleError(res, "Failed to load analytics reports.");
       }
-      return res.json();
+      const data = await res.json();
+      this.cache.set(cacheKey, { data, timestamp: Date.now() });
+      return data;
     },
   };
 }

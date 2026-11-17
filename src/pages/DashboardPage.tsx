@@ -10,8 +10,9 @@ import { getDisplayShortUrl, getWorkingShortUrl } from "../utils/urlHelper.js";
 
 export const DashboardPage: React.FC = () => {
   const { toast } = useToast();
-  const [data, setData] = useState<AnalyticsDashboardData | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const cached = api.analytics.getCachedDashboardData();
+  const [data, setData] = useState<AnalyticsDashboardData | null>(cached);
+  const [isLoading, setIsLoading] = useState<boolean>(!cached);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const fetchDashboardData = async (silent = false) => {
@@ -19,7 +20,7 @@ export const DashboardPage: React.FC = () => {
     if (!silent) setIsLoading(true);
     else setIsRefreshing(true);
     try {
-      const res = await api.analytics.getDashboardData();
+      const res = await api.analytics.getDashboardData(true);
       setData(res);
     } catch (err: any) {
       toast.error("Couldn't load dashboard data.");
@@ -32,12 +33,12 @@ export const DashboardPage: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     const load = async () => {
-      setIsLoading(true);
+      if (!data) setIsLoading(true);
       try {
         const res = await api.analytics.getDashboardData();
         if (isMounted) setData(res);
       } catch (err: any) {
-        if (isMounted) toast.error("Couldn't load dashboard data.");
+        if (isMounted && !data) toast.error("Couldn't load dashboard data.");
       } finally {
         if (isMounted) setIsLoading(false);
       }
