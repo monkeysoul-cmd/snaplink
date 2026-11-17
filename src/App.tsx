@@ -1,21 +1,53 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { Link2 } from "lucide-react";
 import { AuthProvider, useAuth } from "./context/AuthContext.js";
 import { ToastProvider } from "./context/ToastContext.js";
 import { Navbar } from "./components/Navbar.js";
 import { Sidebar } from "./components/Sidebar.js";
 
-// Page Imports
-import { LandingPage } from "./pages/LandingPage.js";
-import { LoginPage } from "./pages/LoginPage.js";
-import { RegisterPage } from "./pages/RegisterPage.js";
-import { DashboardPage } from "./pages/DashboardPage.js";
-import { CreateUrlPage } from "./pages/CreateUrlPage.js";
-import { LinksPage } from "./pages/LinksPage.js";
-import { AnalyticsPage } from "./pages/AnalyticsPage.js";
-import { ProfilePage } from "./pages/ProfilePage.js";
-import { UnlockPage } from "./pages/UnlockPage.js";
-import { NotFoundPage } from "./pages/NotFoundPage.js";
+// Route Loaders for Code Splitting & Preloading
+export const routeLoaders = {
+  landing: () => import("./pages/LandingPage.js").then((m) => ({ default: m.LandingPage })),
+  login: () => import("./pages/LoginPage.js").then((m) => ({ default: m.LoginPage })),
+  register: () => import("./pages/RegisterPage.js").then((m) => ({ default: m.RegisterPage })),
+  dashboard: () => import("./pages/DashboardPage.js").then((m) => ({ default: m.DashboardPage })),
+  create: () => import("./pages/CreateUrlPage.js").then((m) => ({ default: m.CreateUrlPage })),
+  links: () => import("./pages/LinksPage.js").then((m) => ({ default: m.LinksPage })),
+  analytics: () => import("./pages/AnalyticsPage.js").then((m) => ({ default: m.AnalyticsPage })),
+  profile: () => import("./pages/ProfilePage.js").then((m) => ({ default: m.ProfilePage })),
+  unlock: () => import("./pages/UnlockPage.js").then((m) => ({ default: m.UnlockPage })),
+  notFound: () => import("./pages/NotFoundPage.js").then((m) => ({ default: m.NotFoundPage })),
+};
+
+// Lazy loaded page components
+const LandingPage = React.lazy(routeLoaders.landing);
+const LoginPage = React.lazy(routeLoaders.login);
+const RegisterPage = React.lazy(routeLoaders.register);
+const DashboardPage = React.lazy(routeLoaders.dashboard);
+const CreateUrlPage = React.lazy(routeLoaders.create);
+const LinksPage = React.lazy(routeLoaders.links);
+const AnalyticsPage = React.lazy(routeLoaders.analytics);
+const ProfilePage = React.lazy(routeLoaders.profile);
+const UnlockPage = React.lazy(routeLoaders.unlock);
+const NotFoundPage = React.lazy(routeLoaders.notFound);
+
+// Preload route on hover / intent
+export const preloadRoute = (path: string) => {
+  if (path.includes("dashboard")) routeLoaders.dashboard();
+  else if (path.includes("create")) routeLoaders.create();
+  else if (path.includes("links")) routeLoaders.links();
+  else if (path.includes("analytics")) routeLoaders.analytics();
+  else if (path.includes("profile")) routeLoaders.profile();
+  else if (path.includes("login")) routeLoaders.login();
+  else if (path.includes("register")) routeLoaders.register();
+};
+
+const PageFallback: React.FC = () => (
+  <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
+    <div className="h-8 w-44 bg-zinc-200/80 dark:bg-zinc-800/80 rounded-xl animate-pulse" />
+    <div className="h-44 rounded-2xl bg-zinc-100/70 dark:bg-white/[0.04] border border-black/5 dark:border-white/5 animate-pulse" />
+  </div>
+);
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -48,6 +80,61 @@ const AppContent: React.FC = () => {
     };
   }, []);
 
+  // Preload primary logged-in routes in the background during idle time
+  useEffect(() => {
+    if (isAuthenticated) {
+      const timer = setTimeout(() => {
+        routeLoaders.dashboard();
+        routeLoaders.links();
+        routeLoaders.create();
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated]);
+
+  // Global power user keyboard navigation shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const isInput = target && (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT" ||
+        target.isContentEditable
+      );
+
+      if (isInput || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (!isAuthenticated) return;
+
+      const key = e.key.toLowerCase();
+      if (key === "c" || key === "n") {
+        e.preventDefault();
+        window.location.hash = "#/create";
+      } else if (key === "d") {
+        e.preventDefault();
+        window.location.hash = "#/dashboard";
+      } else if (key === "l") {
+        e.preventDefault();
+        window.location.hash = "#/links";
+      } else if (key === "a") {
+        e.preventDefault();
+        window.location.hash = "#/analytics";
+      } else if (key === "p") {
+        e.preventDefault();
+        window.location.hash = "#/profile";
+      } else if (e.key === "/") {
+        e.preventDefault();
+        window.location.hash = "#/links";
+        setTimeout(() => {
+          document.getElementById("url-search-input")?.focus();
+        }, 50);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isAuthenticated]);
+
   // Global loading state on app mount/session validation
   if (isLoading) {
     return (
@@ -75,7 +162,6 @@ const AppContent: React.FC = () => {
 
   // Authenticated Route Protection
   if (isPrivatePath && !isAuthenticated) {
-    // Force redirect to login page
     window.location.hash = "#/login";
     return null;
   }
@@ -124,13 +210,17 @@ const AppContent: React.FC = () => {
         <div className="flex-1 w-full min-w-0 md:pl-64 flex flex-col pb-16 md:pb-0">
           <Sidebar currentPath={currentPath} />
           <main className="flex-1 w-full max-w-7xl mx-auto min-w-0">
-            {renderPage()}
+            <Suspense fallback={<PageFallback />}>
+              {renderPage()}
+            </Suspense>
           </main>
         </div>
       ) : (
         // Guest pages layout (Home, login, unlock, register)
         <main className="flex-1 min-w-0">
-          {renderPage()}
+          <Suspense fallback={<PageFallback />}>
+            {renderPage()}
+          </Suspense>
         </main>
       )}
     </div>

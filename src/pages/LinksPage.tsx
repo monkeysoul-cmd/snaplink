@@ -26,19 +26,19 @@ export const LinksPage: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalUrls, setTotalUrls] = useState<number>(0);
 
-  // Debounce search input to avoid network thrashing & race conditions
+  // Debounce search input for snappier responsive typing (160ms)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
-    }, 280);
+    }, 160);
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Debounce tag input
+  // Debounce tag input (160ms)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedTag(tag);
-    }, 280);
+    }, 160);
     return () => clearTimeout(timer);
   }, [tag]);
 
@@ -252,15 +252,26 @@ export const LinksPage: React.FC = () => {
 
           {/* Cards grid */}
           <div className="grid grid-cols-1 gap-4">
-            {urls.map((item, i) => (
-              <div
-                key={item.id || item._id || i}
-                className="animate-fadeInUp"
-                style={{ animationDelay: `${i * 0.05}s`, opacity: 0 }}
-              >
-                <UrlCard url={item} onUpdate={fetchUrls} onDelete={fetchUrls} />
-              </div>
-            ))}
+            {urls.map((item, i) => {
+              const itemId = item.id || item._id || "";
+              return (
+                <div
+                  key={itemId || i}
+                  className="animate-fadeInUp"
+                  style={{ animationDelay: `${Math.min(i, 8) * 0.03}s`, opacity: 0 }}
+                >
+                  <UrlCard
+                    url={item}
+                    onUpdate={fetchUrls}
+                    onDelete={() => {
+                      // Instant optimistic removal from UI
+                      setUrls((prev) => prev.filter((u) => (u.id || u._id) !== itemId));
+                      setTotalUrls((prev) => Math.max(0, prev - 1));
+                    }}
+                  />
+                </div>
+              );
+            })}
           </div>
 
           {/* Pagination */}

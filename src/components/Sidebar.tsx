@@ -1,6 +1,7 @@
 import React from "react";
 import { BarChart3, LayoutDashboard, Link2, PlusCircle, Settings, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext.js";
+import { preloadRoute } from "../App.js";
 
 interface SidebarProps {
   currentPath: string;
@@ -77,6 +78,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
                 <button
                   key={item.path}
                   onClick={() => handleNavigate(item.path)}
+                  onMouseEnter={() => preloadRoute(item.path)}
+                  onFocus={() => preloadRoute(item.path)}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all cursor-pointer text-left ${
                     isActive
                       ? "bg-zinc-900/5 dark:bg-white/[0.08] text-zinc-900 dark:text-white shadow-xs border border-zinc-900/10 dark:border-white/10 backdrop-blur-md"

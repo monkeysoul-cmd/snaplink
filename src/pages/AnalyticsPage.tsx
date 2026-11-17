@@ -113,8 +113,9 @@ const ITEM_COLORS = [
 
 export const AnalyticsPage: React.FC = () => {
   const { toast } = useToast();
-  const [data, setData] = useState<AnalyticsDashboardData | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const cached = api.analytics.getCachedDashboardData();
+  const [data, setData] = useState<AnalyticsDashboardData | null>(cached);
+  const [isLoading, setIsLoading] = useState<boolean>(!cached);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const fetchAnalytics = async (silent = false) => {
@@ -122,7 +123,7 @@ export const AnalyticsPage: React.FC = () => {
     if (!silent) setIsLoading(true);
     else setIsRefreshing(true);
     try {
-      const res = await api.analytics.getDashboardData();
+      const res = await api.analytics.getDashboardData(true);
       setData(res);
     } catch (error) {
       toast.error("Couldn't load analytics.");
@@ -135,12 +136,12 @@ export const AnalyticsPage: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     const load = async () => {
-      setIsLoading(true);
+      if (!data) setIsLoading(true);
       try {
         const res = await api.analytics.getDashboardData();
         if (isMounted) setData(res);
       } catch (error) {
-        if (isMounted) toast.error("Couldn't load analytics.");
+        if (isMounted && !data) toast.error("Couldn't load analytics.");
       } finally {
         if (isMounted) setIsLoading(false);
       }

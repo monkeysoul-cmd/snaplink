@@ -37,6 +37,11 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
   const [showQr, setShowQr] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isDeletingConfirm, setIsDeletingConfirm] = useState<boolean>(false);
+  const [isFav, setIsFav] = useState<boolean>(url.isFavorite);
+
+  useEffect(() => {
+    setIsFav(url.isFavorite);
+  }, [url.isFavorite]);
 
   useEffect(() => {
     return () => {
@@ -87,11 +92,14 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
   const handleFavoriteToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    const nextFav = !isFav;
+    setIsFav(nextFav); // Instant 0ms visual feedback
     try {
-      await api.url.update(urlId, { isFavorite: !url.isFavorite });
-      onUpdate();
-      toast.success(url.isFavorite ? "Removed from favorites." : "Added to favorites!");
+      await api.url.update(urlId, { isFavorite: nextFav });
+      toast.success(nextFav ? "Added to favorites!" : "Removed from favorites.");
+      api.invalidateCache();
     } catch (error: any) {
+      setIsFav(!nextFav); // Revert on failure
       toast.error(error.message || "Couldn't update.");
     }
   };
@@ -154,11 +162,13 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
   const handleDelete = async () => {
     try {
+      setIsDeletingConfirm(false);
+      onDelete();
       await api.url.delete(urlId);
       toast.success("Link deleted.");
-      onDelete();
     } catch (error: any) {
       toast.error(error.message || "Couldn't delete.");
+      onUpdate();
     }
   };
 
@@ -237,15 +247,15 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={handleFavoriteToggle}
-                className={`p-2 rounded-xl transition cursor-pointer border ${
-                  url.isFavorite
+                className={`p-2 rounded-xl transition-all cursor-pointer border active:scale-90 ${
+                  isFav
                     ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30"
                     : "text-zinc-500 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/[0.04] border-transparent hover:border-amber-500/20 hover:text-amber-500"
                 }`}
-                title={url.isFavorite ? "Remove from favorites" : "Add to favorites"}
+                title={isFav ? "Remove from favorites" : "Add to favorites"}
                 id={`fav-toggle-${url.id}`}
               >
-                <Star className={`w-4 h-4 ${url.isFavorite ? 'fill-current' : ''}`} />
+                <Star className={`w-4 h-4 transition-transform ${isFav ? 'fill-current scale-110' : ''}`} />
               </button>
 
               <div className="px-3 py-1.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/[0.06] rounded-xl text-center select-none min-w-[56px]">
