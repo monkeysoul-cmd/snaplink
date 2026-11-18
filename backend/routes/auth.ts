@@ -112,8 +112,12 @@ router.post("/login", authLimiter, async (req: Request, res: Response): Promise<
       return;
     }
 
-    // Find user
-    const user = await User.findOne({ email: trimmedEmail });
+    // Find user (exact match with case-insensitive fallback for legacy accounts)
+    let user = await User.findOne({ email: trimmedEmail });
+    if (!user) {
+      const escapedEmail = trimmedEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      user = await User.findOne({ email: new RegExp(`^${escapedEmail}$`, "i") });
+    }
     if (!user) {
       res.status(400).json({ message: "Invalid email or password" });
       return;

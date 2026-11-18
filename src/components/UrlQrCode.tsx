@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Download, Loader2, QrCode } from "lucide-react";
 import { useToast } from "../context/ToastContext.js";
 
@@ -10,6 +10,10 @@ interface UrlQrCodeProps {
 export const UrlQrCode: React.FC<UrlQrCodeProps> = ({ shortUrl, shortCode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { toast } = useToast();
+  
+  useEffect(() => {
+    setIsLoading(true);
+  }, [shortUrl]);
   
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(shortUrl)}`;
 

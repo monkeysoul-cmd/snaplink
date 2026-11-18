@@ -193,8 +193,9 @@ router.get("/:shortCode", async (req: Request, res: Response, next: NextFunction
 
     // 3. Check if link is password protected
     if (url.passwordHash) {
-      // Redirect to frontend unlock screen
-      res.redirect(`/#/unlock/${url.shortCode}`);
+      // Redirect to frontend unlock screen using custom alias if present or short code
+      const slug = encodeURIComponent(url.customAlias || url.shortCode);
+      res.redirect(`/#/unlock/${slug}`);
       return;
     }
 

@@ -13,8 +13,14 @@ if (!cached) {
 }
 
 export const connectDB = async () => {
-  if (cached.conn) {
+  if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
+  }
+
+  // If previous connection dropped or closed, reset promise and conn
+  if (mongoose.connection.readyState === 0 && cached.conn) {
+    cached.conn = null;
+    cached.promise = null;
   }
 
   if (!cached.promise) {
@@ -75,6 +81,7 @@ const ClickAnalyticSchema = new mongoose.Schema({
   device: { type: String },
   country: { type: String }
 }, {
+  _id: false,
   toJSON: {
     transform: (_doc, ret: any) => {
       delete ret.ip; // Never expose raw visitor IP addresses in API responses

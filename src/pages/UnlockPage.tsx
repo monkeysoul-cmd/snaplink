@@ -16,6 +16,13 @@ export const UnlockPage: React.FC = () => {
     if (unlockIdx !== -1 && parts[unlockIdx + 1]) {
       return decodeURIComponent(parts[unlockIdx + 1]);
     }
+    // Also check pathname in case accessed directly via browser path before hash router catches it
+    const cleanPath = (window.location.pathname || "").split("?")[0].replace(/\/+$/, "");
+    const pathParts = cleanPath.split("/").filter(Boolean);
+    const pathUnlockIdx = pathParts.indexOf("unlock");
+    if (pathUnlockIdx !== -1 && pathParts[pathUnlockIdx + 1]) {
+      return decodeURIComponent(pathParts[pathUnlockIdx + 1]);
+    }
     const last = parts[parts.length - 1];
     return last && last !== "unlock" ? decodeURIComponent(last) : "";
   };

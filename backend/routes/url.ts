@@ -4,8 +4,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Url } from "../config/db.js";
 import { authenticateToken, AuthenticatedRequest, JWT_SECRET } from "../middleware/auth.js";
-import { generateShortCode, isValidUrl, normalizeUrl } from "../utils/helpers.js";
-import { createUrlLimiter } from "../middleware/rateLimiter.js";
+import { generateShortCode, isValidUrl, normalizeUrl, parseUserAgent, anonymizeIp } from "../utils/helpers.js";
+import { createUrlLimiter, verifyLimiter } from "../middleware/rateLimiter.js";
 
 const RESERVED_ALIASES = new Set([
   "api", "dashboard", "create", "links", "analytics", "profile",
@@ -129,7 +129,7 @@ router.post("/", createUrlLimiter, async (req: Request, res: Response): Promise<
 
     // If custom alias is provided, validate format and uniqueness
     let finalShortCode = "";
-    const hasCustomAlias = Boolean(customAlias && customAlias.trim() !== "");
+    const hasCustomAlias = Boolean(customAlias && typeof customAlias === "string" && customAlias.trim() !== "");
 
     if (hasCustomAlias) {
       const aliasError = validateCustomAlias(customAlias);
@@ -379,7 +379,9 @@ router.put("/:id", authenticateToken as any, async (req: AuthenticatedRequest, r
 
     if (customAlias !== undefined) {
       if (customAlias === null || (typeof customAlias === "string" && customAlias.trim() === "")) {
-        updates.customAlias = null;
+        updates.$unset = updates.$unset || {};
+        updates.$unset.customAlias = 1;
+        delete updates.customAlias;
         // If the shortCode was identical to the customAlias being removed, regenerate a unique 6-char short code
         if (url.customAlias && url.shortCode === url.customAlias) {
           let attempts = 0;
@@ -522,6 +524,105 @@ router.delete("/:id", authenticateToken as any, async (req: AuthenticatedRequest
   } catch (error) {
     console.error("Delete URL error:", error);
     res.status(500).json({ message: "Server error deleting URL" });
+  }
+});
+
+// POST /api/url/:shortCode/verify (Verify link password & record atomic click analytics)
+router.post("/:shortCode/verify", verifyLimiter, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { shortCode } = req.params;
+    const { password } = req.body;
+
+    if (!password || typeof password !== "string") {
+      res.status(400).json({ message: "Password is required" });
+      return;
+    }
+
+    const cleanCode = (shortCode || "").trim();
+    if (!cleanCode || cleanCode.length > 100) {
+      res.status(404).json({ message: "Short URL not found" });
+      return;
+    }
+
+    // Fast indexed match
+    let url = await Url.findOne({
+      $or: [{ shortCode: cleanCode }, { customAlias: cleanCode }]
+    });
+
+    // Case-insensitive fallback
+    if (!url) {
+      const escapedCode = cleanCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      url = await Url.findOne({
+        $or: [
+          { shortCode: new RegExp(`^${escapedCode}$`, "i") },
+          { customAlias: new RegExp(`^${escapedCode}$`, "i") }
+        ]
+      });
+    }
+
+    if (!url) {
+      res.status(404).json({ message: "Short URL not found" });
+      return;
+    }
+
+    if (!url.isActive) {
+      res.status(400).json({ message: "This link has been deactivated and cannot be accessed." });
+      return;
+    }
+
+    if (url.expiresAt && new Date(url.expiresAt).getTime() < Date.now()) {
+      res.status(400).json({ message: "This link has expired and is no longer accessible." });
+      return;
+    }
+
+    if (!url.passwordHash) {
+      res.status(400).json({ message: "This URL is not password-protected" });
+      return;
+    }
+
+    const isMatch = await bcrypt.compare(password, url.passwordHash);
+    if (!isMatch) {
+      res.status(401).json({ message: "Incorrect password" });
+      return;
+    }
+
+    if (!isValidUrl(url.originalUrl)) {
+      res.status(400).json({ message: "The destination URL is invalid or unsafe." });
+      return;
+    }
+
+    // User-Agent analytics
+    const userAgent = req.headers["user-agent"] || "";
+    const forwarded = req.headers["x-forwarded-for"];
+    const rawIp = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim() || req.socket.remoteAddress || "127.0.0.1";
+    const clientCountry = (req.headers["x-vercel-ip-country"] || req.headers["cf-ipcountry"] || "") as string;
+    const { browser, device, country } = parseUserAgent(userAgent, clientCountry);
+    const safeIp = anonymizeIp(rawIp);
+
+    // Atomic update to avoid race conditions and lost clicks
+    await Url.updateOne(
+      { _id: url._id },
+      {
+        $inc: { clicks: 1 },
+        $push: {
+          clickAnalytics: {
+            $each: [{
+              timestamp: new Date().toISOString(),
+              ip: safeIp,
+              browser,
+              device,
+              country,
+            }],
+            $slice: -500
+          }
+        }
+      }
+    );
+
+    res.json({ originalUrl: url.originalUrl });
+  } catch (error) {
+    console.error("Verify URL password error:", error);
+    res.status(500).json({ message: "Server error during password verification" });
   }
 });
 

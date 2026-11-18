@@ -1,4 +1,5 @@
 import { Router, Response } from "express";
+import mongoose from "mongoose";
 import { Url } from "../config/db.js";
 import { authenticateToken, AuthenticatedRequest } from "../middleware/auth.js";
 
@@ -10,7 +11,10 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
     const userId = req.user!.id;
 
     // Fetch user's URLs using lean() for reduced memory and execution overhead
-    const urls: any[] = await Url.find({ userId }).lean();
+    const userQuery = mongoose.isValidObjectId(userId)
+      ? { $or: [{ userId: new mongoose.Types.ObjectId(userId) }, { userId }] }
+      : { userId };
+    const urls: any[] = await Url.find(userQuery).lean();
 
     // 1. Overall Metrics
     const totalUrls = urls.length;
@@ -25,7 +29,7 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
       .sort((a, b) => (b.clicks || 0) - (a.clicks || 0) || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 5)
       .map((u) => ({
-        id: u.id || u._id.toString(),
+        id: String(u._id || u.id || ""),
         shortCode: u.shortCode,
         originalUrl: u.originalUrl,
         clicks: u.clicks,
@@ -37,7 +41,7 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 5)
       .map((u) => ({
-        id: u.id || u._id.toString(),
+        id: String(u._id || u.id || ""),
         shortCode: u.shortCode,
         originalUrl: u.originalUrl,
         clicks: u.clicks,
@@ -75,8 +79,9 @@ router.get("/", authenticateToken as any, async (req: AuthenticatedRequest, res:
       dailyClicksMap[dateStr] = 0;
     }
 
-    // Populate daily clicks from logs
+    // Populate daily clicks from logs safely
     allClicks.forEach((click) => {
+      if (!click.timestamp || typeof click.timestamp !== "string") return;
       const clickDate = click.timestamp.split("T")[0];
       if (clickDate in dailyClicksMap) {
         dailyClicksMap[clickDate] += 1;

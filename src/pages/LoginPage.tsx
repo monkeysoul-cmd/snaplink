@@ -54,7 +54,7 @@ export const LoginPage: React.FC = () => {
               <span>1,248 clicks</span>
             </div>
             <div className="font-mono text-sm font-medium text-zinc-900 dark:text-white">
-              snaplink.io/launch
+              snaplink.vercel.app/launch
             </div>
             <div className="text-[11px] text-zinc-400 dark:text-zinc-500 truncate">
               https://example.com/company/product-announcement-2026
