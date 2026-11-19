@@ -390,7 +390,6 @@ graph LR
 
 ```text
 snaplink/
-├── .env.example              # Template for environment variables and secrets
 ├── package.json              # Scripts, build tools, and production dependencies
 ├── tsconfig.json             # TypeScript compiler settings
 ├── vite.config.ts            # Vite asset bundler configuration
@@ -490,10 +489,13 @@ All requests accept and return JSON payloads. Authenticated endpoints require th
 
 ## ⚙️ Environment Configuration
 
-Create a `.env` file in the root directory. You can copy the provided `.env.example`:
+Create a `.env` file in the root directory:
 
-```bash
-cp .env.example .env
+```env
+MONGO_URI="mongodb+srv://user:pass@cluster.mongodb.net/snaplink"
+JWT_SECRET="your_super_secret_64_character_hex_key"
+VITE_APP_URL="https://snaplink.vercel.app"
+PORT=3000
 ```
 
 | Variable | Required | Default / Example | Purpose |
