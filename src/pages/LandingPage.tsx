@@ -4,6 +4,7 @@ import { api } from "../services/api.js";
 import { useAuth } from "../context/AuthContext.js";
 import { useToast } from "../context/ToastContext.js";
 import { getDisplayShortUrl, getWorkingShortUrl } from "../utils/urlHelper.js";
+import { copyToClipboard } from "../utils/clipboard.js";
 
 export const LandingPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -66,13 +67,13 @@ export const LandingPage: React.FC = () => {
   const handleCopy = async () => {
     const textToCopy = workingUrl || shortenedUrl;
     if (!textToCopy) return;
-    try {
-      await navigator.clipboard.writeText(textToCopy);
+    const ok = await copyToClipboard(textToCopy);
+    if (ok) {
       setCopied(true);
       toast.success("Copied to clipboard");
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
       copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
-    } catch {
+    } else {
       toast.error("Couldn't copy — try selecting it manually.");
     }
   };

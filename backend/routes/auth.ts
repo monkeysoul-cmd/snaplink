@@ -7,6 +7,9 @@ import { authLimiter } from "../middleware/rateLimiter.js";
 
 const router = Router();
 
+// Constant-time mitigation against user enumeration timing attacks
+const DUMMY_BCRYPT_HASH = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
+
 // POST /api/auth/register
 router.post("/register", authLimiter, async (req: Request, res: Response): Promise<void> => {
   try {
@@ -119,6 +122,7 @@ router.post("/login", authLimiter, async (req: Request, res: Response): Promise<
       user = await User.findOne({ email: new RegExp(`^${escapedEmail}$`, "i") });
     }
     if (!user) {
+      await bcrypt.compare(password, DUMMY_BCRYPT_HASH);
       res.status(400).json({ message: "Invalid email or password" });
       return;
     }

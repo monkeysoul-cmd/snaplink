@@ -9,6 +9,7 @@ import { useToast } from "../context/ToastContext.js";
 import { UrlQrCode } from "./UrlQrCode.js";
 import { ExpiryPicker } from "./ExpiryPicker.js";
 import { getDisplayShortUrl, getWorkingShortUrl, getRedirectUrl } from "../utils/urlHelper.js";
+import { copyToClipboard } from "../utils/clipboard.js";
 
 interface UrlCardProps {
   url: UrlItem;
@@ -79,13 +80,13 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
   };
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(workingShortLink);
+    const ok = await copyToClipboard(workingShortLink);
+    if (ok) {
       setCopied(true);
       toast.success("Copied!");
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
       copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
-    } catch {
+    } else {
       toast.error("Couldn't copy — try selecting it manually.");
     }
   };
@@ -203,7 +204,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
               {/* Short link row */}
               <div className="flex items-center gap-2 flex-wrap">
                 <button
-                  onClick={() => window.open(workingShortLink, "_blank")}
+                  onClick={() => window.open(workingShortLink, "_blank", "noopener,noreferrer")}
                   className="text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline flex items-center gap-1.5 cursor-pointer short-link-mono transition-colors group/link"
                   id={`link-short-${url.id}`}
                 >
@@ -353,8 +354,13 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
 
           {/* Delete confirmation */}
           {isDeletingConfirm && (
-            <div className="p-4 bg-rose-500/10 border border-rose-500/25 rounded-xl animate-scaleIn space-y-3">
-              <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold text-sm">
+            <div
+              role="alertdialog"
+              aria-modal="true"
+              aria-labelledby={`del-title-${url.id}`}
+              className="p-4 bg-rose-500/10 border border-rose-500/25 rounded-xl animate-scaleIn space-y-3"
+            >
+              <div id={`del-title-${url.id}`} className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold text-sm">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 Delete this link permanently?
               </div>
@@ -471,6 +477,7 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
                   <button
                     type="button"
                     onClick={() => setShowEditPwd(!showEditPwd)}
+                    aria-label={showEditPwd ? "Hide password" : "Show password"}
                     className="absolute right-3 top-3.5 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 cursor-pointer transition-colors"
                   >
                     {showEditPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

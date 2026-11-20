@@ -9,6 +9,7 @@ import { useToast } from "../context/ToastContext.js";
 import { UrlQrCode } from "../components/UrlQrCode.js";
 import { ExpiryPicker } from "../components/ExpiryPicker.js";
 import { getDisplayShortUrl, getWorkingShortUrl, getShortDomain } from "../utils/urlHelper.js";
+import { copyToClipboard } from "../utils/clipboard.js";
 
 const computeDefaultExpiry = (pref: string | null): string => {
   if (!pref || pref === "never") return "";
@@ -133,14 +134,14 @@ export const CreateUrlPage: React.FC = () => {
 
   const handleCopy = async () => {
     if (!workingUrl) return;
-    try {
-      await navigator.clipboard.writeText(workingUrl);
+    const ok = await copyToClipboard(workingUrl);
+    if (ok) {
       setCopied(true);
       toast.success("Copied!");
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
       copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Couldn't copy.");
+    } else {
+      toast.error("Couldn't copy — try selecting it manually.");
     }
   };
 
@@ -197,7 +198,7 @@ export const CreateUrlPage: React.FC = () => {
                   <a
                     href={workingUrl}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="text-lg sm:text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 hover:underline break-all block transition-colors group/link flex items-center gap-2"
                   >
                     <span>{displayUrl}</span>
@@ -390,6 +391,7 @@ export const CreateUrlPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowPwd(!showPwd)}
+                    aria-label={showPwd ? "Hide password" : "Show password"}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
                   >
                     {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

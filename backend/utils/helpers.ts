@@ -23,9 +23,86 @@ const FORBIDDEN_HOSTS = new Set([
   "instance-data",
 ]);
 
-// URL validation that blocks SSRF, private networks, localhost, and cloud metadata
+// Parse dotted decimal, octal, hex, or integer IPv4 into a standard 32-bit unsigned number
+function parseIpv4ToNumber(hostname: string): number | null {
+  const parts = hostname.split(".");
+  if (parts.length < 1 || parts.length > 4) return null;
+  const numbers: number[] = [];
+  for (const part of parts) {
+    let num: number;
+    if (/^0x[0-9a-f]+$/i.test(part)) {
+      num = parseInt(part, 16);
+    } else if (/^0[0-7]+$/.test(part)) {
+      num = parseInt(part, 8);
+    } else if (/^\d+$/.test(part)) {
+      num = parseInt(part, 10);
+    } else {
+      return null;
+    }
+    if (isNaN(num) || num < 0) return null;
+    numbers.push(num);
+  }
+
+  let ip = 0;
+  if (numbers.length === 1) {
+    if (numbers[0] > 0xffffffff) return null;
+    ip = numbers[0];
+  } else if (numbers.length === 2) {
+    if (numbers[0] > 0xff || numbers[1] > 0xffffff) return null;
+    ip = ((numbers[0] << 24) | numbers[1]) >>> 0;
+  } else if (numbers.length === 3) {
+    if (numbers[0] > 0xff || numbers[1] > 0xff || numbers[2] > 0xffff) return null;
+    ip = ((numbers[0] << 24) | (numbers[1] << 16) | numbers[2]) >>> 0;
+  } else if (numbers.length === 4) {
+    if (numbers.some(n => n > 0xff)) return null;
+    ip = ((numbers[0] << 24) | (numbers[1] << 16) | (numbers[2] << 8) | numbers[3]) >>> 0;
+  }
+  return ip >>> 0;
+}
+
+function isPrivateIpv4(ip: number): boolean {
+  // 0.0.0.0/8 (Current network)
+  if (ip <= 0x00ffffff) return true;
+  // 10.0.0.0/8 (Private)
+  if (ip >= 0x0a000000 && ip <= 0x0affffff) return true;
+  // 100.64.0.0/10 (CGNAT / Shared Address Space)
+  if (ip >= 0x64400000 && ip <= 0x647fffff) return true;
+  // 127.0.0.0/8 (Loopback)
+  if (ip >= 0x7f000000 && ip <= 0x7fffffff) return true;
+  // 169.254.0.0/16 (Link-Local / Cloud Instance Metadata)
+  if (ip >= 0xa9fe0000 && ip <= 0xa9feffff) return true;
+  // 172.16.0.0/12 (Private)
+  if (ip >= 0xac100000 && ip <= 0xac1fffff) return true;
+  // 192.0.0.0/24 (IETF Protocol Assignments)
+  if (ip >= 0xc0000000 && ip <= 0xc00000ff) return true;
+  // 192.0.2.0/24 (TEST-NET-1)
+  if (ip >= 0xc0000200 && ip <= 0xc00002ff) return true;
+  // 192.168.0.0/16 (Private)
+  if (ip >= 0xc0a80000 && ip <= 0xc0a8ffff) return true;
+  // 198.18.0.0/15 (Benchmarking)
+  if (ip >= 0xc6120000 && ip <= 0xc613ffff) return true;
+  // 198.51.100.0/24 (TEST-NET-2)
+  if (ip >= 0xc6336400 && ip <= 0xc63364ff) return true;
+  // 203.0.113.0/24 (TEST-NET-3)
+  if (ip >= 0xcb007100 && ip <= 0xcb0071ff) return true;
+  // 224.0.0.0/4 (Multicast)
+  if (ip >= 0xe0000000 && ip <= 0xefffffff) return true;
+  // 240.0.0.0/4 (Reserved / Future Use)
+  if (ip >= 0xf0000000 && ip <= 0xffffffff) return true;
+  // 255.255.255.255 (Broadcast)
+  if (ip === 0xffffffff) return true;
+
+  return false;
+}
+
+// URL validation that blocks SSRF, private networks, localhost, DNS rebinding, and cloud metadata
 export function isValidUrl(url: string): boolean {
   try {
+    // Reject control characters, newlines, and null bytes to prevent header injection
+    if (/[\x00-\x1F\x7F]/.test(url)) {
+      return false;
+    }
+
     const parsed = new URL(url);
     if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
       return false;
@@ -45,9 +122,23 @@ export function isValidUrl(url: string): boolean {
       hostname.endsWith(".internal") ||
       hostname.endsWith(".lan") ||
       hostname.endsWith(".home.arpa") ||
-      hostname.endsWith(".localhost")
+      hostname.endsWith(".localhost") ||
+      hostname.endsWith(".localdomain")
     ) {
       return false;
+    }
+
+    // Disallow public wildcard DNS rebinding domains that resolve to 127.0.0.1 / private IPs
+    if (/(\.|\b)(nip\.io|sslip\.io|localtest\.me|vcap\.me|lvh\.me|traefik\.me|lacolhost\.com)$/i.test(hostname)) {
+      return false;
+    }
+
+    // Check if hostname is an IPv4 address in any encoding (decimal, octal, hex, multi-part)
+    const ipv4Num = parseIpv4ToNumber(hostname);
+    if (ipv4Num !== null) {
+      if (isPrivateIpv4(ipv4Num)) {
+        return false;
+      }
     }
 
     // IPv6 literal checks (e.g. [::1], [fe80:...], [fc00:...], [fd00:...], [::ffff:...])
@@ -58,38 +149,19 @@ export function isValidUrl(url: string): boolean {
         ipv6 === "::" ||
         ipv6.startsWith("fe80:") ||
         ipv6.startsWith("fc") ||
-        ipv6.startsWith("fd") ||
-        ipv6.startsWith("::ffff:") ||
-        ipv6.startsWith("0:0:0:0:0:ffff:")
+        ipv6.startsWith("fd")
       ) {
         return false;
       }
-    }
 
-    // Disallow private, loopback, link-local, carrier-grade NAT, and reserved IPv4 ranges:
-    // 0.0.0.0/8 (Current network)
-    // 10.0.0.0/8 (RFC 1918 Private)
-    // 100.64.0.0/10 (RFC 6598 Shared Address Space / CGNAT)
-    // 127.0.0.0/8 (RFC 1122 Loopback)
-    // 169.254.0.0/16 (RFC 3927 Link-Local / Cloud Metadata)
-    // 172.16.0.0/12 (RFC 1918 Private)
-    // 192.0.0.0/24 (RFC 6890 IETF Protocol Assignments)
-    // 192.0.2.0/24 (RFC 5737 TEST-NET-1)
-    // 192.168.0.0/16 (RFC 1918 Private)
-    // 198.18.0.0/15 (RFC 2544 Benchmarking)
-    // 198.51.100.0/24 (RFC 5737 TEST-NET-2)
-    // 203.0.113.0/24 (RFC 5737 TEST-NET-3)
-    // 224.0.0.0/4 (RFC 5771 Multicast)
-    // 240.0.0.0/4 (RFC 1112 Reserved / Future use)
-    // 255.255.255.255 (Broadcast)
-    if (
-      /^(0\.|10\.|127\.|169\.254\.|192\.168\.|192\.0\.|198\.51\.100\.|203\.0\.113\.|255\.255\.255\.255)/.test(hostname) ||
-      /^100\.(6[4-9]|[7-9][0-9]|1[0-1][0-9]|12[0-7])\./.test(hostname) ||
-      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname) ||
-      /^198\.(1[8-9])\./.test(hostname) ||
-      /^(22[4-9]|23[0-9]|24[0-9]|25[0-5])\./.test(hostname)
-    ) {
-      return false;
+      // Check IPv4-mapped IPv6 (e.g. ::ffff:127.0.0.1 or ::ffff:7f00:1)
+      if (ipv6.startsWith("::ffff:") || ipv6.startsWith("0:0:0:0:0:ffff:")) {
+        const mappedPart = ipv6.replace(/^.*ffff:/, "");
+        const mappedIp = parseIpv4ToNumber(mappedPart);
+        if (mappedIp !== null && isPrivateIpv4(mappedIp)) {
+          return false;
+        }
+      }
     }
 
     // Ensure hostname is a valid dot-separated domain (or bracketed valid public IPv6)

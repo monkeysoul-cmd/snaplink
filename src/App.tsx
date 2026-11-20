@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext.js";
 import { ToastProvider } from "./context/ToastContext.js";
 import { Navbar } from "./components/Navbar.js";
 import { Sidebar } from "./components/Sidebar.js";
+import { ErrorBoundary } from "./components/ErrorBoundary.js";
 
 // Route Loaders for Code Splitting & Preloading
 export const routeLoaders = {
@@ -229,10 +230,12 @@ const AppContent: React.FC = () => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <AppContent />
-      </ToastProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

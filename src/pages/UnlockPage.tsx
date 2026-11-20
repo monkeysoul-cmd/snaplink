@@ -47,10 +47,20 @@ export const UnlockPage: React.FC = () => {
     try {
       const data = await api.url.verifyPassword(shortCode, password);
       toast.success("Unlocked");
-      const targetUrl = /^https?:\/\//i.test(data.originalUrl) 
-        ? data.originalUrl 
-        : `https://${data.originalUrl}`;
-      window.location.href = targetUrl;
+      const rawUrl = (data.originalUrl || "").trim();
+      const targetUrl = /^https?:\/\//i.test(rawUrl) 
+        ? rawUrl 
+        : `https://${rawUrl}`;
+      try {
+        const parsed = new URL(targetUrl);
+        if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+          throw new Error("Invalid protocol");
+        }
+        window.location.href = parsed.toString();
+      } catch {
+        setErrorMsg("Destination URL is invalid or unsafe.");
+        toast.error("Invalid destination URL");
+      }
     } catch (error: any) {
       console.error(error);
       const msg = error.message || "Incorrect password.";
