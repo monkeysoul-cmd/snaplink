@@ -315,8 +315,8 @@ export const UrlCard: React.FC<UrlCardProps> = ({ url, onUpdate, onDelete }) => 
                 title="QR Code"
                 className={`p-1.5 sm:p-2 rounded-lg border transition-all cursor-pointer shrink-0 ${
                   showQr
-                    ? "bg-violet-500/15 border-violet-500/30 text-violet-700 dark:text-violet-400"
-                    : "glass-input text-zinc-600 dark:text-zinc-400 hover:text-violet-600 dark:hover:text-violet-400 hover:border-violet-500/20"
+                    ? "bg-teal-500/15 border-teal-500/30 text-teal-700 dark:text-teal-400"
+                    : "glass-input text-zinc-600 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-400 hover:border-teal-500/20"
                 }`}
                 id={`qr-btn-${url.id}`}
               >
