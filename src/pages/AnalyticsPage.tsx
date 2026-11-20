@@ -107,7 +107,7 @@ const ITEM_COLORS = [
   { bg: 'linear-gradient(90deg, #10b981, #34d399)', dot: '#34d399', text: 'text-emerald-600 dark:text-emerald-400' },
   { bg: 'linear-gradient(90deg, #14b8a6, #2dd4bf)', dot: '#2dd4bf', text: 'text-teal-600 dark:text-teal-400' },
   { bg: 'linear-gradient(90deg, #06b6d4, #67e8f9)', dot: '#67e8f9', text: 'text-cyan-600 dark:text-cyan-400' },
-  { bg: 'linear-gradient(90deg, #8b5cf6, #a78bfa)', dot: '#a78bfa', text: 'text-violet-600 dark:text-violet-400' },
+  { bg: 'linear-gradient(90deg, #0284c7, #38bdf8)', dot: '#38bdf8', text: 'text-sky-600 dark:text-sky-400' },
   { bg: 'linear-gradient(90deg, #f59e0b, #fbbf24)', dot: '#fbbf24', text: 'text-amber-600 dark:text-amber-400' },
 ];
 
